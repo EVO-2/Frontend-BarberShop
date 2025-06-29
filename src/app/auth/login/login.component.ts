@@ -5,10 +5,14 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
+  mostrarPassword: boolean = false;
+  loginError: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -24,10 +28,12 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('Formulario enviado', this.loginForm.value);
     if (this.loginForm.invalid) {
       return;
     }
+
+    this.isLoading = true;
+    this.loginError = false;
 
     const loginData = this.loginForm.value;
 
@@ -36,10 +42,12 @@ export class LoginComponent implements OnInit {
         next: (res: any) => {
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.user));
-          this.router.navigate(['/dashboard']); // o cambia esta ruta si usas otra
+          this.router.navigate(['/signup']);
         },
         error: (err) => {
           console.error('Error en login', err);
+          this.loginError = true;
+          this.isLoading = false;
         }
       });
   }

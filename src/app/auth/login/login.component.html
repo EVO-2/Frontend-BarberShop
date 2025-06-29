@@ -1,21 +1,60 @@
 <div fxLayout="column" fxLayoutAlign="center center" style="min-height: 100vh; background-color: #f3f3f3;">
   <mat-card style="width: 100%; max-width: 400px; padding: 20px;">
-    <mat-card-header>
-      <mat-card-title>Iniciar Sesión</mat-card-title>
-    </mat-card-header>
+    
+    <!-- ✅ Logo centrado -->
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <img src="assets/logo.png" alt="Logo Barbería" class="logo" />
+    </div>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Correo electrónico</mat-label>
         <input matInput type="email" formControlName="correo" required />
+        <mat-error *ngIf="loginForm.get('correo')?.hasError('required')">
+          El correo es obligatorio.
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('correo')?.hasError('email')">
+          Correo no válido.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contraseña</mat-label>
-        <input matInput type="password" formControlName="password" required />
-      </mat-form-field><br>
-      <button mat-raised-button color="primary" class="full-width" type="submit">
-        Iniciar Sesión
+        <input
+          matInput
+          [type]="mostrarPassword ? 'text' : 'password'"
+          formControlName="password"
+          required
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="mostrarPassword = !mostrarPassword"
+          [attr.aria-label]="'Mostrar contraseña'"
+          [attr.aria-pressed]="mostrarPassword"
+        >
+          <mat-icon>{{ mostrarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          La contraseña es obligatoria.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-error *ngIf="loginError" class="error-msg">
+        Credenciales incorrectas. Inténtalo de nuevo.
+      </mat-error>
+
+      <br />
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="full-width"
+        type="submit"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Cargando...' : 'Iniciar Sesión' }}
       </button>
     </form>
   </mat-card>

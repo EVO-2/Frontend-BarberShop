@@ -1,0 +1,16 @@
+<div fxLayout="column" fxLayoutAlign="center center" style="min-height: 100vh; background-color: #e3f2fd;">
+  <mat-card class="dashboard-card">
+    <mat-card-header>
+      <mat-card-title>Bienvenido, {{ usuario?.nombre || 'Usuario' }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p><strong>Rol:</strong> {{ usuario?.rol }}</p>
+      <p>Has iniciado sesión correctamente. 🎉</p>
+    </mat-card-content>
+
+    <mat-card-actions fxLayout="row" fxLayoutAlign="end">
+      <button mat-raised-button color="warn" (click)="logout()">Cerrar sesión</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

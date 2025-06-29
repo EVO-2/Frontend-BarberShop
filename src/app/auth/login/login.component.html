@@ -1,0 +1,22 @@
+<div fxLayout="column" fxLayoutAlign="center center" style="min-height: 100vh; background-color: #f3f3f3;">
+  <mat-card style="width: 100%; max-width: 400px; padding: 20px;">
+    <mat-card-header>
+      <mat-card-title>Iniciar Sesión</mat-card-title>
+    </mat-card-header>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="correo" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password" required />
+      </mat-form-field><br>
+      <button mat-raised-button color="primary" class="full-width" type="submit">
+        Iniciar Sesión
+      </button>
+    </form>
+  </mat-card>
+</div>

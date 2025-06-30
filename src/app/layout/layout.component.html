@@ -1,9 +1,11 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+  <mat-sidenav #sidenav mode="side" opened>
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard">Dashboard</a>
-      <a mat-list-item routerLink="/signup">Crear Usuario</a>
-      <a mat-list-item (click)="logout()">Cerrar Sesión</a>
+      <a mat-list-item routerLink="/dashboard">Inicio</a>
+      <a mat-list-item *ngIf="usuario.rol === 'admin'" routerLink="/admin">Admin</a>
+      <a mat-list-item *ngIf="usuario.rol === 'barbero'" routerLink="/barbero">Barbero</a>
+      <a mat-list-item *ngIf="usuario.rol === 'cliente'" routerLink="/cliente">Cliente</a>
+      <a mat-list-item (click)="logout()">Cerrar sesión</a>
     </mat-nav-list>
   </mat-sidenav>
 
@@ -12,13 +14,15 @@
       <button mat-icon-button (click)="sidenav.toggle()" class="hide-on-desktop">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>Barbería App</span>
-      <span class="spacer"></span>
-      <span *ngIf="usuario">Hola, {{ usuario?.nombre }}</span>
+      <span>Barbería App - {{ usuario?.rol | titlecase }}</span>
     </mat-toolbar>
 
     <div class="main-content">
       <router-outlet></router-outlet>
     </div>
+
+    <footer class="footer">
+      <p>&copy; 2025 Barbería App. Todos los derechos reservados.</p>
+    </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>

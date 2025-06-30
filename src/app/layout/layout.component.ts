@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -7,15 +6,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent {
-  usuario: any;
-
-  constructor(private router: Router) {
-    const userData = localStorage.getItem('user');
-    this.usuario = userData ? JSON.parse(userData) : null;
-  }
+  usuario = JSON.parse(localStorage.getItem('user') || '{}');
 
   logout() {
     localStorage.clear();
-    this.router.navigate(['/login']);
+    window.location.href = '/login';
   }
 }

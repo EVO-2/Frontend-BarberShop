@@ -10,9 +10,10 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  mostrarPassword: boolean = false;
-  loginError: boolean = false;
-  isLoading: boolean = false;
+  loginError = false;
+  isLoading = false;
+  hidePassword = true;
+  mostrarPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -28,27 +29,40 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      return;
-    }
-
-    this.isLoading = true;
     this.loginError = false;
 
+    if (this.loginForm.invalid) return;
+
+    this.isLoading = true;
     const loginData = this.loginForm.value;
 
-    this.http.post('http://localhost:3000/api/auth/login', loginData)
-      .subscribe({
-        next: (res: any) => {
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', JSON.stringify(res.user));
-          this.router.navigate(['/signup']);
-        },
-        error: (err) => {
-          console.error('Error en login', err);
-          this.loginError = true;
-          this.isLoading = false;
+    this.http.post<any>('http://localhost:3000/api/auth/login', loginData).subscribe({
+      next: (res) => {
+        console.log('✅ Respuesta:', res);
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('user', JSON.stringify(res.user));
+
+        const rol = res.user.rol;
+        switch (rol) {
+          case 'admin':
+            this.router.navigate(['/admin']);
+            break;
+          case 'barbero':
+            this.router.navigate(['/barbero']);
+            break;
+          case 'cliente':
+            this.router.navigate(['/cliente']);
+            break;
+          default:
+            this.router.navigate(['/dashboard']);
+            break;
         }
-      });
+      },
+      error: (err) => {
+        console.error('❌ Error en login', err);
+        this.loginError = true;
+        this.isLoading = false;
+      }
+    });
   }
 }

@@ -1,33 +1,60 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+// Componentes de autenticación
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
-import { LayoutComponent } from './layout/layout.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 
-import { AuthGuard } from './guards/auth.guard'; // ✅ Guard de autenticación
+// Layout general (menú, toolbar, footer)
+import { LayoutComponent } from './layout/layout.component';
+
+// Guardias de acceso
+import { AuthGuard } from './guards/auth.guard';
+
+// Dashboards según rol (rutas corregidas)
+import { AdminDashboardComponent } from './roles/admin/admin-dashboard/admin-dashboard.component';
+import { BarberoDashboardComponent } from './roles/barbero/barbero-dashboard/barbero-dashboard.component';
+import { ClienteDashboardComponent } from './roles/cliente/cliente-dashboard/cliente-dashboard.component';
 
 const routes: Routes = [
+  // Login y Registro sin layout
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
+
+  // Rutas protegidas que usan el LayoutComponent
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard], // ✅ Protege el layout completo
-    data: { roles: ['admin', 'barbero', 'cliente'] }, // ✅ Acepta múltiples roles
+    canActivate: [AuthGuard],
     children: [
       {
-        path: 'dashboard',
-        component: DashboardComponent,
+        path: 'admin',
+        component: AdminDashboardComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin', 'barbero'] } // ✅ Protege con roles específicos
+        data: { roles: ['admin'] }
+      },
+      {
+        path: 'barbero',
+        component: BarberoDashboardComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['barbero'] }
+      },
+      {
+        path: 'cliente',
+        component: ClienteDashboardComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['cliente'] }
+      },
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
       }
-      // 🔒 Agrega más rutas protegidas aquí
     ]
   },
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' } // Ruta para no encontrados
+
+  // Ruta por defecto para cualquier otra
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({

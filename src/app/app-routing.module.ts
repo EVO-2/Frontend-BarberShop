@@ -13,6 +13,7 @@ import { AuthGuard } from './guards/auth.guard';
 
 // Dashboards según rol (rutas corregidas)
 import { AdminDashboardComponent } from './roles/admin/admin-dashboard/admin-dashboard.component';
+import { UsuariosComponent } from './roles/admin/usuarios/usuarios.component';
 import { BarberoDashboardComponent } from './roles/barbero/barbero-dashboard/barbero-dashboard.component';
 import { ClienteDashboardComponent } from './roles/cliente/cliente-dashboard/cliente-dashboard.component';
 
@@ -30,6 +31,12 @@ const routes: Routes = [
       {
         path: 'admin',
         component: AdminDashboardComponent,
+        canActivate: [AuthGuard],
+        data: { roles: ['admin'] }
+      },
+      {
+        path: 'admin/usuarios',
+        component: UsuariosComponent,
         canActivate: [AuthGuard],
         data: { roles: ['admin'] }
       },

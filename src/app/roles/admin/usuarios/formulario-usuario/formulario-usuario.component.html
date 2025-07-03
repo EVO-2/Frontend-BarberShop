@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar Usuario' : 'Crear Usuario' }}</h2>
+
+<form [formGroup]="formulario" (ngSubmit)="guardar()" class="formulario-usuario" fxLayout="column" fxLayoutGap="16px" mat-dialog-content>
+
+  <!-- Nombre -->
+  <mat-form-field appearance="fill">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" placeholder="Ingrese el nombre" />
+    <mat-error *ngIf="formulario.get('nombre')?.hasError('required')">
+      El nombre es obligatorio.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Correo -->
+  <mat-form-field appearance="fill">
+    <mat-label>Correo electrónico</mat-label>
+    <input matInput formControlName="correo" placeholder="ejemplo@correo.com" />
+    <mat-error *ngIf="formulario.get('correo')?.hasError('required')">
+      El correo es obligatorio.
+    </mat-error>
+    <mat-error *ngIf="formulario.get('correo')?.hasError('email')">
+      El formato del correo no es válido.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Contraseña -->
+  <mat-form-field appearance="fill">
+    <mat-label>Contraseña</mat-label>
+    <input matInput type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
+    <mat-error *ngIf="formulario.get('password')?.hasError('required') && !esEdicion">
+      La contraseña es obligatoria.
+    </mat-error>
+    <mat-error *ngIf="formulario.get('password')?.hasError('minlength')">
+      La contraseña debe tener al menos 6 caracteres.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Rol -->
+  <mat-form-field appearance="fill">
+    <mat-label>Rol</mat-label>
+    <mat-select formControlName="rol">
+      <mat-option *ngFor="let rol of roles" [value]="rol">
+        {{ rol | titlecase }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="formulario.get('rol')?.hasError('required')">
+      Debes seleccionar un rol.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Botones -->
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cerrar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="formulario.invalid">
+      {{ esEdicion ? 'Actualizar' : 'Crear' }}
+    </button>
+  </mat-dialog-actions>
+
+</form>

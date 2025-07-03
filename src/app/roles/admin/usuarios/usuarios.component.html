@@ -1,0 +1,78 @@
+<div class="usuarios-container" fxLayout="column" fxLayoutGap="24px">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h2>Gestión de Usuarios</h2>
+    <button mat-raised-button color="primary" (click)="abrirFormulario()">
+      Crear Usuario
+    </button>
+  </div>
+
+  <!-- Filtro de búsqueda -->
+  <mat-form-field appearance="outline">
+    <mat-label>Buscar usuario</mat-label>
+    <input matInput (keyup)="aplicarFiltro($event)" placeholder="Nombre, correo o rol..." />
+  </mat-form-field>
+
+  <!-- Tabla de usuarios -->
+  <mat-table [dataSource]="dataSource" class="mat-elevation-z2" *ngIf="dataSource.data.length > 0">
+
+    <!-- ID -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+      <mat-cell *matCellDef="let usuario">{{ usuario.id }}</mat-cell>
+    </ng-container>
+
+    <!-- Nombre -->
+    <ng-container matColumnDef="nombre">
+      <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+      <mat-cell *matCellDef="let usuario">{{ usuario.nombre }}</mat-cell>
+    </ng-container>
+
+    <!-- Correo -->
+    <ng-container matColumnDef="correo">
+      <mat-header-cell *matHeaderCellDef>Correo</mat-header-cell>
+      <mat-cell *matCellDef="let usuario">{{ usuario.correo }}</mat-cell>
+    </ng-container>
+
+    <!-- Rol -->
+    <ng-container matColumnDef="rol">
+      <mat-header-cell *matHeaderCellDef>Rol</mat-header-cell>
+      <mat-cell *matCellDef="let usuario">{{ usuario.rol | titlecase }}</mat-cell>
+    </ng-container>
+
+    <!-- Estado -->
+    <ng-container matColumnDef="estado">
+      <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+      <mat-cell *matCellDef="let usuario">
+        <span [ngClass]="{ 'activo': usuario.estado, 'inactivo': !usuario.estado }">
+          {{ usuario.estado ? 'Activo' : 'Inactivo' }}
+        </span>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Acciones -->
+    <ng-container matColumnDef="acciones">
+      <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
+      <mat-cell *matCellDef="let usuario">
+        <button mat-icon-button color="primary" (click)="abrirFormulario(usuario)" matTooltip="Editar usuario">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="cambiarEstadoUsuario(usuario)"
+                [matTooltip]="usuario.estado ? 'Desactivar usuario' : 'Activar usuario'">
+          <mat-icon>{{ usuario.estado ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Filas de la tabla -->
+    <mat-header-row *matHeaderRowDef="columnas"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: columnas;"></mat-row>
+  </mat-table>
+
+  <!-- Paginación -->
+  <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+
+  <!-- Mensaje si no hay usuarios -->
+  <div *ngIf="dataSource.data.length === 0" class="sin-usuarios">
+    <p>No hay usuarios registrados.</p>
+  </div>
+</div>

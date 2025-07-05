@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>{{ data ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+
+<form [formGroup]="clienteForm" (ngSubmit)="guardar()" class="formulario">
+  <mat-form-field appearance="outline" class="campo">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" required>
+    <mat-error *ngIf="clienteForm.get('nombre')?.hasError('required')">
+      El nombre es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="campo">
+    <mat-label>Correo</mat-label>
+    <input matInput formControlName="correo" required>
+    <mat-error *ngIf="clienteForm.get('correo')?.hasError('required')">
+      El correo es obligatorio
+    </mat-error>
+    <mat-error *ngIf="clienteForm.get('correo')?.hasError('email')">
+      Correo inválido
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="campo">
+    <mat-label>Teléfono</mat-label>
+    <input matInput formControlName="telefono" required>
+    <mat-error *ngIf="clienteForm.get('telefono')?.hasError('required')">
+      El teléfono es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="campo">
+    <mat-label>Edad</mat-label>
+    <input type="number" matInput formControlName="edad" required>
+    <mat-error *ngIf="clienteForm.get('edad')?.hasError('required')">
+      La edad es obligatoria
+    </mat-error>
+    <mat-error *ngIf="clienteForm.get('edad')?.hasError('min')">
+      Edad mínima: 1 año
+    </mat-error>
+  </mat-form-field>
+
+  <div class="acciones">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="clienteForm.invalid">
+      {{ data ? 'Actualizar' : 'Crear' }}
+    </button>
+  </div>
+</form>

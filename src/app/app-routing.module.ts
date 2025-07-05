@@ -5,62 +5,55 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 
-// Layout general (menú, toolbar, footer)
+// Layout general
 import { LayoutComponent } from './layout/layout.component';
 
-// Guardias de acceso
+// Guardias
 import { AuthGuard } from './guards/auth.guard';
 
-// Dashboards según rol (rutas corregidas)
+// Dashboards
 import { AdminDashboardComponent } from './roles/admin/admin-dashboard/admin-dashboard.component';
-import { UsuariosComponent } from './roles/admin/usuarios/usuarios.component';
 import { BarberoDashboardComponent } from './roles/barbero/barbero-dashboard/barbero-dashboard.component';
-import { ClienteDashboardComponent } from './roles/cliente/cliente-dashboard/cliente-dashboard.component';
+
+// Admin Components
+import { UsuariosComponent } from './roles/admin/usuarios/usuarios.component';
+import { ClientesComponent } from './roles/admin/clientes/clientes.component';
 
 const routes: Routes = [
-  // Login y Registro sin layout
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
 
-  // Rutas protegidas que usan el LayoutComponent
   {
     path: '',
     component: LayoutComponent,
     canActivate: [AuthGuard],
     children: [
+      // Rutas ADMIN
       {
         path: 'admin',
-        component: AdminDashboardComponent,
         canActivate: [AuthGuard],
-        data: { roles: ['admin'] }
+        data: { roles: ['admin'] },
+        children: [
+          { path: 'dashboard', component: AdminDashboardComponent },
+          { path: 'usuarios', component: UsuariosComponent },
+          { path: 'clientes', component: ClientesComponent } // ✅ ahora está dentro
+        ]
       },
-      {
-        path: 'admin/usuarios',
-        component: UsuariosComponent,
-        canActivate: [AuthGuard],
-        data: { roles: ['admin'] }
-      },
+
+      // Ruta BARBERO
       {
         path: 'barbero',
         component: BarberoDashboardComponent,
         canActivate: [AuthGuard],
         data: { roles: ['barbero'] }
       },
-      {
-        path: 'cliente',
-        component: ClienteDashboardComponent,
-        canActivate: [AuthGuard],
-        data: { roles: ['cliente'] }
-      },
-      {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
-      }
+
+      // Redirección por defecto
+      { path: '', redirectTo: 'admin/dashboard', pathMatch: 'full' }
     ]
   },
 
-  // Ruta por defecto para cualquier otra
+  // Ruta catch-all
   { path: '**', redirectTo: 'login' }
 ];
 

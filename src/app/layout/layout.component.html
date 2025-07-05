@@ -1,28 +1,36 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="side" opened>
-    <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard">Inicio</a>
-      <a mat-list-item *ngIf="usuario.rol === 'admin'" routerLink="/admin">Admin</a>
-      <a mat-list-item *ngIf="usuario.rol === 'barbero'" routerLink="/barbero">Barbero</a>
-      <a mat-list-item *ngIf="usuario.rol === 'cliente'" routerLink="/cliente">Cliente</a>
-      <a mat-list-item (click)="logout()">Cerrar sesión</a>
+<mat-sidenav-container class="sidenav-container" autosize>
+
+  <!-- Barra lateral -->
+  <mat-sidenav #drawer mode="side" opened class="sidenav">
+    <mat-toolbar color="primary">
+      Barbería Admin
+    </mat-toolbar>
+
+    <mat-nav-list *ngIf="rol === 'admin'">
+      <a
+        mat-list-item
+        *ngFor="let ruta of rutasAdmin"
+        [routerLink]="ruta.path"
+        routerLinkActive="active-link"
+        class="nav-item"
+      >
+        <mat-icon class="icono-menu" [ngClass]="ruta.colorClase">{{ ruta.icono }}</mat-icon>
+        <span class="nav-label">{{ ruta.nombre }}</span>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
 
+  <!-- Contenido principal -->
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="sidenav.toggle()" class="hide-on-desktop">
+    <mat-toolbar color="primary" class="main-toolbar">
+      <button mat-icon-button (click)="drawer.toggle()" class="menu-button">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>Barbería App - {{ usuario?.rol | titlecase }}</span>
+      <span>Panel de Administración</span>
     </mat-toolbar>
 
     <div class="main-content">
       <router-outlet></router-outlet>
     </div>
-
-    <footer class="footer">
-      <p>&copy; 2025 Barbería App. Todos los derechos reservados.</p>
-    </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>

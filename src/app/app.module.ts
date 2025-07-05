@@ -15,7 +15,8 @@ import { AppRoutingModule } from './app-routing.module';
 // Dashboards por rol
 import { AdminDashboardComponent } from './roles/admin/admin-dashboard/admin-dashboard.component';
 import { BarberoDashboardComponent } from './roles/barbero/barbero-dashboard/barbero-dashboard.component';
-import { ClienteDashboardComponent } from './roles/cliente/cliente-dashboard/cliente-dashboard.component';
+import { ClientesComponent } from './roles/admin/clientes/clientes.component';
+
 
 // Componentes de usuarios
 import { UsuariosComponent } from './roles/admin/usuarios/usuarios.component';
@@ -41,6 +42,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormularioClienteComponent } from './roles/admin/clientes/formulario-cliente/formulario-cliente.component';
+//import { ClientesComponent } from './roles/admin/clientes/clientes.component';
+import { FormsModule } from '@angular/forms';
+
 
 
 
@@ -51,9 +56,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     LayoutComponent,
     AdminDashboardComponent,
     BarberoDashboardComponent,
-    ClienteDashboardComponent,
     UsuariosComponent,
     FormularioUsuarioComponent,
+    ClientesComponent,
+    FormularioClienteComponent
     
   ],
   imports: [
@@ -79,7 +85,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatSelectModule,
     FlexLayoutModule,
     MatTooltipModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+     FormsModule
 
   ],
   providers: [

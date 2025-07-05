@@ -1,0 +1,47 @@
+.contenedor-clientes {
+  padding: 24px;
+
+  .encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
+  .filtro {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 16px;
+  }
+
+  .tabla {
+    overflow-x: auto;
+    table {
+      width: 100%;
+      min-width: 600px;
+
+      th.mat-header-cell {
+        font-weight: bold;
+        color: #333;
+      }
+
+      td.mat-cell {
+        color: #555;
+      }
+
+      .activo {
+        color: green;
+        font-weight: bold;
+      }
+
+      .inactivo {
+        color: red;
+        font-weight: bold;
+      }
+    }
+  }
+}

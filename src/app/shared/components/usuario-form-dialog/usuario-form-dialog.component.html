@@ -1,0 +1,45 @@
+<mat-card class="usuario-form-card">
+  <h2 mat-dialog-title>{{ esEdicion ? 'Editar Usuario' : 'Crear Usuario' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" mat-dialog-content>
+    <div class="form-group">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" placeholder="Ingrese el nombre" />
+        <mat-error *ngIf="form.get('nombre')?.hasError('required')">El nombre es obligatorio</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo</mat-label>
+        <input matInput formControlName="correo" placeholder="Ingrese el correo" />
+        <mat-error *ngIf="form.get('correo')?.hasError('required')">El correo es obligatorio</mat-error>
+        <mat-error *ngIf="form.get('correo')?.hasError('email')">Correo no válido</mat-error>
+        <mat-error *ngIf="form.get('correo')?.hasError('correoExiste')">Este correo ya está registrado</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width" *ngIf="!esEdicion">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="Ingrese la contraseña" />
+        <mat-error *ngIf="form.get('password')?.hasError('required')">La contraseña es obligatoria</mat-error>
+        <mat-error *ngIf="form.get('password')?.hasError('minlength')">Mínimo 6 caracteres</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="rol">
+          <mat-option value="admin">Administrador</mat-option>
+          <mat-option value="cliente">Cliente</mat-option>
+          <mat-option value="barbero">Barbero</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('rol')?.hasError('required')">El rol es obligatorio</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-dialog-actions align="end" class="botones-acciones">
+      <button mat-stroked-button color="warn" type="button" (click)="cancelar()">Cancelar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+        {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</mat-card>

@@ -31,6 +31,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UsuarioFormDialogComponent } from './shared/components/usuario-form-dialog/usuario-form-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
+import { LayoutComponent } from './layout/layout/layout.component';
+import { SidebarComponent } from './layout/sidebar/sidebar.component';
 
 
 
@@ -41,7 +43,9 @@ import { MatSelectModule } from '@angular/material/select';
     AppComponent,
     LoginComponent,
     UsuariosComponent,
-    UsuarioFormDialogComponent
+    UsuarioFormDialogComponent,
+    LayoutComponent,
+    SidebarComponent
    
   ],
   imports: [

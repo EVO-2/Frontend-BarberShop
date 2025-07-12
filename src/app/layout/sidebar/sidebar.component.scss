@@ -1,0 +1,43 @@
+.menu {
+  list-style: none;
+  padding: 0;
+
+  li {
+    a {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      color: white;
+      text-decoration: none;
+
+      span.material-icons {
+        margin-right: 10px;
+      }
+
+      &:hover {
+        background-color: #37474f;
+      }
+    }
+  }
+}
+
+.cerrar-sesion {
+  padding: 1rem;
+  text-align: center;
+
+  button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    span.material-icons {
+      font-size: 20px;
+    }
+  }
+}

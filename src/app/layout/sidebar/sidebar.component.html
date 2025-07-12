@@ -1,0 +1,19 @@
+<nav>
+  <ul class="menu">
+    <ng-container *ngFor="let item of menu">
+      <li *ngIf="puedeVer(item)">
+        <a [routerLink]="item.ruta">
+          <span class="material-icons">{{ item.icono }}</span>
+          {{ item.label }}
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+
+  <div class="cerrar-sesion">
+    <button (click)="cerrarSesion()">
+      <span class="material-icons">logout</span> Cerrar sesión
+    </button>
+  </div>
+</nav>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">

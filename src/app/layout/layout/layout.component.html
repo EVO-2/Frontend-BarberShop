@@ -1,0 +1,31 @@
+<div class="layout-container">
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <div class="content">
+    <!-- Barra superior -->
+    <header class="header">
+      <div class="user-info">
+        <img
+          *ngIf="fotoPerfil"
+          [src]="'http://localhost:3000/' + fotoPerfil"
+          alt="Foto de perfil"
+          class="avatar"
+        />
+        <span class="nombre">{{ nombreUsuario }}</span>
+        <button class="editar-btn" (click)="editarPerfil()">
+          <span class="material-icons">edit</span> Editar perfil
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+      <p>© 2025 Barbería JEVO</p>
+    </footer>
+  </div>
+</div>

@@ -4,18 +4,33 @@
   <div class="content">
     <!-- Barra superior -->
     <header class="header">
+      <!-- ⏰ Fecha y hora -->
+      <div class="fecha-hora">{{ fechaHoraActual }}</div>
+
       <div class="user-info">
-        <img
-          *ngIf="fotoPerfil"
-          [src]="'http://localhost:3000/' + fotoPerfil"
-          alt="Foto de perfil"
-          class="avatar"
-        />
-        <span class="nombre">{{ nombreUsuario }}</span>
-        <button class="editar-btn" (click)="editarPerfil()">
-          <span class="material-icons">edit</span> Editar perfil
+        <!-- Botón de imagen con menú desplegable -->
+        <button mat-icon-button [matMenuTriggerFor]="perfilMenu" class="avatar-btn">
+          <img
+            *ngIf="fotoPerfil"
+            [src]="fotoPerfil"
+            alt="Foto de perfil"
+            class="avatar"
+          />
         </button>
+        <span class="nombre">{{ nombreUsuario }}</span>
       </div>
+
+      <!-- Menú desplegable del usuario -->
+      <mat-menu #perfilMenu="matMenu">
+        <button mat-menu-item (click)="editarPerfil()">
+          <mat-icon>edit</mat-icon>
+          <span>Editar perfil</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
     </header>
 
     <!-- Contenido principal -->

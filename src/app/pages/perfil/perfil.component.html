@@ -1,0 +1,43 @@
+<div class="perfil-container" [formGroup]="perfilForm">
+  <h2 class="perfil-title">Editar Perfil</h2>
+
+  <div class="foto-preview">
+    <img [src]="fotoPreview || 'https://via.placeholder.com/100'" alt="Foto actual" />
+  </div>
+
+  <div class="foto-btn">
+    <button mat-stroked-button color="primary" (click)="fileInput.click()">
+      Cambiar foto
+    </button>
+    <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+  </div>
+
+  <div class="form-fields">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" />
+    </mat-form-field>
+
+    <!-- Campo para nueva contraseña -->
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>Nueva contraseña</mat-label>
+  <input matInput type="password" formControlName="nuevaPassword" placeholder="•••••••">
+</mat-form-field>
+
+<!-- Campo para confirmar contraseña -->
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>Confirmar contraseña</mat-label>
+  <input matInput type="password" formControlName="confirmarPassword" placeholder="•••••••">
+</mat-form-field>
+
+<!-- Validación de coincidencia -->
+<div class="error" *ngIf="perfilForm.hasError('noCoincide') && perfilForm.get('confirmarPassword')?.touched">
+  Las contraseñas no coinciden.
+</div>
+
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="guardarCambios()">Guardar</button>
+    <button mat-raised-button color="warn" (click)="cancelar()">Cancelar</button>
+  </div>
+</div>

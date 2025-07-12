@@ -43,18 +43,21 @@ export class LoginComponent implements OnInit {
         }
 
         const rol = this.authService.obtenerRol();
+        console.log('🔑 Rol detectado:', rol);
+
         if (rol === 'admin') {
           this.router.navigate(['/usuarios']);
         } else if (rol === 'cliente') {
-          this.router.navigate(['/citas']);
+          this.router.navigate(['/reservar']);
         } else if (rol === 'barbero') {
-          this.router.navigate(['/agenda']);
+          this.router.navigate(['/mis-citas']);
         } else {
           this.router.navigate(['/']);
         }
       },
       error: (err: any) => {
-        this.error = err.error?.mensaje || 'Error al iniciar sesión';
+        console.error('❌ Error al iniciar sesión:', err);
+        this.error = err.error?.mensaje || 'Correo o contraseña incorrectos';
       }
     });
   }

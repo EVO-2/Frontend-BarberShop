@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -9,7 +9,8 @@ import { AuthService } from '../../auth/auth.service';
 })
 export class LayoutComponent implements OnInit {
   nombreUsuario = '';
-  fotoPerfil   = '';
+  fotoPerfil = '';
+  fechaHoraActual = '';
 
   constructor(
     private authService: AuthService,
@@ -20,12 +21,34 @@ export class LayoutComponent implements OnInit {
     const usuario = this.authService.obtenerUsuarioInfo();
     if (usuario) {
       this.nombreUsuario = usuario.nombre;
-      this.fotoPerfil   = usuario.foto;   // puede ser '' si aún no tiene foto
+      this.fotoPerfil = usuario.foto;
     }
+
+    this.actualizarFechaHora();
+    setInterval(() => this.actualizarFechaHora(), 1000); // actualiza cada segundo
   }
 
-  /** Navega al componente de edición de perfil (lo crearás más adelante) */
+  actualizarFechaHora() {
+    const now = new Date();
+    this.fechaHoraActual = now.toLocaleString('es-CO', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+      timeZone: 'America/Bogota'
+    });
+  }
+
   editarPerfil(): void {
     this.router.navigate(['/perfil']);
+  }
+
+  logout(): void {
+    this.authService.cerrarSesion();
+    this.router.navigate(['/login']);
   }
 }

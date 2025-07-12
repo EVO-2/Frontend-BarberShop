@@ -39,12 +39,23 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
+  cursor: pointer;
+}
+
+.avatar-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 }
 
 .nombre {
   font-weight: bold;
 }
 
+/* Botón editar anterior (ya no se usa con mat-menu, pero lo dejamos por si se reutiliza) */
 .editar-btn {
   background-color: transparent;
   border: none;
@@ -68,4 +79,29 @@
   text-align: center;
   padding: 0.5rem;
   font-size: 0.85rem;
+}
+
+/* Estilos para mat-menu */
+::ng-deep .mat-menu-content {
+  padding: 0;
+}
+
+::ng-deep .mat-menu-item {
+  font-size: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+::ng-deep .mat-icon {
+  font-size: 20px;
+  color: #34495e;
+}
+
+.fecha-hora {
+  margin-right: auto;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffffcc;
 }

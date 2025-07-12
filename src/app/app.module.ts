@@ -33,6 +33,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { LayoutComponent } from './layout/layout/layout.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
+import { ReservarCitaComponent } from './pages/reservar-cita/reservar-cita.component';
+import { MisCitasComponent } from './pages/mis-citas/mis-citas.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { MatMenuModule }  from '@angular/material/menu';
 
 
 
@@ -45,7 +49,10 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
     UsuariosComponent,
     UsuarioFormDialogComponent,
     LayoutComponent,
-    SidebarComponent
+    SidebarComponent,
+    ReservarCitaComponent,
+    MisCitasComponent,
+    PerfilComponent
    
   ],
   imports: [
@@ -70,7 +77,8 @@ import { SidebarComponent } from './layout/sidebar/sidebar.component';
     MatSlideToggleModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    MatMenuModule
   ],
   providers: [
     {

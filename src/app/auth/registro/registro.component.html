@@ -1,0 +1,67 @@
+<h2 class="titulo">Crear cuenta</h2>
+
+
+
+<form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
+
+  <!-- Nombre -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" />
+    <mat-error *ngIf="nombre?.hasError('required')"><span>Nombre es requerido</span></mat-error>
+    <mat-error *ngIf="nombre?.hasError('minlength')"><span>Mínimo 3 caracteres</span></mat-error>
+    <mat-error *ngIf="nombre?.hasError('pattern')"><span>Solo letras y espacios</span></mat-error>
+  </mat-form-field>
+
+  <!-- Correo -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Correo electrónico</mat-label>
+    <input matInput formControlName="correo" />
+    <mat-error *ngIf="correo?.hasError('required')"><span>Correo es requerido</span></mat-error>
+    <mat-error *ngIf="correo?.hasError('email')"><span>Formato inválido</span></mat-error>
+    <mat-error *ngIf="correo?.hasError('emailExiste')"><span>Este correo ya está registrado</span></mat-error>
+  </mat-form-field>
+
+  <!-- Contraseña -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Contraseña</mat-label>
+    <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
+    <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+      <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+    <mat-error *ngIf="password?.hasError('required')"><span></span>Contraseña es requerida</mat-error>
+    <mat-error *ngIf="password?.hasError('minlength')"><span>Mínimo 8 caracteres</span></mat-error>
+    <mat-error *ngIf="password?.hasError('pattern')">
+      <span>Debe incluir mayúsculas, minúsculas, números y un carácter especial</span>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Confirmar Contraseña -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Confirmar contraseña</mat-label>
+    <input matInput [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmarPassword" />
+    <button mat-icon-button matSuffix (click)="hideConfirm = !hideConfirm" type="button">
+      <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+    <mat-error *ngIf="confirmarPassword?.hasError('required')">Confirmación requerida</mat-error>
+    <mat-error *ngIf="registroForm.hasError('noCoinciden') && confirmarPassword?.touched">
+      <span>Las contraseñas no coinciden</span>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" style="text-align: center; color: red;" class="mb-2">
+    <mat-icon color="warn">error</mat-icon> {{ error }}
+  </div>
+
+  <!-- Botones -->
+  <div class="acciones">
+    <button mat-flat-button color="primary" [disabled]="registroForm.invalid || cargando">
+      Registrar
+    </button>
+    <button mat-stroked-button color="accent" type="button" (click)="volverAlLogin()">
+      Volver al login
+    </button>
+  </div>
+
+</form>

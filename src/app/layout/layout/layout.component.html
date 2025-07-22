@@ -1,0 +1,12 @@
+<div class="layout-container" style="display: flex; min-height: 100vh;">
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Contenido principal -->
+  <div class="main-content" style="flex: 1; display: flex; flex-direction: column;">
+    <div class="content" style="flex: 1;">
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+  </div>
+</div>

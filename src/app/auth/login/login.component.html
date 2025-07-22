@@ -1,0 +1,57 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <img src="assets/logo.png" class="login-logo" alt="Logo" />
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- <h2 class="login-title">Iniciar sesión</h2> -->
+
+      <!-- Campo Correo -->
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput formControlName="correo" type="email" />
+        <mat-error *ngIf="form.get('correo')?.hasError('required')">
+          El correo es obligatorio
+        </mat-error>
+        <mat-error *ngIf="form.get('correo')?.hasError('email')">
+          Debe ingresar un correo válido
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Campo Contraseña -->
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
+        <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="form.get('password')?.hasError('required')">
+          La contraseña es obligatoria
+        </mat-error>
+        <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+          Mínimo 6 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Error general -->
+      <div class="error-message" *ngIf="errorLogin">
+        <mat-icon color="warn">error</mat-icon>
+        {{ errorLogin }}
+      </div>
+
+      <!-- Botones -->
+      <div class="button-group">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          Ingresar
+        </button>
+        <button mat-stroked-button color="accent" type="button" (click)="router.navigate(['/registro'])">
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Olvidaste contraseña -->
+      <div class="forgot-password">
+        <a href="#">¿Olvidaste tu contraseña?</a>
+      </div>
+    </form>
+  </mat-card>
+</div>

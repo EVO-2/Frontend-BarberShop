@@ -1,0 +1,45 @@
+.titulo {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.registro-form {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 2rem; /* mantenido del original */
+}
+
+.full-width {
+  width: 100%;
+}
+
+.acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+button[mat-flat-button] {
+  transition: background-color 0.3s ease;
+}
+
+button[mat-flat-button]:disabled {
+  background-color: #cfd8dc !important; /* gris claro */
+  color: #888 !important;
+  cursor: not-allowed;
+}
+.snackbar-success {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.snackbar-error {
+  background-color: #f44336;
+  color: #fff;
+}

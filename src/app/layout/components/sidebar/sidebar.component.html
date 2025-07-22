@@ -1,0 +1,36 @@
+<!-- src/app/shared/components/sidebar/sidebar.component.html -->
+<nav class="h-full flex flex-col p-4 space-y-2 bg-white">
+  <!-- Logo -->
+  <div class="text-2xl font-bold text-center text-primary mb-6">
+    Barbería JEVO
+  </div>
+
+  <!-- Admin links -->
+  <ng-container *ngIf="rol === 'admin'">
+    <a routerLink="/usuarios" routerLinkActive="active-link" class="sidebar-link">Usuarios</a>
+    <a routerLink="/clientes" routerLinkActive="active-link" class="sidebar-link">Clientes</a>
+    <a routerLink="/peluqueros" routerLinkActive="active-link" class="sidebar-link">Peluqueros</a>
+    <a routerLink="/citas" routerLinkActive="active-link" class="sidebar-link">Citas</a>
+    <a routerLink="/reportes" routerLinkActive="active-link" class="sidebar-link">Reportes</a>
+  </ng-container>
+
+  <!-- Barbero links -->
+  <ng-container *ngIf="rol === 'barbero'">
+    <a routerLink="/mis-citas" routerLinkActive="active-link" class="sidebar-link">Mis Citas</a>
+    <a routerLink="/perfil" routerLinkActive="active-link" class="sidebar-link">Perfil</a>
+  </ng-container>
+
+  <!-- Cliente links -->
+  <ng-container *ngIf="rol === 'cliente'">
+    <a routerLink="/reservar" routerLinkActive="active-link" class="sidebar-link">Reservar Cita</a>
+    <a routerLink="/historial" routerLinkActive="active-link" class="sidebar-link">Mis Citas</a>
+    <a routerLink="/perfil" routerLinkActive="active-link" class="sidebar-link">Perfil</a>
+  </ng-container>
+
+  <!-- Cierre de sesión -->
+  <div class="mt-auto pt-4 border-t">
+    <a (click)="logout()" class="sidebar-link text-red-600 hover:text-red-800 cursor-pointer">
+      Cerrar sesión
+    </a>
+  </div>
+</nav>

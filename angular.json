@@ -30,6 +30,7 @@
               "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -65,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "Frontend-BarberShop:build:production"
+              "buildTarget": "Frontend-BarberShop:build:production"
             },
             "development": {
-              "browserTarget": "Frontend-BarberShop:build:development"
+              "buildTarget": "Frontend-BarberShop:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -76,7 +77,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Frontend-BarberShop:build"
+            "buildTarget": "Frontend-BarberShop:build"
           }
         },
         "test": {
@@ -91,6 +92,10 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
+            ],
+            "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
+              "src/styles.scss"
             ],
             "styles": [
               "src/styles.scss"

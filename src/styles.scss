@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Core de Material
+@include mat.core();
+
+// 🎨 Paletas de colores personalizadas
+$jevo-primary: mat.define-palette(mat.$blue-palette, 900, 800, 700);
+$jevo-accent: mat.define-palette(mat.$grey-palette, 400, 300, 500);
+$jevo-warn: mat.define-palette(mat.$red-palette);
+
+// 🌞 Tema claro personalizado
+$jevo-theme: mat.define-light-theme((
+  color: (
+    primary: $jevo-primary,
+    accent: $jevo-accent,
+    warn: $jevo-warn
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+// 🔥 Aplica los estilos de Material con tu tema
+@include mat.all-component-themes($jevo-theme);

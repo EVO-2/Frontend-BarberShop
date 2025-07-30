@@ -1,0 +1,28 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #8a8a8ad7; 
+  color: rgb(26, 26, 26);
+  padding: 16px;
+  flex-wrap: wrap;
+
+  a {
+    color: rgb(29, 29, 29);
+    margin-left: 12px;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .footer-left, .footer-center, .footer-right {
+    margin: 8px;
+  }
+
+  .footer-center {
+    text-align: center;
+    flex: 1;
+  }
+}

@@ -1,25 +1,60 @@
 <h2 class="titulo">Crear cuenta</h2>
 
-
-
 <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
 
   <!-- Nombre -->
   <mat-form-field class="full-width" appearance="outline">
     <mat-label>Nombre</mat-label>
     <input matInput formControlName="nombre" />
-    <mat-error *ngIf="nombre?.hasError('required')"><span>Nombre es requerido</span></mat-error>
-    <mat-error *ngIf="nombre?.hasError('minlength')"><span>Mínimo 3 caracteres</span></mat-error>
-    <mat-error *ngIf="nombre?.hasError('pattern')"><span>Solo letras y espacios</span></mat-error>
+    <mat-error *ngIf="nombre?.hasError('required')">Nombre es requerido</mat-error>
+    <mat-error *ngIf="nombre?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
+    <mat-error *ngIf="nombre?.hasError('pattern')">Solo letras y espacios</mat-error>
   </mat-form-field>
 
   <!-- Correo -->
   <mat-form-field class="full-width" appearance="outline">
     <mat-label>Correo electrónico</mat-label>
     <input matInput formControlName="correo" />
-    <mat-error *ngIf="correo?.hasError('required')"><span>Correo es requerido</span></mat-error>
-    <mat-error *ngIf="correo?.hasError('email')"><span>Formato inválido</span></mat-error>
-    <mat-error *ngIf="correo?.hasError('emailExiste')"><span>Este correo ya está registrado</span></mat-error>
+    <mat-error *ngIf="correo?.hasError('required')">Correo es requerido</mat-error>
+    <mat-error *ngIf="correo?.hasError('email')">Formato inválido</mat-error>
+    <mat-error *ngIf="correo?.hasError('emailExiste')">Este correo ya está registrado</mat-error>
+  </mat-form-field>
+
+  <!-- Teléfono -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Teléfono</mat-label>
+    <input matInput formControlName="telefono" maxlength="15" />
+    <mat-error *ngIf="telefono?.hasError('required')">Teléfono es requerido</mat-error>
+    <mat-error *ngIf="telefono?.hasError('telefonoInvalido')">
+      Debe contener entre 7 y 10 dígitos numéricos
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Dirección -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Dirección</mat-label>
+    <input matInput formControlName="direccion" />
+    <mat-error *ngIf="direccion?.hasError('required')">Dirección es requerida</mat-error>
+  </mat-form-field>
+
+  <!-- Género -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Género</mat-label>
+    <mat-select formControlName="genero">
+      <mat-option *ngFor="let g of generos" [value]="g">{{ g }}</mat-option>
+    </mat-select>
+    <mat-error *ngIf="genero?.hasError('required')">Género es requerido</mat-error>
+  </mat-form-field>
+
+  <!-- Fecha de Nacimiento -->
+  <mat-form-field class="full-width" appearance="outline">
+    <mat-label>Fecha de nacimiento</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="fecha_nacimiento" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="fecha_nacimiento?.hasError('required')">
+      Fecha de nacimiento es requerida
+    </mat-error>
   </mat-form-field>
 
   <!-- Contraseña -->
@@ -29,10 +64,10 @@
     <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
       <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
     </button>
-    <mat-error *ngIf="password?.hasError('required')"><span></span>Contraseña es requerida</mat-error>
-    <mat-error *ngIf="password?.hasError('minlength')"><span>Mínimo 8 caracteres</span></mat-error>
+    <mat-error *ngIf="password?.hasError('required')">Contraseña es requerida</mat-error>
+    <mat-error *ngIf="password?.hasError('minlength')">Mínimo 8 caracteres</mat-error>
     <mat-error *ngIf="password?.hasError('pattern')">
-      <span>Debe incluir mayúsculas, minúsculas, números y un carácter especial</span>
+      Debe incluir mayúsculas, minúsculas, números y un carácter especial
     </mat-error>
   </mat-form-field>
 
@@ -44,13 +79,13 @@
       <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
     </button>
     <mat-error *ngIf="confirmarPassword?.hasError('required')">Confirmación requerida</mat-error>
-    <mat-error *ngIf="registroForm.hasError('noCoinciden') && confirmarPassword?.touched">
-      <span>Las contraseñas no coinciden</span>
+    <mat-error *ngIf="noCoinciden">
+      Las contraseñas no coinciden
     </mat-error>
   </mat-form-field>
 
   <!-- Mensaje de error -->
-  <div *ngIf="error" style="text-align: center; color: red;" class="mb-2">
+  <div *ngIf="error" class="mb-2" style="text-align: center; color: red;">
     <mat-icon color="warn">error</mat-icon> {{ error }}
   </div>
 
@@ -63,5 +98,4 @@
       Volver al login
     </button>
   </div>
-
 </form>

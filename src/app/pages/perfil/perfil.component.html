@@ -1,0 +1,100 @@
+<div class="perfil-container mat-elevation-z4" *ngIf="perfilForm">
+  <h2 class="titulo">Mi Perfil</h2>
+
+  <div class="perfil-contenido">
+    <!-- Foto de perfil -->
+    <div class="foto-container">
+      <img [src]="fotoPerfilUrl" class="avatar-header" alt="Foto de perfil">
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden #fileInput />
+      <button mat-stroked-button color="primary" (click)="fileInput.click()">
+        Cambiar Foto
+      </button>
+    </div>
+
+    <!-- Formulario de edición -->
+    <form [formGroup]="perfilForm" (ngSubmit)="guardarCambios()" class="formulario">
+
+      <!-- Nombre -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+
+      <!-- Correo -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo</mat-label>
+        <input matInput formControlName="correo" type="email" />
+      </mat-form-field>
+
+      <!-- Teléfono -->
+      <mat-form-field *ngIf="esCliente || esPeluquero" appearance="outline" class="full-width">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" type="tel" />
+      </mat-form-field>
+
+      <!-- Dirección -->
+      <mat-form-field *ngIf="esCliente || esPeluquero" appearance="outline" class="full-width">
+        <mat-label>Dirección</mat-label>
+        <input matInput formControlName="direccion" />
+      </mat-form-field>
+
+      <!-- Experiencia (solo peluquero) -->
+      <mat-form-field *ngIf="esPeluquero" appearance="outline" class="full-width">
+        <mat-label>Experiencia (años)</mat-label>
+        <input matInput formControlName="experiencia" type="number" min="0" />
+      </mat-form-field>
+
+      <!-- Especialidades (solo peluquero) -->
+      <mat-form-field *ngIf="esPeluquero" appearance="outline" class="full-width">
+        <mat-label>Especialidades</mat-label>
+        <input matInput formControlName="especialidades" />
+      </mat-form-field>
+
+      <!-- Nueva contraseña -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nueva contraseña</mat-label>
+        <input
+          matInput
+          [type]="ocultarPassword ? 'password' : 'text'"
+          formControlName="password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="ocultarPassword = !ocultarPassword"
+        >
+          <mat-icon>{{ ocultarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Confirmar contraseña -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirmar contraseña</mat-label>
+        <input
+          matInput
+          [type]="ocultarPassword ? 'password' : 'text'"
+          formControlName="confirmarPassword"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="ocultarPassword = !ocultarPassword"
+        >
+          <mat-icon>{{ ocultarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!-- Botones -->
+      <div class="botones">
+        <button mat-raised-button color="primary" type="submit" [disabled]="perfilForm.invalid">
+          Guardar Cambios
+        </button>
+        <button mat-button color="warn" type="button" (click)="cancelarCambios()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

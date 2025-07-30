@@ -1,0 +1,38 @@
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2e3a59;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.usuario-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    mat-slide-toggle {
+      margin-top: 0.5rem;
+    }
+  }
+
+  mat-dialog-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    button {
+      min-width: 100px;
+    }
+  }
+}

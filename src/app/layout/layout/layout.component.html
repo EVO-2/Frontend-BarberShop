@@ -1,12 +1,53 @@
-<div class="layout-container" style="display: flex; min-height: 100vh;">
-  <!-- Sidebar -->
-  <app-sidebar></app-sidebar>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" mode="side" opened>
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
 
-  <!-- Contenido principal -->
-  <div class="main-content" style="flex: 1; display: flex; flex-direction: column;">
-    <div class="content" style="flex: 1;">
-      <router-outlet></router-outlet>
+  <mat-sidenav-content>
+    <!-- Header -->
+    <mat-toolbar color="primary" class="header">
+      <!-- Botón para abrir sidenav (solo en móviles) -->
+      <button mat-icon-button (click)="drawer.toggle()" class="hide-desktop">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Fecha y hora -->
+      <div class="fecha-hora-inline">
+        <mat-icon class="icono-reloj">schedule</mat-icon>
+        <span class="fecha-texto">{{ fechaActual }} | {{ horaActual }}</span>
+      </div>
+
+      <!-- Usuario + Avatar + Menú -->
+      <div class="user-info" *ngIf="usuario" style="margin-left: auto; display: flex; align-items: center;">
+        <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
+
+        <!-- Botón con avatar y menú -->
+        <button mat-button [matMenuTriggerFor]="menu">
+        <!--  <img [src]="fotoPerfilUrl$ | async" class="avatar-header" alt="Avatar" /> -->
+           <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="irAEditarPerfil()">
+            <mat-icon>edit</mat-icon>
+            <span>Editar perfil</span>
+          </button>
+          <button mat-menu-item (click)="cerrarSesion()">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar sesión</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
+
+    <!-- Contenido principal -->
+    <div class="main-wrapper">
+      <div class="main-content">
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- Footer -->
+      <app-footer></app-footer>
     </div>
-    <app-footer></app-footer>
-  </div>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

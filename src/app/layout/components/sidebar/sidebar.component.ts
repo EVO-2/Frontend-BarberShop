@@ -1,26 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/auth/auth.service';
+import { MenuService } from 'src/app/shared/services/menu.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  rol: string = '';
+  menuItems: any[] = [];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    public authService: AuthService,
+    private menuService: MenuService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.rol = this.authService.getRol(); // obtiene el rol del usuario logueado
+    this.authService.usuario$.subscribe(usuario => {
+      if (usuario?.rol) {
+        this.menuItems = this.menuService.getMenuPorRol(usuario.rol);
+      }
+    });
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']); // redirige al login tras cerrar sesión
+  cerrarSesion(): void {
+    this.authService.logout(); // asegúrate de tener este método en el AuthService
+    this.router.navigate(['/login']);
   }
 }

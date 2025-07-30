@@ -1,0 +1,15 @@
+.datetime {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #5f5a5a;
+  margin-right: 1rem;
+}
+
+.avatar-header {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}

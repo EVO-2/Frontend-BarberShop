@@ -1,0 +1,197 @@
+<h2 mat-dialog-title class="dialog-title">{{ titulo }}</h2>
+
+<form [formGroup]="usuarioForm" (ngSubmit)="guardar()" class="usuario-form">
+  <mat-dialog-content>
+    <div class="form-group">
+      <!-- Nombre -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+        <mat-error *ngIf="usuarioForm.get('nombre')?.hasError('required')">
+          El nombre es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Correo -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Correo</mat-label>
+        <input matInput formControlName="correo" type="email" />
+        <mat-error *ngIf="usuarioForm.get('correo')?.hasError('required')">
+          El correo es obligatorio
+        </mat-error>
+        <mat-error *ngIf="usuarioForm.get('correo')?.hasError('email')">
+          Ingrese un correo válido
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Rol -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="rol" (selectionChange)="onRolChange($event.value)">
+          <mat-option *ngFor="let r of roles" [value]="r.nombre">{{ r.nombre | titlecase }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="usuarioForm.get('rol')?.hasError('required')">
+          El rol es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Contraseña (solo crear) con toggle -->
+      <mat-form-field appearance="fill" class="full-width" *ngIf="!data?.modo || data?.modo !== 'editar'">
+        <mat-label>Contraseña</mat-label>
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+          required
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="'Toggle password visibility'"
+          [attr.aria-pressed]="!hidePassword"
+          type="button"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="usuarioForm.get('password')?.hasError('required')">
+          La contraseña es obligatoria
+        </mat-error>
+        <mat-error *ngIf="usuarioForm.get('password')?.hasError('minlength')">
+          Mínimo 8 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ===== CAMPOS EXTRA PARA CLIENTE ===== -->
+      <ng-container *ngIf="usuarioForm.get('rol')?.value === 'cliente'">
+        <mat-form-field appearance="fill">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="genero">
+            <mat-option value="masculino">Masculino</mat-option>
+            <mat-option value="femenino">Femenino</mat-option>
+            <mat-option value="otro">Otro</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput type="date" formControlName="fecha_nacimiento" />
+        </mat-form-field>
+      </ng-container>
+
+      <!-- ===== CAMPOS EXTRA PARA PELUQUERO ===== -->
+      <ng-container *ngIf="usuarioForm.get('rol')?.value === 'barbero'">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Especialidad</mat-label>
+          <input matInput formControlName="especialidad" />
+          <mat-error *ngIf="usuarioForm.get('especialidad')?.hasError('required') && usuarioForm.get('especialidad')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Experiencia (años)</mat-label>
+          <input matInput formControlName="experiencia" />
+          <mat-error *ngIf="usuarioForm.get('experiencia')?.hasError('required') && usuarioForm.get('experiencia')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Teléfono profesional</mat-label>
+          <input matInput formControlName="telefono_profesional" />
+          <mat-error *ngIf="usuarioForm.get('telefono_profesional')?.hasError('required') && usuarioForm.get('telefono_profesional')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Dirección profesional</mat-label>
+          <input matInput formControlName="direccion_profesional" />
+          <mat-error *ngIf="usuarioForm.get('direccion_profesional')?.hasError('required') && usuarioForm.get('direccion_profesional')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="genero">
+            <mat-option value="masculino">Masculino</mat-option>
+            <mat-option value="femenino">Femenino</mat-option>
+            <mat-option value="otro">Otro</mat-option>
+          </mat-select>
+          <mat-error *ngIf="usuarioForm.get('genero')?.hasError('required') && usuarioForm.get('genero')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput [matDatepicker]="pickerFecha" formControlName="fecha_nacimiento" />
+          <mat-datepicker-toggle matSuffix [for]="pickerFecha"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFecha></mat-datepicker>
+          <mat-error *ngIf="usuarioForm.get('fecha_nacimiento')?.hasError('required') && usuarioForm.get('fecha_nacimiento')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Sede</mat-label>
+          <mat-select formControlName="sede" (selectionChange)="cargarPuestos($event.value)">
+            <mat-option *ngFor="let sede of sedes" [value]="sede._id">
+              {{ sede.nombre }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="usuarioForm.get('sede')?.hasError('required') && usuarioForm.get('sede')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Puesto de trabajo</mat-label>
+          <mat-select formControlName="puesto_id">
+            <mat-option *ngFor="let puesto of puestos" [value]="puesto._id">
+              {{ puesto.nombre }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="usuarioForm.get('puesto_id')?.hasError('required') && usuarioForm.get('puesto_id')?.touched">
+            Este campo es obligatorio
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- Estado -->
+      <mat-slide-toggle formControlName="estado" color="primary">
+        Estado activo
+      </mat-slide-toggle>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()" [disabled]="isSubmitting">Cancelar</button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="usuarioForm.invalid || isSubmitting"
+    >
+      <mat-spinner
+        *ngIf="isSubmitting"
+        diameter="20"
+        strokeWidth="3"
+        style="margin-right: 8px;"
+      ></mat-spinner>
+      {{ isSubmitting ? (data ? 'Actualizando...' : 'Guardando...') : (data ? 'Actualizar' : 'Guardar') }}
+    </button>
+  </mat-dialog-actions>
+</form>

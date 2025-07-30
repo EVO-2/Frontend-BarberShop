@@ -1,35 +1,173 @@
+/* ===== Layout General ===== */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ===== Sidebar ===== */
 .sidenav-container {
   height: 100vh;
 }
 
 .sidenav {
-  width: 240px;
-  background-color: #fafafa;
-  border-right: 1px solid #e0e0e0;
+  width: 250px;
 }
 
+app-sidebar {
+  width: 250px;
+  background-color: #f4f4f4;
+  height: 100%;
+}
+
+/* ===== Header ===== */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem;
   height: 64px;
-  background-color: #1976d2;
-  color: white;
+  padding: 0 16px;
+  background-color: #828286d7;
+  color: rgba(65, 60, 60, 0.795);
 }
 
-.fecha-hora {
-  font-weight: 500;
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.spacer {
+  flex: 1 1 auto;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+}
+
+.user-name {
+  margin-right: 10px;
+  font-weight: 300;
+  color: #030303;
+  font-size: 80%;
 }
 
 .avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
 }
+
+/* ===== Main Content ===== */
+.main-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+}
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 34px); 
+  flex: 1;
+}
+
+/* ===== Footer ===== */
+.footer {
+  background-color: #e0e0e0;
+  height: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 14px;
+  color: #333;
+  margin-top: auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ddd;
+  border-top: 1px solid #ccc;
+}
+
+
+
+/* ===== Responsive ===== */
+.hide-desktop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hide-desktop {
+    display: inline-flex;
+  }
+
+  .sidenav {
+    width: 200px;
+  }
+
+  app-sidebar {
+    width: 200px;
+  }
+}
+
+/* ===== Otros ===== */
+.clock {
+  font-weight: 500;
+  font-size: 14px;
+  color: #fff;
+  margin-right: 16px;
+}
+
+.fecha-hora-inline {
+  display: flex;
+  align-items: center; 
+  gap: 0.5rem;
+  color: rgb(0, 0, 0);
+  font-size: 0.85rem; 
+
+  .icono-reloj {
+    font-size: 18px;
+    vertical-align: middle; 
+    display: flex;
+    align-items: center;
+  }
+
+  .fecha-texto {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+  }
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+button[mat-button] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+

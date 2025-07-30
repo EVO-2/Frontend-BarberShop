@@ -3,30 +3,30 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { LayoutComponent } from './layout/layout/layout.component';
-// import { AuthGuard } from './guards/auth.guard'; // <-- puedes activarlo luego
+import { AuthGuard } from './guards/auth.guard';
 import { RegistroComponent } from './auth/registro/registro.component';
-
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { UsuariosComponent } from './pages/usuarios/usuarios.component'; 
 
 const routes: Routes = [
-  // ✅ Redirección por defecto a login si accede a raíz
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // ✅ Ruta pública de login
+  // Rutas públicas
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
 
-  // ✅ Rutas protegidas bajo layout
+  // Rutas protegidas con layout
   {
     path: '',
     component: LayoutComponent,
-    // canActivate: [AuthGuard], // <-- activar si tienes guardas de autenticación
+    canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      // Aquí puedes agregar más rutas protegidas
+      { path: 'perfil', component: PerfilComponent },
+      { path: 'usuarios', component: UsuariosComponent } 
     ]
   },
 
-  // ✅ Redirección de rutas no válidas
   { path: '**', redirectTo: 'login' }
 ];
 

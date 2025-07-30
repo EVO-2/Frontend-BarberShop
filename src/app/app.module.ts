@@ -5,34 +5,31 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
-// Angular Material
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor'; 
 
 
-// Componentes propios
+
+
+import { MaterialModule } from './shared/material.module';
+
+
 import { LoginComponent } from './auth/login/login.component';
-import { RegistroComponent } from './auth/registro/registro.component'; 
+import { RegistroComponent } from './auth/registro/registro.component';
+import { UsuariosComponent } from 'src/app/pages/usuarios/usuarios.component';
+import { UsuarioDialogComponent } from 'src/app/pages/usuarios/usuario-dialog/usuario-dialog.component';
 
-// Standalone components (NO se declaran, se importan)
-import { FooterComponent } from 'src/app/layout/components/footer/footer.component';
-import { SidebarComponent } from 'src/app/layout/components/sidebar/sidebar.component';
-import { LayoutComponent } from './layout/layout/layout.component';
+
+
+import { LayoutModule } from './layout/layout.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RegistroComponent, 
+    RegistroComponent,
+    UsuariosComponent,
+    UsuarioDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -41,25 +38,18 @@ import { LayoutComponent } from './layout/layout/layout.component';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
+    MaterialModule,
 
-    // Angular Material
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatListModule,
-    MatSelectModule,
-    MatSnackBarModule,
-
-    // ✅ Importar componentes standalone
-    FooterComponent,
-    SidebarComponent,
-    LayoutComponent,
+    
+    LayoutModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

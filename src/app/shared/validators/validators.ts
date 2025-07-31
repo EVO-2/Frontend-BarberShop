@@ -5,19 +5,21 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
  */
 export function passwordsIguales(passwordKey: string, confirmarKey: string): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {
-    const password = group.get(passwordKey)?.value;
-    const confirmar = group.get(confirmarKey)?.value;
+    const passwordControl = group.get(passwordKey);
+    const confirmarControl = group.get(confirmarKey);
+
+    if (!passwordControl || !confirmarControl) return null;
+
+    const password = passwordControl.value;
+    const confirmar = confirmarControl.value;
 
     if (password !== confirmar) {
-      group.get(confirmarKey)?.setErrors({ noCoinciden: true });
+      confirmarControl.setErrors({ ...confirmarControl.errors, noCoinciden: true });
       return { noCoinciden: true };
     } else {
-      const errors = group.get(confirmarKey)?.errors;
-      if (errors) {
-        delete errors['noCoinciden'];
-        if (Object.keys(errors).length === 0) {
-          group.get(confirmarKey)?.setErrors(null);
-        }
+      if (confirmarControl.errors) {
+        const { noCoinciden, ...otrosErrores } = confirmarControl.errors;
+        confirmarControl.setErrors(Object.keys(otrosErrores).length ? otrosErrores : null);
       }
     }
 
@@ -30,7 +32,7 @@ export function passwordsIguales(passwordKey: string, confirmarKey: string): Val
  */
 export function telefonoValido(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    const valor = control.value;
+    const valor = control.value?.toString().trim();
     const regex = /^\d{10}$/;
 
     if (!regex.test(valor)) {

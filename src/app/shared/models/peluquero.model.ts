@@ -4,7 +4,7 @@ export interface Peluquero {
   especialidades?: string[];
   experiencia?: number;
   telefono_profesional?: string;
-  direccion?: string;
+  direccion_profesional?: string; 
   genero?: 'masculino' | 'femenino' | 'otro';
   fecha_nacimiento?: Date | string;
   sede?: string | null; // ID de la sede

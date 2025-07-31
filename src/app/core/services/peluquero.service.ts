@@ -15,9 +15,10 @@ export class PeluqueroService {
     return this.http.get(`${this.apiUrl}/usuario/${usuarioId}`);
   }
 
-  actualizarPeluquero(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
-  }
+  actualizarPeluquero(id: string, data: any): Observable<any> {
+  return this.http.put(`${this.apiUrl}/peluqueros/${id}`, data);
+}
+
 
   actualizarPorUsuarioId(usuarioId: number, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/por-usuario/${usuarioId}`, data);

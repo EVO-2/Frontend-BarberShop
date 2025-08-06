@@ -3,24 +3,23 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { catchError, map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 
-export function emailExisteValidator(authService: AuthService): AsyncValidatorFn {
+export function emailExisteValidator(authService: AuthService, correoActual?: string): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     const email = control.value;
 
-    // Verifica que el email no esté vacío o compuesto solo de espacios
-    if (!email || email.trim() === '') {
+    // Si el email no ha cambiado, no validar
+    if (!email || email.trim() === '' || email === correoActual) {
       return of(null);
     }
 
-    // Llama al backend y verifica si el correo ya existe
     return authService.verificarCorreo(email).pipe(
       map(respuesta => {
         if (respuesta && typeof respuesta.existe === 'boolean') {
           return respuesta.existe ? { emailExiste: true } : null;
         }
-        return null; // si la respuesta no es válida
+        return null;
       }),
-      catchError(() => of(null)) // En caso de error, no bloquea el formulario
+      catchError(() => of(null))
     );
   };
 }

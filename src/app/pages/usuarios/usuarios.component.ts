@@ -38,12 +38,28 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
   cargarUsuarios(): void {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (usuarios: any[]) => {
-        this.dataSource.data = usuarios;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        const usuariosExtendidos = usuarios.map((usuario) => {
+          const rolNombre = usuario.rol?.nombre || '';
+
+          const esCliente = rolNombre === 'cliente';
+          const esBarbero = rolNombre === 'barbero';
+
+          return {
+            ...usuario,
+            telefono: esCliente ? usuario.detalles?.telefono : usuario.detalles?.telefono_profesional,
+            direccion: esCliente ? usuario.detalles?.direccion : usuario.detalles?.direccion_profesional,
+            genero: usuario.detalles?.genero || '',
+            especialidades: esBarbero ? usuario.detalles?.especialidades?.join(', ') : '',
+            sede: esBarbero ? usuario.detalles?.sede?.nombre : '',
+            puestoTrabajo: esBarbero ? usuario.detalles?.puestoTrabajo?.nombre : '',
+          };
+        });
+
+        console.log('📊 Usuarios Cargados:', usuariosExtendidos);
+        this.dataSource.data = usuariosExtendidos;
       },
-      error: (err: any) => {
-        console.error(err);
+      error: (err) => {
+        console.error('❌ Error al cargar usuarios:', err);
         this.snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 });
       },
     });
@@ -59,37 +75,39 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
   }
 
   abrirDialog(usuario?: any): void {
-    const dialogRef = this.dialog.open(UsuarioDialogComponent, {
-      width: '400px',
-      data: usuario || null,
-    });
+    const data = usuario && usuario._id
+      ? { modo: 'editar', usuarioId: usuario._id }
+      : { modo: 'crear' };
 
-    dialogRef.afterClosed().subscribe((resultado) => {
+    this.dialog.open(UsuarioDialogComponent, {
+      width: '500px',
+      data,
+      disableClose: true
+    }).afterClosed().subscribe((resultado) => {
       if (resultado) {
-        this.snackBar.open(
-          usuario ? 'Usuario actualizado' : 'Usuario creado',
-          'Cerrar',
-          { duration: 3000 }
-        );
+        const mensaje = data.modo === 'crear'
+          ? 'Usuario creado correctamente'
+          : 'Usuario actualizado correctamente';
+        this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
         this.cargarUsuarios();
       }
     });
   }
 
   cambiarEstado(usuario: any): void {
-    usuario.estado = !usuario.estado;
+    const nuevoEstado = !usuario.estado;
 
-    this.usuarioService.cambiarEstadoUsuario(usuario._id, usuario.estado).subscribe({
+    this.usuarioService.cambiarEstadoUsuario(usuario._id, nuevoEstado).subscribe({
       next: () => {
+        usuario.estado = nuevoEstado;
         this.snackBar.open(
-          `Usuario ${usuario.estado ? 'activado' : 'desactivado'}`,
+          `Usuario ${nuevoEstado ? 'activado' : 'desactivado'}`,
           'Cerrar',
           { duration: 3000 }
         );
       },
       error: () => {
-        usuario.estado = !usuario.estado; // Revertir si falla
-        this.snackBar.open('Error al cambiar estado', 'Cerrar', {
+        this.snackBar.open('Error al cambiar estado del usuario', 'Cerrar', {
           duration: 3000,
         });
       },

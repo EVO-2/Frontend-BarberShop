@@ -76,8 +76,8 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
 
   abrirDialog(usuario?: any): void {
     const data = usuario && usuario._id
-      ? { modo: 'editar', usuarioId: usuario._id }
-      : { modo: 'crear' };
+  ? { modo: 'editar', usuarioId: usuario._id, correoActual: usuario.correo }
+  : { modo: 'crear' };
 
     this.dialog.open(UsuarioDialogComponent, {
       width: '500px',

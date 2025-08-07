@@ -1,6 +1,6 @@
 :host {
   display: block;
-  padding: 2rem 1.5rem; /* Espacio arriba y laterales */
+  padding: 2rem 1.5rem;
   max-width: 800px;
   width: 100%;
   height: 100%;
@@ -24,7 +24,7 @@
     width: 100%;
 
     .mat-form-field-wrapper {
-      margin-top: 0.5rem; /* Espacio entre label y borde input */
+      margin-top: 0.5rem;
     }
   }
 
@@ -51,14 +51,14 @@
 }
 
 mat-dialog-content {
-  max-height: 65vh; /* Scroll si hay muchos campos */
+  max-height: 65vh;
   overflow-y: auto;
-  padding: 0 1rem; /* Padding lateral para separarlo del borde */
+  padding: 0 1rem;
   box-sizing: border-box;
 
   .grid {
     display: grid;
-    gap: 1.5rem; /* Separación entre columnas */
+    gap: 1.5rem;
   }
 
   @media (min-width: 768px) {
@@ -112,4 +112,24 @@ mat-dialog-actions {
   .mat-flat-button {
     font-weight: 600;
   }
+}
+
+/* ESTILOS PARA OPCIONES OCUPADAS */
+.disabled-option {
+  color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+}
+
+.lock-icon {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.puesto-ocupado {
+  color: gray !important;
+  opacity: 0.6;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
 }

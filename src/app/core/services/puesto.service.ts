@@ -7,23 +7,42 @@ import { Observable } from 'rxjs';
 })
 export class PuestoService {
 
-  private baseUrl = 'http://localhost:3000/api/puestos'; // Ajusta si usas proxy o diferente puerto
+  private baseUrl = 'http://localhost:3000/api/puestos'; 
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Obtener puestos activos (opcionalmente filtrados por sede)
-   * @param sedeId ID de la sede (opcional)
+   * Obtener puestos disponibles (no ocupados) de una sede.
+   * Si se proporciona peluqueroId (modo editar), su puesto actual no será excluido.
+   * @param sedeId ID de la sede (obligatorio)
+   * @param peluqueroId ID del peluquero (opcional en modo edición)
    */
-  getPuestos(sedeId?: string): Observable<any[]> {
-    let params = new HttpParams();
+  getPuestos(sedeId: string, peluqueroId?: string): Observable<any[]> {
+    let params = new HttpParams().set('sede_id', sedeId);
 
-    if (sedeId) {
-      params = params.set('sede', sedeId); // ✅ usa 'sede' como en el backend
+    // Si viene en modo edición, se le envía el peluqueroId para mantener su puesto actual en la respuesta
+    if (peluqueroId) {
+      params = params.set('peluquero_id', peluqueroId);
     }
 
     return this.http.get<any[]>(this.baseUrl, { params });
   }
 
-  
+  /**
+   * Liberar un puesto de trabajo (remover peluquero asignado)
+   * @param puestoId ID del puesto a liberar
+   */
+  liberarPuesto(puestoId: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${puestoId}/liberar`, {});
+  }
+
+  /**
+   * Asignar un peluquero a un puesto de trabajo
+   * @param puestoId ID del puesto
+   * @param peluqueroId ID del peluquero
+   */
+  asignarPeluquero(puestoId: string, peluqueroId: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${puestoId}/asignar`, { peluqueroId });
+  }
+
 }

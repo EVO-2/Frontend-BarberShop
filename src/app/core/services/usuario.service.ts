@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class UsuarioService {
   private apiUrl = `${environment.apiUrl}/usuarios`;
   private sedesUrl = `${environment.apiUrl}/sedes`;
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -66,4 +67,8 @@ export class UsuarioService {
     return this.http.put(`${this.apiUrl}/${id}/cambiar-password`, data);
   }
 
+  
+  verificarPuestoOcupado(puestoId: string, usuarioId: string): Observable<boolean> {
+      return this.http.get<boolean>(`${this.baseUrl}/usuarios/verificar-puesto/${puestoId}?usuarioId=${usuarioId}`);
+    }
 }

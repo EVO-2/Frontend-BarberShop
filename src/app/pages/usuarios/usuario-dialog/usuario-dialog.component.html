@@ -27,7 +27,7 @@
       <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Toggle password visibility'" [attr.aria-pressed]="!hidePassword">
         <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
-      <mat-error *ngIf="usuarioForm.get('password')?.hasError('required')">Contraseña obligatoria</mat-error>
+      <mat-error *ngIf="usuarioForm.get('password')?.hasError('required') && modo === 'crear'">Contraseña obligatoria</mat-error>
       <mat-error *ngIf="usuarioForm.get('password')?.hasError('passwordSegura')">
         Debe tener mayúscula, minúscula, número y símbolo
       </mat-error>
@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <!-- Campos extendidos CLIENTE -->
+  <!-- Datos Cliente -->
   <div *ngIf="mostrarCamposCliente" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
     <h3 class="col-span-full text-lg font-semibold">Datos Cliente</h3>
 
@@ -85,18 +85,20 @@
       <mat-label>Fecha Nacimiento</mat-label>
       <input matInput [matDatepicker]="pickerCliente" formControlName="fecha_nacimiento" />
       <mat-datepicker-toggle matSuffix [for]="pickerCliente"></mat-datepicker-toggle>
-      <mat-datepicker #pickerCliente></mat-datepicker>
+      <mat-datepicker #pickerCliente startView="multi-year" panelClass="es-datepicker"></mat-datepicker>
     </mat-form-field>
   </div>
 
-  <!-- Campos extendidos PELUQUERO -->
+  <!-- Datos Peluquero -->
   <div *ngIf="mostrarCamposPeluquero" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
     <h3 class="col-span-full text-lg font-semibold">Datos Peluquero</h3>
 
     <mat-form-field appearance="outline">
       <mat-label>Teléfono Profesional</mat-label>
       <input matInput formControlName="telefono" />
-      <mat-error *ngIf="usuarioForm.get('telefono')?.hasError('telefonoInvalido')">Teléfono debe tener 10 dígitos</mat-error>
+      <mat-error *ngIf="usuarioForm.get('telefono')?.hasError('telefonoInvalido')">
+        Teléfono debe tener 10 dígitos
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -117,7 +119,7 @@
       <mat-label>Fecha Nacimiento</mat-label>
       <input matInput [matDatepicker]="pickerPeluquero" formControlName="fecha_nacimiento" />
       <mat-datepicker-toggle matSuffix [for]="pickerPeluquero"></mat-datepicker-toggle>
-      <mat-datepicker #pickerPeluquero></mat-datepicker>
+      <mat-datepicker #pickerPeluquero startView="multi-year" panelClass="es-datepicker"></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -128,6 +130,12 @@
     <mat-form-field appearance="outline">
       <mat-label>Experiencia (años)</mat-label>
       <input matInput type="number" formControlName="experiencia" />
+      <mat-error *ngIf="usuarioForm.get('experiencia')?.hasError('min')">
+        Debe ser mayor o igual a 0
+      </mat-error>
+      <mat-error *ngIf="usuarioForm.get('experiencia')?.hasError('pattern')">
+        Solo números positivos
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -137,18 +145,27 @@
       </mat-select>
     </mat-form-field>
 
+    <!-- ✅ Puesto de trabajo (solo barbero) -->
     <mat-form-field appearance="outline">
-      <mat-label>Puesto de Trabajo</mat-label>
+      <mat-label>Puesto de trabajo</mat-label>
       <mat-select formControlName="puestoTrabajo">
-        <mat-option *ngFor="let puesto of puestosDisponibles" [value]="puesto._id">{{ puesto.nombre }}</mat-option>
+        <mat-option *ngFor="let puesto of puestosDisponibles" [value]="puesto._id">
+          {{ puesto.nombre }}
+        </mat-option>
       </mat-select>
+      <mat-error *ngIf="usuarioForm.get('puestoTrabajo')?.hasError('required')">
+        Debes seleccionar un puesto
+      </mat-error>
     </mat-form-field>
   </div>
-</mat-dialog-content>
 
-<mat-dialog-actions align="end" class="mt-4">
-  <button mat-flat-button color="warn" (click)="cerrar()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="guardar()" [disabled]="usuarioForm.invalid">
-    {{ modo === 'crear' ? 'Crear' : 'Actualizar' }}
-  </button>
-</mat-dialog-actions>
+  <!-- Acciones -->
+  <mat-dialog-actions align="end" class="mt-6">
+    <button mat-flat-button color="warn" (click)="cerrar()">Cancelar</button>
+    <button mat-flat-button color="primary"
+      [disabled]="usuarioForm.invalid || !usuarioForm.dirty"
+      (click)="guardar()">
+      {{ modo === 'crear' ? 'Crear' : 'Actualizar' }}
+    </button>
+  </mat-dialog-actions>
+

@@ -5,10 +5,8 @@ import { UsuarioService } from 'src/app/core/services/usuario.service';
 import { SedeService } from 'src/app/core/services/sede.service';
 import { RolService } from 'src/app/core/services/rol.service';
 import { PuestoService } from 'src/app/core/services/puesto.service';
-
-import { telefonoValido } from 'src/app/shared/validators/validators';
+import { telefonoValido, passwordsIguales } from 'src/app/shared/validators/validators';
 import { passwordSegura } from 'src/app/shared/validators/password-segura.validator';
-import { passwordsIguales } from 'src/app/shared/validators/validators';
 import { emailExisteValidator } from 'src/app/shared/validators/email-existe.validator';
 import { AuthService } from 'src/app/auth/auth.service';
 
@@ -27,9 +25,10 @@ export class UsuarioDialogComponent implements OnInit {
   puestosDisponibles: any[] = [];
   mostrarCamposCliente: boolean = false;
   mostrarCamposPeluquero: boolean = false;
+  usuarioActualId: string = '';
+
   hidePassword = true;
   hideConfirmPassword = true;
-
 
   constructor(
     private fb: FormBuilder,
@@ -40,43 +39,60 @@ export class UsuarioDialogComponent implements OnInit {
     private authService: AuthService,
     private dialogRef: MatDialogRef<UsuarioDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    console.log('📥 DATA RECIBIDA AL ABRIR DIALOG:', this.data);
-    this.cargarRoles();
-    this.cargarSedes();
-
     this.modo = this.data?.modo === 'editar' ? 'editar' : 'crear';
     this.titulo = this.modo === 'editar' ? 'Editar Usuario' : 'Crear Usuario';
+    this.usuarioActualId = this.data?.usuarioId || '';
 
     this.inicializarFormulario();
+    this.cargarRoles();
+    this.cargarSedes();
 
     this.usuarioForm.get('rol')?.valueChanges.subscribe((rolId) => {
       const rolSeleccionado = this.roles.find(r => r._id === rolId);
       const nombreRol = rolSeleccionado?.nombre || '';
       this.toggleCamposExtendidos(nombreRol);
+
+      const puestoCtrl = this.usuarioForm.get('puestoTrabajo');
+      if (nombreRol === 'barbero') {
+        puestoCtrl?.setValidators([Validators.required]);
+
+        // Validación de puesto solo si está creando
+        if (this.modo === 'crear') {
+          puestoCtrl?.valueChanges.subscribe((puestoId) => {
+            if (puestoId) {
+              this.validarPuestoOcupado(puestoId);
+            }
+          });
+        }
+      } else {
+        puestoCtrl?.clearValidators();
+        puestoCtrl?.setValue(null);
+      }
+
+      puestoCtrl?.updateValueAndValidity();
     });
 
     this.usuarioForm.get('sede')?.valueChanges.subscribe((sedeId) => {
-      this.onSedeSeleccionada(sedeId);
+      this.usuarioForm.get('puestoTrabajo')?.reset();
+      this.cargarPuestosPorSede(sedeId);
     });
 
     if (this.modo === 'editar') {
-      this.cargarUsuarioParaEditar(this.data.usuarioId);
+      this.cargarUsuarioParaEditar(this.usuarioActualId);
     }
   }
 
   inicializarFormulario(): void {
     this.usuarioForm = this.fb.group({
-      nombre: ['', [
-        Validators.required,
-        Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]{3,}$/)
-      ]],
-      correo: ['', [
-        Validators.required,
-        Validators.email
-      ], [emailExisteValidator(this.authService, this.data?.usuario?.correo)]],
+      nombre: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]{3,}$/)]],
+      correo: [
+        '',
+        [Validators.required, Validators.email],
+        this.modo === 'crear' ? [emailExisteValidator(this.authService)] : []
+      ],
       password: ['', this.modo === 'crear' ? [Validators.required, passwordSegura()] : []],
       confirmarPassword: [''],
       rol: ['', Validators.required],
@@ -86,30 +102,41 @@ export class UsuarioDialogComponent implements OnInit {
       genero: ['otro'],
       fecha_nacimiento: [''],
       especialidades: [[]],
-      experiencia: [0],
+      experiencia: [0, [Validators.min(0), Validators.pattern('^[0-9]+$')]],
       sede: [''],
-      puestoTrabajo: ['']
+      puestoTrabajo: [null]
     }, {
       validators: passwordsIguales('password', 'confirmarPassword')
     });
   }
 
+  validarPuestoOcupado(puestoId: string): void {
+    if (!puestoId) return;
+
+    this.usuarioService.verificarPuestoOcupado(puestoId, this.usuarioActualId).subscribe((ocupado) => {
+      const control = this.usuarioForm.get('puestoTrabajo');
+      if (ocupado) {
+        control?.setErrors({ ocupado: true });
+      } else {
+        const currentErrors = control?.errors;
+        if (currentErrors) {
+          delete currentErrors['ocupado'];
+          control?.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+        }
+      }
+    });
+  }
+
   cargarRoles(): void {
     this.rolService.obtenerRoles().subscribe({
-      next: (roles) => {
-        this.roles = roles;
-        console.log('📋 Roles cargados:', this.roles);
-      },
+      next: (roles) => this.roles = roles,
       error: (err) => console.error('❌ Error cargando roles:', err)
     });
   }
 
   cargarSedes(): void {
     this.sedeService.obtenerSedes().subscribe({
-      next: (sedes) => {
-        this.sedes = sedes;
-        console.log('📦 Sedes cargadas:', this.sedes);
-      },
+      next: (sedes) => this.sedes = sedes,
       error: (err) => console.error('❌ Error cargando sedes:', err)
     });
   }
@@ -117,15 +144,13 @@ export class UsuarioDialogComponent implements OnInit {
   cargarUsuarioParaEditar(usuarioId: string): void {
     this.usuarioService.obtenerUsuarioPorId(usuarioId).subscribe({
       next: (usuarioCompleto) => {
-        console.log('📥 Usuario cargado desde backend:', usuarioCompleto);
-
         const detalles = usuarioCompleto.detalles || {};
         const rol = usuarioCompleto.rol?.nombre || usuarioCompleto.rol;
 
         this.usuarioForm.patchValue({
           nombre: usuarioCompleto.nombre,
           correo: usuarioCompleto.correo,
-          rol: usuarioCompleto.rol && typeof usuarioCompleto.rol === 'object' ? usuarioCompleto.rol._id : usuarioCompleto.rol || '',
+          rol: usuarioCompleto.rol?._id || usuarioCompleto.rol,
           estado: usuarioCompleto.estado,
           telefono: detalles.telefono || detalles.telefono_profesional || '',
           direccion: detalles.direccion || detalles.direccion_profesional || '',
@@ -133,78 +158,90 @@ export class UsuarioDialogComponent implements OnInit {
           fecha_nacimiento: detalles.fecha_nacimiento || '',
           especialidades: detalles.especialidades || [],
           experiencia: detalles.experiencia || 0,
-          sede: detalles.sede && typeof detalles.sede === 'object' ? detalles.sede._id : detalles.sede || '',
-          puestoTrabajo: detalles.puestoTrabajo && typeof detalles.puestoTrabajo === 'object' ? detalles.puestoTrabajo._id : detalles.puestoTrabajo || ''
+          sede: detalles.sede?._id || detalles.sede,
         });
 
+        this.usuarioForm.get('correo')?.clearAsyncValidators();
+        this.usuarioForm.get('correo')?.updateValueAndValidity();
         this.toggleCamposExtendidos(rol);
 
         if (detalles.sede) {
           const sedeId = detalles.sede._id || detalles.sede;
-          this.cargarPuestos(sedeId);
+          const puestoIdSeleccionado = detalles.puestoTrabajo?._id || detalles.puestoTrabajo;
+          this.cargarPuestosPorSede(sedeId, puestoIdSeleccionado);
         }
       },
-      error: (err) => {
-        console.error('❌ Error al cargar usuario desde backend:', err);
-      }
+      error: (err) => console.error('❌ Error al cargar usuario desde backend:', err)
     });
   }
 
-  cargarPuestos(sedeId: string): void {
-    this.puestoService.getPuestos(sedeId).subscribe({
+  cargarPuestosPorSede(sedeId: string, puestoIdSeleccionado?: string): void {
+    if (!sedeId) return;
+
+    const peluqueroId = this.modo === 'editar' ? this.usuarioActualId : undefined;
+
+    this.puestoService.getPuestos(sedeId, peluqueroId).subscribe({
       next: (puestos) => {
-        this.puestosDisponibles = puestos;
-        console.log('💺 Puestos disponibles cargados:', puestos);
+        this.puestosDisponibles = puestos.filter(puesto => {
+          return !puesto.ocupado || puesto._id === puestoIdSeleccionado;
+        });
+
+        if (puestoIdSeleccionado) {
+          this.usuarioForm.patchValue({ puestoTrabajo: puestoIdSeleccionado });
+        }
       },
       error: (err) => console.error('❌ Error cargando puestos:', err)
     });
   }
 
-  onSedeSeleccionada(sedeId: string): void {
-    if (sedeId) {
-      this.cargarPuestos(sedeId);
-    } else {
-      this.puestosDisponibles = [];
-    }
-  }
-
   toggleCamposExtendidos(nombreRol: string): void {
     this.mostrarCamposCliente = nombreRol === 'cliente';
     this.mostrarCamposPeluquero = nombreRol === 'barbero';
-    console.log('🟢 mostrarCamposCliente:', this.mostrarCamposCliente);
-    console.log('🟢 mostrarCamposPeluquero:', this.mostrarCamposPeluquero);
+  }
+
+  getNombrePuestoSeleccionado(): string {
+    const puestoId = this.usuarioForm.get('puestoTrabajo')?.value;
+    const puesto = this.puestosDisponibles.find(p => p._id === puestoId);
+    return puesto ? puesto.nombre : 'Seleccionar';
   }
 
   guardar(): void {
-    if (this.usuarioForm.invalid) {
-      this.usuarioForm.markAllAsTouched();
-      return;
+    if (this.usuarioForm.invalid) return;
+
+    const formValues = this.usuarioForm.value;
+    const datos: any = {
+      usuarioId: this.usuarioActualId,
+      nombre: formValues.nombre,
+      correo: formValues.correo,
+      rol: formValues.rol,
+      estado: formValues.estado,
+      detalles: {
+        telefono: formValues.telefono,
+        direccion: formValues.direccion,
+        genero: formValues.genero,
+        fecha_nacimiento: formValues.fecha_nacimiento,
+        especialidades: formValues.especialidades,
+        experiencia: formValues.experiencia,
+        sede: formValues.sede,
+        puestoTrabajo: formValues.puestoTrabajo
+      }
+    };
+
+    if (this.modo === 'crear' || (formValues.password && formValues.password.trim() !== '')) {
+      datos.password = formValues.password;
     }
 
-    const datos = this.usuarioForm.value;
-    console.log('📤 Datos a enviar:', datos);
+    const accion = this.modo === 'crear'
+      ? this.usuarioService.crearUsuario(datos)
+      : this.usuarioService.actualizarUsuario(this.data.usuarioId, datos);
 
-    if (this.modo === 'crear') {
-      this.usuarioService.crearUsuario(datos).subscribe({
-        next: (res) => {
-          console.log('✅ Usuario creado:', res);
-          this.dialogRef.close(true);
-        },
-        error: (err) => console.error('❌ Error al crear usuario:', err)
-      });
-    } else {
-      this.usuarioService.actualizarUsuario(this.data.usuarioId, datos).subscribe({
-        next: (res) => {
-          console.log('✅ Usuario actualizado:', res);
-          this.dialogRef.close(true);
-        },
-        error: (err) => console.error('❌ Error al actualizar usuario:', err)
-      });
-    }
+    accion.subscribe({
+      next: () => this.dialogRef.close(true),
+      error: (err) => console.error(`❌ Error al ${this.modo === 'crear' ? 'crear' : 'actualizar'} usuario:`, err)
+    });
   }
 
   cerrar(): void {
     this.dialogRef.close();
   }
-
 }

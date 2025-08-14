@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { HttpParams } from '@angular/common/http';
+
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +71,20 @@ export class UsuarioService {
   }
 
   
-  verificarPuestoOcupado(puestoId: string, usuarioId: string): Observable<boolean> {
-      return this.http.get<boolean>(`${this.baseUrl}/usuarios/verificar-puesto/${puestoId}?usuarioId=${usuarioId}`);
-    }
+ // ===== Verificar si un puesto está disponible (o asignado al mismo usuario) =====
+  verificarPuesto(puestoId: string, usuarioId?: string): Observable<boolean> {
+    let params = new HttpParams();
+    if (usuarioId) params = params.set('usuarioId', usuarioId);
+
+    const url = `${this.apiUrl}/verificar-puesto/${puestoId}`;
+    console.log('[UsuarioService] URL verificarPuesto:', url, 'params=', params.toString());
+
+    return this.http
+      .get<{ disponible: boolean }>(url, { params })
+      .pipe(
+        tap((res) => console.log('[UsuarioService] respuesta verificarPuesto =>', res)),
+        map((res) => res.disponible)
+      );
+  }
 }
+

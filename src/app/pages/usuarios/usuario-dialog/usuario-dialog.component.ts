@@ -27,6 +27,10 @@ export class UsuarioDialogComponent implements OnInit {
   mostrarCamposPeluquero: boolean = false;
   usuarioActualId: string = '';
 
+  // Para lógica unificada con backend
+  puestoTrabajoAnterior: string | null = null;
+  estadoAnterior: boolean = true;
+
   hidePassword = true;
   hideConfirmPassword = true;
 
@@ -59,19 +63,16 @@ export class UsuarioDialogComponent implements OnInit {
       if (nombreRol === 'barbero') {
         puestoCtrl?.setValidators([Validators.required]);
 
-        // Validación de puesto solo si está creando
-        if (this.modo === 'crear') {
-          puestoCtrl?.valueChanges.subscribe((puestoId) => {
-            if (puestoId) {
-              this.validarPuestoOcupado(puestoId);
-            }
-          });
-        }
+        // Validación de puesto
+        puestoCtrl?.valueChanges.subscribe((puestoId) => {
+          if (puestoId) {
+            this.validarPuestoOcupado(puestoId);
+          }
+        });
       } else {
         puestoCtrl?.clearValidators();
         puestoCtrl?.setValue(null);
       }
-
       puestoCtrl?.updateValueAndValidity();
     });
 
@@ -111,13 +112,17 @@ export class UsuarioDialogComponent implements OnInit {
   }
 
   validarPuestoOcupado(puestoId: string): void {
-    if (!puestoId) return;
+  if (!puestoId) return;
 
-    this.usuarioService.verificarPuestoOcupado(puestoId, this.usuarioActualId).subscribe((ocupado) => {
+  this.usuarioService.verificarPuesto(puestoId, this.usuarioActualId)
+    .subscribe((disponible: boolean) => {
       const control = this.usuarioForm.get('puestoTrabajo');
-      if (ocupado) {
+
+      if (!disponible && puestoId !== this.puestoTrabajoAnterior) {
+        // ❌ Puesto ocupado → asignar error
         control?.setErrors({ ocupado: true });
       } else {
+        // ✅ Puesto libre → quitar error si existía
         const currentErrors = control?.errors;
         if (currentErrors) {
           delete currentErrors['ocupado'];
@@ -125,7 +130,8 @@ export class UsuarioDialogComponent implements OnInit {
         }
       }
     });
-  }
+}
+
 
   cargarRoles(): void {
     this.rolService.obtenerRoles().subscribe({
@@ -147,6 +153,10 @@ export class UsuarioDialogComponent implements OnInit {
         const detalles = usuarioCompleto.detalles || {};
         const rol = usuarioCompleto.rol?.nombre || usuarioCompleto.rol;
 
+        // Guardamos datos anteriores para lógica de liberación
+        this.puestoTrabajoAnterior = detalles.puestoTrabajo?._id || detalles.puestoTrabajo || null;
+        this.estadoAnterior = usuarioCompleto.estado;
+
         this.usuarioForm.patchValue({
           nombre: usuarioCompleto.nombre,
           correo: usuarioCompleto.correo,
@@ -167,25 +177,30 @@ export class UsuarioDialogComponent implements OnInit {
 
         if (detalles.sede) {
           const sedeId = detalles.sede._id || detalles.sede;
-          const puestoIdSeleccionado = detalles.puestoTrabajo?._id || detalles.puestoTrabajo;
-          this.cargarPuestosPorSede(sedeId, puestoIdSeleccionado);
+          const puestoIdSeleccionado = this.puestoTrabajoAnterior;
+          this.cargarPuestosPorSede(sedeId, puestoIdSeleccionado || undefined);
         }
       },
       error: (err) => console.error('❌ Error al cargar usuario desde backend:', err)
     });
   }
 
-  cargarPuestosPorSede(sedeId: string, puestoIdSeleccionado?: string): void {
-    if (!sedeId) return;
+ cargarPuestosPorSede(sedeId: string, puestoIdSeleccionado?: string): void {
+  if (!sedeId) return;
 
-    const peluqueroId = this.modo === 'editar' ? this.usuarioActualId : undefined;
+  console.log('[UsuarioDialog] Cargando puestos para sede', sedeId, 'puestoIdSeleccionado:', puestoIdSeleccionado);
+
+  const peluqueroId = this.modo === 'editar' ? this.usuarioActualId : undefined;
+  console.log('[UsuarioDialog] peluqueroId enviado:', peluqueroId);
 
     this.puestoService.getPuestos(sedeId, peluqueroId).subscribe({
       next: (puestos) => {
-        this.puestosDisponibles = puestos.filter(puesto => {
-          return !puesto.ocupado || puesto._id === puestoIdSeleccionado;
-        });
+        console.log('[UsuarioDialog] Puestos recibidos del backend:', puestos);
 
+        // ✅ Asignamos directamente lo que envía el backend
+        this.puestosDisponibles = puestos;
+
+        // Si hay un puesto seleccionado, lo marcamos en el formulario
         if (puestoIdSeleccionado) {
           this.usuarioForm.patchValue({ puestoTrabajo: puestoIdSeleccionado });
         }
@@ -193,6 +208,8 @@ export class UsuarioDialogComponent implements OnInit {
       error: (err) => console.error('❌ Error cargando puestos:', err)
     });
   }
+
+
 
   toggleCamposExtendidos(nombreRol: string): void {
     this.mostrarCamposCliente = nombreRol === 'cliente';
@@ -226,6 +243,12 @@ export class UsuarioDialogComponent implements OnInit {
         puestoTrabajo: formValues.puestoTrabajo
       }
     };
+
+    // Enviamos datos de control para el backend
+    if (this.modo === 'editar') {
+      datos.puestoTrabajoAnterior = this.puestoTrabajoAnterior;
+      datos.estadoAnterior = this.estadoAnterior;
+    }
 
     if (this.modo === 'crear' || (formValues.password && formValues.password.trim() !== '')) {
       datos.password = formValues.password;

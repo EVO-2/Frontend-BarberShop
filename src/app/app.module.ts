@@ -4,22 +4,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor'; 
 
-
-
-
 import { MaterialModule } from './shared/material.module';
-
 
 import { LoginComponent } from './auth/login/login.component';
 import { RegistroComponent } from './auth/registro/registro.component';
 import { UsuariosComponent } from 'src/app/pages/usuarios/usuarios.component';
 import { UsuarioDialogComponent } from 'src/app/pages/usuarios/usuario-dialog/usuario-dialog.component';
-
-
+import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component'; 
 
 import { LayoutModule } from './layout/layout.module';
 
@@ -29,7 +23,8 @@ import { LayoutModule } from './layout/layout.module';
     LoginComponent,
     RegistroComponent,
     UsuariosComponent,
-    UsuarioDialogComponent
+    UsuarioDialogComponent,
+    ReservarCitaComponent 
   ],
   imports: [
     BrowserModule,
@@ -39,8 +34,6 @@ import { LayoutModule } from './layout/layout.module';
     FormsModule,
     HttpClientModule,
     MaterialModule,
-
-    
     LayoutModule
   ],
   providers: [

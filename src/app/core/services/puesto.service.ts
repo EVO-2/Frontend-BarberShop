@@ -17,16 +17,23 @@ export class PuestoService {
    * @param sedeId ID de la sede (obligatorio)
    * @param peluqueroId ID del peluquero (opcional en modo edición)
    */
-  getPuestos(sedeId: string, peluqueroId?: string): Observable<any[]> {
-    let params = new HttpParams().set('sede_id', sedeId);
+ getPuestos(sedeId: string, peluqueroId?: string): Observable<any[]> {
+  let params = new HttpParams().set('sede_id', sedeId);
 
-    // Si viene en modo edición, se le envía el peluqueroId para mantener su puesto actual en la respuesta
-    if (peluqueroId) {
-      params = params.set('peluquero_id', peluqueroId);
-    }
-
-    return this.http.get<any[]>(this.baseUrl, { params });
+  if (peluqueroId) {
+    params = params.set('peluquero_id', peluqueroId);
   }
+
+  console.log(
+    '[PuestoService] GET puestos URL:',
+    this.baseUrl,
+    'params=',
+    params.toString()
+  );
+
+  return this.http.get<any[]>(this.baseUrl, { params });
+}
+
 
   /**
    * Liberar un puesto de trabajo (remover peluquero asignado)

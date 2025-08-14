@@ -1,6 +1,8 @@
+import { Usuario } from './usuario.model';
+
 export interface Cliente {
-  _id?: string; // Opcional si se está creando
-  usuario: string; // ID del usuario relacionado
+  _id?: string;
+  usuario: Usuario; // ahora es un objeto Usuario
   telefono?: string;
   direccion?: string;
   genero?: 'masculino' | 'femenino' | 'otro';

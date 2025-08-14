@@ -1,0 +1,70 @@
+.reserva-form {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .servicios-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    mat-checkbox {
+      flex: 1 1 45%;
+      min-width: 150px;
+    }
+  }
+
+  mat-form-field {
+    .mat-form-field-label {
+      font-weight: 500;
+    }
+  }
+
+  mat-select {
+    mat-icon {
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    .mat-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &.mat-option-disabled {
+        opacity: 0.6;
+        font-style: italic;
+      }
+    }
+  }
+
+  input[readonly] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 0;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .servicios-list {
+      flex-direction: column;
+
+      mat-checkbox {
+        flex: 1 1 100%;
+      }
+    }
+  }
+}

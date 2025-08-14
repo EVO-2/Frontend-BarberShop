@@ -1,0 +1,109 @@
+<form [formGroup]="reservarForm" (ngSubmit)="submit()" class="reserva-form">
+
+  <!-- Cliente -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Cliente</mat-label>
+    <mat-select formControlName="cliente">
+      <mat-option *ngFor="let c of clientes" [value]="c._id">
+        {{ c?.usuario?.nombre || 'Sin nombre' }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="reservarForm.get('cliente')?.hasError('required')">
+      El cliente es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Sede -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Sede</mat-label>
+    <mat-select formControlName="sede" (selectionChange)="onSedeChange($event.value)">
+      <mat-option *ngFor="let s of sedes" [value]="s._id">
+        {{ s?.nombre || 'Sin nombre' }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="reservarForm.get('sede')?.hasError('required')">
+      La sede es obligatoria
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Peluquero -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Peluquero</mat-label>
+    <mat-select formControlName="peluquero" (selectionChange)="onPeluqueroChange($event.value)">
+      <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id" [disabled]="p?.ocupado">
+        {{ p?.nombre || 'Sin nombre' }}
+        <mat-icon *ngIf="p?.ocupado" color="warn">lock</mat-icon>
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="reservarForm.get('peluquero')?.hasError('required')">
+      El peluquero es obligatorio
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Puesto de Trabajo -->
+    <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Puesto de Trabajo</mat-label>
+    <mat-select formControlName="puestoTrabajo">
+      <mat-option *ngFor="let p of puestos" [value]="p._id">
+        {{ p.nombre }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
+  <!-- Fecha -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Fecha</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="fecha" (dateChange)="validarFechaHora()">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="reservarForm.get('fecha')?.hasError('required')">
+      La fecha es obligatoria
+    </mat-error>
+    <mat-error *ngIf="fechaHoraInvalida">
+      No puedes seleccionar una fecha u hora anterior a la actual
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Hora -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Hora</mat-label>
+    <input matInput type="time" formControlName="hora">
+    <mat-error *ngIf="reservarForm.get('hora')?.hasError('required')">
+      La hora es obligatoria
+    </mat-error>
+    <mat-error *ngIf="fechaHoraInvalida">
+      No puedes seleccionar una fecha u hora anterior a la actual
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Servicios -->
+  <label class="servicios-label">Servicios</label>
+  <div class="servicios-list">
+    <mat-checkbox *ngFor="let s of servicios"
+                  [checked]="serviciosArray.value.includes(s._id)"
+                  (change)="toggleServicio(s._id, $event)">
+      {{ s?.nombre || 'Sin nombre' }} ({{ s?.duracion || 0 }} min - ${{ s?.precio || 0 }})
+    </mat-checkbox>
+  </div>
+  <mat-error *ngIf="serviciosArray.invalid || serviciosArray.length === 0">
+    Debes seleccionar al menos un servicio
+  </mat-error>
+
+  <!-- Observaciones -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Observaciones</mat-label>
+    <textarea matInput formControlName="observaciones" rows="3"></textarea>
+  </mat-form-field>
+
+  <!-- Botones -->
+  <div class="botones">
+    <button mat-raised-button color="primary" type="submit" [disabled]="reservarForm.invalid || fechaHoraInvalida || loading">
+      Reservar Cita
+    </button>
+    <button mat-raised-button color="warn" type="button" (click)="cancelarCita()">
+      Cancelar
+    </button>
+  </div>
+
+</form>

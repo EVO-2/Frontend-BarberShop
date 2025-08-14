@@ -5,8 +5,11 @@ import { Sede } from './sede.model';
 import { PuestoTrabajo } from './puesto-trabajo.model';
 import { Pago } from './pago.model';
 
+export type EstadoCita = 'pendiente' | 'confirmada' | 'completada' | 'finalizada';
+
 export interface Cita {
   _id?: string;
+  
   cliente: string | Cliente;
   peluquero: string | Peluquero;
   servicios: (string | Servicio)[];
@@ -14,13 +17,12 @@ export interface Cita {
   puestoTrabajo: string | PuestoTrabajo;
   pago?: string | Pago | null;
 
-  fecha: string | Date;
+  fecha: string; // siempre manejar ISO string en Angular
   turno: number;
 
-  estado?: 'pendiente' | 'confirmada' | 'completada' | 'finalizada';
-
+  estado?: EstadoCita;
   observaciones?: string;
 
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
+  createdAt?: string;
+  updatedAt?: string;
 }

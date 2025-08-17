@@ -1,4 +1,4 @@
-<form [formGroup]="reservarForm" (ngSubmit)="submit()" class="reserva-form">
+<form [formGroup]="reservarForm" (ngSubmit)="reservarCita()" class="reserva-form">
 
   <!-- Cliente -->
   <mat-form-field appearance="fill" class="full-width">
@@ -32,7 +32,7 @@
     <mat-select formControlName="peluquero" (selectionChange)="onPeluqueroChange($event.value)">
       <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id" [disabled]="p?.ocupado">
         {{ p?.nombre || 'Sin nombre' }}
-        <mat-icon *ngIf="p?.ocupado" color="warn">lock</mat-icon>
+        <mat-icon *ngIf="p?.ocupado" color="warn" matTooltip="Ocupado" class="ml-2">lock</mat-icon>
       </mat-option>
     </mat-select>
     <mat-error *ngIf="reservarForm.get('peluquero')?.hasError('required')">
@@ -40,40 +40,41 @@
     </mat-error>
   </mat-form-field>
 
-  <!-- Puesto de Trabajo -->
-    <mat-form-field appearance="fill" class="full-width">
+  <!-- Puesto de Trabajo (solo lectura) -->
+  <mat-form-field appearance="fill" class="full-width">
     <mat-label>Puesto de Trabajo</mat-label>
-    <mat-select formControlName="puestoTrabajo">
-      <mat-option *ngFor="let p of puestos" [value]="p._id">
-        {{ p.nombre }}
-      </mat-option>
-    </mat-select>
+    <input matInput [value]="puestoSeleccionado?.nombre" disabled>
+    <mat-error *ngIf="reservarForm.get('puestoTrabajo')?.hasError('required')">
+      El puesto de trabajo es obligatorio
+    </mat-error>
   </mat-form-field>
 
+  <!-- Campo oculto para enviar el _id -->
+  <input type="hidden" formControlName="puestoTrabajo">
 
   <!-- Fecha -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Fecha</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="fecha" (dateChange)="validarFechaHora()">
+    <input matInput [matDatepicker]="picker" formControlName="fecha" (dateChange)="validarFechaHoraYActualizarOcupacion()">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
     <mat-error *ngIf="reservarForm.get('fecha')?.hasError('required')">
       La fecha es obligatoria
     </mat-error>
     <mat-error *ngIf="fechaHoraInvalida">
-      No puedes seleccionar una fecha u hora anterior a la actual
+      La fecha u hora seleccionada ya está ocupada
     </mat-error>
   </mat-form-field>
 
   <!-- Hora -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Hora</mat-label>
-    <input matInput type="time" formControlName="hora">
+    <input matInput type="time" formControlName="hora" (change)="validarFechaHoraYActualizarOcupacion()">
     <mat-error *ngIf="reservarForm.get('hora')?.hasError('required')">
       La hora es obligatoria
     </mat-error>
     <mat-error *ngIf="fechaHoraInvalida">
-      No puedes seleccionar una fecha u hora anterior a la actual
+      La hora seleccionada ya está ocupada en esta sede
     </mat-error>
   </mat-form-field>
 

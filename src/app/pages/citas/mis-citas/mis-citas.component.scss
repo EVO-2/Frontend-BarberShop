@@ -1,0 +1,20 @@
+.filtros-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+
+  mat-form-field {
+    flex: 1 1 200px;
+  }
+
+  button {
+    align-self: flex-end; 
+    height: 56px;         
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

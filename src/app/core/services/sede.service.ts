@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface Sede {
   id: number;
@@ -12,11 +13,11 @@ export interface Sede {
   providedIn: 'root',
 })
 export class SedeService {
-  private apiUrl = 'http://localhost:3000/api/sedes';
+  private apiUrl = `${environment.apiUrl}/sedes`;
 
   constructor(private http: HttpClient) {}
 
-  obtenerSedes(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  obtenerSedes(): Observable<Sede[]> {
+    return this.http.get<Sede[]>(this.apiUrl);
   }
 }

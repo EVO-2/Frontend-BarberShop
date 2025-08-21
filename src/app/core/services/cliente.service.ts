@@ -11,16 +11,18 @@ export class ClienteService {
 
   constructor(private http: HttpClient) {}
 
+  // Obtener cliente por usuarioId
   obtenerPorUsuarioId(usuarioId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/usuario/${usuarioId}`);
+    return this.http.get<any>(`${this.apiUrl}/usuario/${usuarioId}`);
   }
 
+  // Actualizar cliente por id
   actualizarCliente(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data);
   }
 
+  // Actualizar cliente por usuarioId
   actualizarPorUsuarioId(usuarioId: number, data: any): Observable<any> {
-  return this.http.put(`${this.apiUrl}/por-usuario/${usuarioId}`, data);
-}
-
+    return this.http.put<any>(`${this.apiUrl}/por-usuario/${usuarioId}`, data);
+  }
 }

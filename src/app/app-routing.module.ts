@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core'; 
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -8,8 +8,7 @@ import { RegistroComponent } from './auth/registro/registro.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component'; 
 import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component';
-
-
+import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component'; 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -26,7 +25,8 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'usuarios', component: UsuariosComponent },
-      { path: 'reservar', component: ReservarCitaComponent }
+      { path: 'reservar', component: ReservarCitaComponent },
+      { path: 'mis-citas', component: MisCitasComponent } 
     ]
   },
 

@@ -1,0 +1,59 @@
+.cita-form {
+  width: 100%;
+  max-width: 600px;
+
+  .alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 1em;
+    border-radius: 6px;
+    margin-bottom: 1.5em;
+    font-size: 0.95rem;
+  }
+
+  .dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .servicios-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    width: 100%;
+
+    .section-label {
+      font-weight: 600;
+      margin-bottom: 0.3em;
+    }
+
+    .checkbox-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      width: 100%;
+    }
+  }
+
+  mat-dialog-actions {
+    margin-top: 1.5em;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5em;
+
+    button {
+      min-width: 100px;
+    }
+  }
+}

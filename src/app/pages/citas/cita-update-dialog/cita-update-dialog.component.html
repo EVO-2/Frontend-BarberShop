@@ -1,0 +1,81 @@
+<h2 mat-dialog-title>Editar Cita</h2>
+
+<form [formGroup]="citaForm" (ngSubmit)="guardar()" class="cita-form">
+
+  <!-- Mensaje si no editable -->
+  <div *ngIf="!esEditable()" class="alert-warning">
+    ⚠️ Esta cita no puede editarse (solo se pueden editar las citas pendientes con más de 1 hora de anticipación).
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+
+    <div class="form-grid">
+
+      <!-- Fecha y hora -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Fecha y hora</mat-label>
+        <input matInput type="datetime-local" formControlName="fecha" [disabled]="!esEditable()">
+      </mat-form-field>
+
+      <!-- Sede -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Sede</mat-label>
+        <mat-select formControlName="sede" (selectionChange)="onSedeChange($event.value)" [disabled]="!esEditable()">
+          <mat-option *ngFor="let s of sedes" [value]="s._id">{{ s.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Peluquero -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Peluquero</mat-label>
+        <mat-select formControlName="peluquero" (selectionChange)="onPeluqueroChange($event.value)" [disabled]="!esEditable()">
+          <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id" [disabled]="p.ocupado || !esEditable()">
+            {{ p.nombre }} <span *ngIf="p.ocupado">(Ocupado)</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Puesto de trabajo -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Puesto de trabajo</mat-label>
+        <mat-select formControlName="puestoTrabajoId" [disabled]="!esEditable()">
+          <mat-option *ngFor="let p of puestosTrabajo" [value]="p._id">
+            {{ p.nombre || p.codigo || 'Puesto' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Observaciones -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Observaciones</mat-label>
+        <textarea matInput formControlName="observaciones" rows="3" [disabled]="!esEditable()"></textarea>
+      </mat-form-field>
+
+      <!-- Servicios -->
+      <div class="servicios-section" *ngIf="servicios.length">
+        <label class="section-label">Servicios:</label>
+        <div class="checkbox-grid">
+          <mat-checkbox
+            *ngFor="let s of servicios; let i = index"
+            [formControl]="serviciosFormControls[i]"
+            (change)="toggleServicio(s._id, $event)"
+            [disabled]="!esEditable()"
+          >
+            {{ s.nombre }}
+          </mat-checkbox>
+        </div>
+      </div>
+
+    </div>
+    
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit"
+            [disabled]="citaForm.invalid || guardando || !esEditable()">
+      Guardar
+    </button>
+  </mat-dialog-actions>
+
+</form>

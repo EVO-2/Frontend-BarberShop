@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { HttpParams } from '@angular/common/http';
-
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +10,7 @@ import { HttpParams } from '@angular/common/http';
 export class UsuarioService {
   private apiUrl = `${environment.apiUrl}/usuarios`;
   private sedesUrl = `${environment.apiUrl}/sedes`;
-  private baseUrl = environment.apiUrl;
+  private rolesUrl = `${environment.apiUrl}/roles`;
 
   constructor(private http: HttpClient) {}
 
@@ -53,7 +51,7 @@ export class UsuarioService {
 
   // ===== Obtener Roles =====
   obtenerRoles(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/roles`);
+    return this.http.get<any[]>(this.rolesUrl);
   }
 
   // ===== Obtener todas las Sedes =====
@@ -66,12 +64,12 @@ export class UsuarioService {
     return this.http.get<any[]>(`${this.sedesUrl}/${sedeId}/puestos`);
   }
 
+  // ===== Cambiar contraseña =====
   cambiarPassword(id: string, data: { actual: string; nueva: string }): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}/cambiar-password`, data);
   }
 
-  
- // ===== Verificar si un puesto está disponible (o asignado al mismo usuario) =====
+  // ===== Verificar si un puesto está disponible (o asignado al mismo usuario) =====
   verificarPuesto(puestoId: string, usuarioId?: string): Observable<boolean> {
     let params = new HttpParams();
     if (usuarioId) params = params.set('usuarioId', usuarioId);
@@ -87,4 +85,3 @@ export class UsuarioService {
       );
   }
 }
-

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core'; 
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,11 +11,15 @@ import { MaterialModule } from './shared/material.module';
 
 import { LoginComponent } from './auth/login/login.component';
 import { RegistroComponent } from './auth/registro/registro.component';
-import { UsuariosComponent } from 'src/app/pages/usuarios/usuarios.component';
-import { UsuarioDialogComponent } from 'src/app/pages/usuarios/usuario-dialog/usuario-dialog.component';
+import { UsuariosComponent } from './pages/usuarios/usuarios.component';
+import { UsuarioDialogComponent } from './pages/usuarios/usuario-dialog/usuario-dialog.component';
 import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component'; 
+import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component'; 
+import { CitaUpdateDialogComponent } from './pages/citas/cita-update-dialog/cita-update-dialog.component'; 
 
 import { LayoutModule } from './layout/layout.module';
+
+
 
 @NgModule({
   declarations: [
@@ -24,7 +28,9 @@ import { LayoutModule } from './layout/layout.module';
     RegistroComponent,
     UsuariosComponent,
     UsuarioDialogComponent,
-    ReservarCitaComponent 
+    ReservarCitaComponent,
+    MisCitasComponent,
+    CitaUpdateDialogComponent, 
   ],
   imports: [
     BrowserModule,
@@ -34,7 +40,8 @@ import { LayoutModule } from './layout/layout.module';
     FormsModule,
     HttpClientModule,
     MaterialModule,
-    LayoutModule
+    LayoutModule,
+    
   ],
   providers: [
     {

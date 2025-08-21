@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { ReservaService } from 'src/app/shared/services/reserva.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CrearCitaPayload } from 'src/app/interfaces/cita.interface'; 
+//import { CrearCitaPayload } from 'src/app/interfaces/cita.interface'; 
 
 interface PeluqueroDropdownItem {
   _id: string;

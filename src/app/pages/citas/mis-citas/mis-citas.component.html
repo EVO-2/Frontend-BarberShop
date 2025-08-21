@@ -1,0 +1,94 @@
+<h2>Mis Citas</h2>
+
+<!-- 🔹 Filtros -->
+<div class="filtros-container">
+  <!-- Fecha -->
+  <mat-form-field appearance="outline">
+    <mat-label>Fecha</mat-label>
+    <input 
+      matInput 
+      [matDatepicker]="picker" 
+      [(ngModel)]="filtroFecha" 
+      (dateChange)="onFechaChange($event)" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Buscador general -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Buscar en todos los campos</mat-label>
+    <input 
+      matInput 
+      type="text" 
+      (input)="onFiltroGeneralChange($event)" 
+      placeholder="Ej: peluquero, sede, servicio...">
+  </mat-form-field>
+
+  <!-- Botón limpiar -->
+  <button mat-stroked-button color="warn" (click)="limpiarFiltros()">Limpiar</button>
+</div>
+
+
+<!-- 🔹 Tabla -->
+<table mat-table [dataSource]="citasFiltradas" class="mat-elevation-z8" *ngIf="citasFiltradas.length">
+
+  <!-- Fecha -->
+  <ng-container matColumnDef="fecha">
+    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+    <td mat-cell *matCellDef="let cita"> {{ cita.fecha | date:'short' }} </td>
+  </ng-container>
+
+  <!-- Turno -->
+  <ng-container matColumnDef="turno">
+    <th mat-header-cell *matHeaderCellDef> Turno </th>
+    <td mat-cell *matCellDef="let cita"> {{ cita.turno }} </td>
+  </ng-container>
+
+  <!-- Peluquero -->
+  <ng-container matColumnDef="peluquero">
+    <th mat-header-cell *matHeaderCellDef> Peluquero </th>
+    <td mat-cell *matCellDef="let cita"> {{ cita.peluquero.usuario.nombre }} </td>
+  </ng-container>
+
+  <!-- Servicios -->
+  <ng-container matColumnDef="servicios">
+    <th mat-header-cell *matHeaderCellDef> Servicios </th>
+    <td mat-cell *matCellDef="let cita">
+      {{ getServicios(cita) }}
+    </td>
+  </ng-container>
+
+  <!-- Estado -->
+  <ng-container matColumnDef="estado">
+    <th mat-header-cell *matHeaderCellDef> Estado </th>
+    <td mat-cell *matCellDef="let cita"> {{ cita.estado }} </td>
+  </ng-container>
+
+  <!-- Acciones -->
+  <ng-container matColumnDef="acciones">
+    <th mat-header-cell *matHeaderCellDef> Acciones </th>
+    <td mat-cell *matCellDef="let cita">
+      <button mat-icon-button color="primary" (click)="editarCita(cita)">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['fecha','turno','peluquero','servicios','estado','acciones']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['fecha','turno','peluquero','servicios','estado','acciones'];"></tr>
+</table>
+
+<!-- 🔹 Mensaje cuando no hay citas -->
+<div *ngIf="!citasFiltradas.length">
+  No tienes citas registradas.
+</div>
+
+<!-- 🔹 Paginación con Angular Material -->
+<mat-paginator
+  *ngIf="citasFiltradas.length"
+  [length]="totalCitas"
+  [pageSize]="tamanoPagina"
+  [pageIndex]="paginaActual"
+  [pageSizeOptions]="[5, 10, 20, 50]"
+  (page)="cambiarPagina($event)">
+</mat-paginator>

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PuestoService {
 
-  private baseUrl = 'http://localhost:3000/api/puestos'; 
+  private baseUrl = `${environment.apiUrl}/puestos`; 
 
   constructor(private http: HttpClient) {}
 
@@ -17,23 +18,22 @@ export class PuestoService {
    * @param sedeId ID de la sede (obligatorio)
    * @param peluqueroId ID del peluquero (opcional en modo edición)
    */
- getPuestos(sedeId: string, peluqueroId?: string): Observable<any[]> {
-  let params = new HttpParams().set('sede_id', sedeId);
+  getPuestos(sedeId: string, peluqueroId?: string): Observable<any[]> {
+    let params = new HttpParams().set('sede_id', sedeId);
 
-  if (peluqueroId) {
-    params = params.set('peluquero_id', peluqueroId);
+    if (peluqueroId) {
+      params = params.set('peluquero_id', peluqueroId);
+    }
+
+    console.log(
+      '[PuestoService] GET puestos URL:',
+      this.baseUrl,
+      'params=',
+      params.toString()
+    );
+
+    return this.http.get<any[]>(this.baseUrl, { params });
   }
-
-  console.log(
-    '[PuestoService] GET puestos URL:',
-    this.baseUrl,
-    'params=',
-    params.toString()
-  );
-
-  return this.http.get<any[]>(this.baseUrl, { params });
-}
-
 
   /**
    * Liberar un puesto de trabajo (remover peluquero asignado)

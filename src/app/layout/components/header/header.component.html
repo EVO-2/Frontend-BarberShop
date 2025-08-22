@@ -1,8 +1,10 @@
-<div class="user-info" *ngIf="usuario" style="margin-left: auto; display: flex; align-items: center;">
-  <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
-  
-  <label class="avatar-label" style="cursor: pointer;">
-    <img [src]="fotoPerfilUrl" class="avatar-header" alt="Avatar" width="40" height="40" style="border-radius: 50%;">
+<div class="user-info" *ngIf="usuario">
+  <!-- Nombre del usuario -->
+  <span class="user-name">{{ usuario.nombre }}</span>
+
+  <!-- Avatar clicable para subir foto -->
+  <label class="avatar-label">
+    <img [src]="fotoPerfilUrl" class="avatar-header" alt="Avatar" />
     <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
   </label>
 </div>

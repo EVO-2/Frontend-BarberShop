@@ -18,26 +18,28 @@
       </div>
 
       <!-- Usuario + Avatar + Menú -->
-      <div class="user-info" *ngIf="usuario" style="margin-left: auto; display: flex; align-items: center;">
-        <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
+        <div class="user-info" *ngIf="authService.usuario$ | async as usuario" style="margin-left: auto; display: flex; align-items: center;">
+          <!-- Nombre del usuario -->
+          <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
 
-        <!-- Botón con avatar y menú -->
-        <button mat-button [matMenuTriggerFor]="menu">
-        <!--  <img [src]="fotoPerfilUrl$ | async" class="avatar-header" alt="Avatar" /> -->
-           <mat-icon>arrow_drop_down</mat-icon>
-        </button>
+          <!-- Botón con avatar y menú -->
+          <button mat-button [matMenuTriggerFor]="menu" class="avatar-button">
+            <img [src]="authService.avatarUrl$ | async" alt="Avatar" class="avatar-header" />
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
 
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="irAEditarPerfil()">
-            <mat-icon>edit</mat-icon>
-            <span>Editar perfil</span>
-          </button>
-          <button mat-menu-item (click)="cerrarSesion()">
-            <mat-icon>logout</mat-icon>
-            <span>Cerrar sesión</span>
-          </button>
-        </mat-menu>
-      </div>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="irAEditarPerfil()">
+              <mat-icon>edit</mat-icon>
+              <span>Editar perfil</span>
+            </button>
+            <button mat-menu-item (click)="cerrarSesion()">
+              <mat-icon>logout</mat-icon>
+              <span>Cerrar sesión</span>
+            </button>
+          </mat-menu>
+        </div>
+
     </mat-toolbar>
 
     <!-- Contenido principal -->

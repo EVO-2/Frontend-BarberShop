@@ -55,7 +55,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
           };
         });
 
-        console.log('📊 Usuarios Cargados:', usuariosExtendidos);
+        
         this.dataSource.data = usuariosExtendidos;
       },
       error: (err) => {

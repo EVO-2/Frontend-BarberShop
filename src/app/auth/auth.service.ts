@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Usuario } from '../shared/models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -21,7 +23,75 @@ export class AuthService {
 
   // =================== Autenticación ===================
   login(datos: { correo: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, datos);
+    return this.http.post<any>(`${this.apiUrl}/login`, datos).pipe(
+      tap((resp: any) => {
+        if (resp && resp.usuario) {
+          const usuarioPlano = this.mapUsuario(resp.usuario);
+
+          // Guardar token + usuario
+          localStorage.setItem('token', resp.token);
+          localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+
+          // Notificar a los Subjects
+          this.usuarioSubject.next(usuarioPlano);
+          const nuevaUrl = this.getFotoUrl(usuarioPlano);
+          this.avatarUrlSubject.next(nuevaUrl);
+          this.fotoPerfilSubject.next(nuevaUrl);
+        }
+      })
+    );
+  }
+
+  // 🔹 Método privado para normalizar el usuario
+  private mapUsuario(usuario: any): Usuario {
+    return {
+      _id: usuario._id,
+      nombre: usuario.nombre,
+      correo: usuario.correo,
+      rol: usuario.rol,
+      foto: usuario.foto ? `${this.apiUrl}/uploads/${usuario.foto}` : undefined,
+
+      // =================== Cliente ===================
+      cliente: usuario.cliente
+        ? {
+            _id: usuario.cliente._id,
+            usuario: {
+              _id: usuario._id,
+              nombre: usuario.nombre,
+              correo: usuario.correo,
+              rol: usuario.rol,
+              foto: usuario.foto ? `${this.apiUrl}/uploads/${usuario.foto}` : undefined,
+            },
+            telefono: usuario.cliente.telefono,
+            direccion: usuario.cliente.direccion,
+            genero: usuario.cliente.genero,
+            fecha_nacimiento: usuario.cliente.fecha_nacimiento,
+            fechaAlta: usuario.cliente.fechaAlta,
+            estado: usuario.cliente.estado,
+            createdAt: usuario.cliente.createdAt,
+            updatedAt: usuario.cliente.updatedAt,
+          }
+        : undefined,
+
+      // =================== Peluquero ===================
+      peluquero: usuario.peluquero
+        ? {
+            _id: usuario.peluquero._id,
+            usuario: usuario._id,
+            especialidades: usuario.peluquero.especialidades,
+            experiencia: usuario.peluquero.experiencia,
+            telefono_profesional: usuario.peluquero.telefono_profesional,
+            direccion_profesional: usuario.peluquero.direccion_profesional,
+            genero: usuario.peluquero.genero,
+            fecha_nacimiento: usuario.peluquero.fecha_nacimiento,
+            sede: usuario.peluquero.sede,
+            puestoTrabajo: usuario.peluquero.puestoTrabajo,
+            estado: usuario.peluquero.estado,
+            createdAt: usuario.peluquero.createdAt,
+            updatedAt: usuario.peluquero.updatedAt,
+          }
+        : undefined,
+    };
   }
 
   registro(nuevoUsuario: any): Observable<any> {
@@ -71,9 +141,6 @@ export class AuthService {
     return usuario?.rol || '';
   }
 
-  obtenerNombre(): string {
-    return this.getUsuario()?.nombre || '';
-  }
 
   obtenerPerfil(): Observable<any> {
     return this.http.get(`${this.apiUrl}/perfil`);
@@ -85,36 +152,33 @@ export class AuthService {
 
   refrescarUsuario(): void {
     this.http.get<any>(`${this.apiUrl}/perfil`).subscribe({
-      next: (usuario) => {
-        localStorage.setItem('usuario', JSON.stringify(usuario));
-        this.usuarioSubject.next(usuario);
+      next: (resp) => {
+        const usuarioPlano = resp.usuario ? this.mapUsuario(resp.usuario) : resp;
+        localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+        this.usuarioSubject.next(usuarioPlano);
 
-        const nuevaUrl = this.getFotoUrl(usuario);
+        const nuevaUrl = this.getFotoUrl(usuarioPlano);
         this.avatarUrlSubject.next(nuevaUrl);
         this.fotoPerfilSubject.next(nuevaUrl);
       },
       error: (error) => {
-        console.error('Error al refrescar usuario:', error);
-      }
+        console.error('❌ Error al refrescar usuario:', error);
+      },
     });
   }
 
   // =================== Foto de Perfil ===================
-
-  /** Retorna la URL completa de la foto del usuario, con fallback al avatar por defecto */
   getFotoUrl(usuario: any): string {
     return usuario?.foto
       ? `${this.apiUrl}/uploads/${usuario.foto}?t=${Date.now()}`
       : 'assets/img/default-avatar.png';
   }
 
-  /** Retorna el usuario actual desde localStorage */
   getUsuarioActual(): any {
     const usuario = localStorage.getItem('usuario');
     return usuario ? JSON.parse(usuario) : null;
   }
 
-  /** Actualiza la foto del usuario en localStorage y notifica a los Subjects */
   actualizarFoto(nombreArchivo: string | null): void {
     const usuario = this.getUsuarioActual();
     if (usuario) {
@@ -131,12 +195,6 @@ export class AuthService {
     }
   }
 
-  /** Alias para actualizar solo la URL de la foto mostrada, sin tocar el usuario */
-  actualizarFotoPerfil(url: string): void {
-    this.fotoPerfilSubject.next(url);
-  }
-
-  /** Sube una nueva foto al servidor */
   subirFotoPerfil(id: string, formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/usuarios/${id}/foto`, formData);
   }

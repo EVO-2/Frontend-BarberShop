@@ -6,8 +6,8 @@ export interface Usuario {
   _id?: string;
   nombre: string;
   correo: string;
-  password?: string; // opcional en frontend por seguridad
-  rol: Rol | string; // puede venir como objeto o solo el ID
+  password?: string; 
+  rol: Rol | string; 
   foto?: string;
   estado?: boolean;
 

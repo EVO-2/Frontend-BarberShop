@@ -170,4 +170,43 @@ button[mat-button] {
   gap: 0.5rem;
 }
 
+.user-info {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+
+  .user-name {
+    margin-right: 8px;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .avatar-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+
+    .avatar-header {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 4px;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    mat-icon {
+      vertical-align: middle;
+    }
+  }
+}
+
+
 

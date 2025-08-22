@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { emailExisteValidator } from 'src/app/shared/validators/email-existe.validator';
 import { passwordsIguales, telefonoValido } from 'src/app/shared/validators/validators';
 
+
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
@@ -69,18 +70,18 @@ export class RegistroComponent {
       fecha_nacimiento
     } = this.registroForm.value;
 
-    const nuevoUsuario = {
-      nombre,
-      correo,
-      password,
-      rol: 'cliente',
-      cliente: {
-        telefono,
-        direccion,
-        genero,
-        fecha_nacimiento
-      }
-    };
+    const nuevoUsuario  = {
+  nombre,
+  correo,
+  password,
+  rol: 'cliente',
+  cliente: {
+    telefono,
+    direccion,
+    genero,
+    fecha_nacimiento
+  }
+};
 
     this.authService.registro(nuevoUsuario).subscribe({
       next: () => {

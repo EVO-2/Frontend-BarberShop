@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MenuService } from 'src/app/shared/services/menu.service';
 import { Router } from '@angular/router';
+import { Usuario } from 'src/app/shared/models/usuario.model';  
 
 @Component({
   selector: 'app-sidebar',
@@ -10,6 +11,7 @@ import { Router } from '@angular/router';
 })
 export class SidebarComponent implements OnInit {
   menuItems: any[] = [];
+  usuario: Usuario | null = null; 
 
   constructor(
     public authService: AuthService,
@@ -18,15 +20,20 @@ export class SidebarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.usuario$.subscribe(usuario => {
+    this.authService.usuario$.subscribe((usuario: Usuario | null) => {
+      this.usuario = usuario;
+
       if (usuario?.rol) {
-        this.menuItems = this.menuService.getMenuPorRol(usuario.rol);
+        const rol = typeof usuario.rol === 'string' ? usuario.rol : usuario.rol.nombre;
+        this.menuItems = this.menuService.getMenuPorRol(rol);
+      } else {
+        this.menuItems = [];
       }
     });
   }
 
   cerrarSesion(): void {
-    this.authService.logout(); // asegúrate de tener este método en el AuthService
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 }

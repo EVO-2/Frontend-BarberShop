@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CitaService } from 'src/app/shared/services/cita.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CitaUpdateDialogComponent } from 'src/app/pages/citas/cita-update-dialog/cita-update-dialog.component';
+import { PagoDialogComponent } from 'src/app/pages/citas/pago-dialog/pago-dialog.component';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PageEvent } from '@angular/material/paginator';
 
@@ -17,9 +18,9 @@ export class MisCitasComponent implements OnInit {
   citasFiltradas: any[] = [];
 
   // Paginación con MatPaginator
-  paginaActual: number = 0;   // 🔹 pageIndex comienza en 0
-  tamanoPagina: number = 10;  // 🔹 cantidad de registros por página
-  totalCitas: number = 0;     // 🔹 total de registros después de filtros
+  paginaActual: number = 0;   
+  tamanoPagina: number = 10;  
+  totalCitas: number = 0;    
 
   // Filtros
   filtroFecha: Date | null = null;
@@ -59,6 +60,31 @@ export class MisCitasComponent implements OnInit {
     return cita.servicios.map((s: any) => s?.nombre || '').join(', ');
   }
 
+  // 🔹 Método para abrir el diálogo de pago
+  abrirPagoDialog(cita: any): void {
+    if (cita.estado === 'cancelada') {
+      alert('❌ No se puede realizar el pago de una cita cancelada');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(PagoDialogComponent, {
+      width: '400px',
+      data: { cita }
+    });
+
+    dialogRef.afterClosed().subscribe(resultado => {
+      if (resultado?.pagado) {
+        const index = this.citas.findIndex(c => c._id === cita._id);
+        if (index >= 0) {
+          this.citas[index].pago = resultado.pago;
+          this.citas[index].estado = 'pagado';
+          this.citasFiltradas = [...this.citas];
+        }
+      }
+    });
+  }
+
+
   // Editar cita
   editarCita(cita: any): void {
     const dialogRef = this.dialog.open(CitaUpdateDialogComponent, {
@@ -76,6 +102,25 @@ export class MisCitasComponent implements OnInit {
       }
     });
   }
+
+  abrirPago(cita: any): void {
+  const dialogRef = this.dialog.open(PagoDialogComponent, {
+    width: '400px',
+    data: { cita }
+  });
+
+  dialogRef.afterClosed().subscribe(resultado => {
+    if (resultado?.pagado) {
+      const index = this.citas.findIndex(c => c._id === cita._id);
+      if (index !== -1) {
+        this.citas[index].pago = resultado.pago;
+        this.citas[index].estado = 'pagado';
+      }
+      this.aplicarFiltros();
+    }
+  });
+}
+
 
   // 🔹 Manejo de eventos de paginador
   cambiarPagina(event: PageEvent): void {
@@ -102,7 +147,7 @@ export class MisCitasComponent implements OnInit {
   limpiarFiltros(): void {
     this.filtroFecha = null;
     this.filtroGeneral = '';
-    this.paginaActual = 0; // reset al inicio
+    this.paginaActual = 0; 
     this.aplicarFiltros();
   }
   

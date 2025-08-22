@@ -1,0 +1,46 @@
+.pago-dialog-card {
+  width: 400px;
+  max-width: 95vw;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-card-header {
+  text-align: center;
+}
+
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+mat-card-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+button.mat-primary {
+  font-weight: 500;
+}
+
+button.mat-stroked-button {
+  border-color: #bbb;
+  color: #555;
+}
+
+.mat-error {
+  font-size: 0.85rem;
+  color: #d32f2f;
+}

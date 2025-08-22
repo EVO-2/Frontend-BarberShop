@@ -28,55 +28,61 @@
   <button mat-stroked-button color="warn" (click)="limpiarFiltros()">Limpiar</button>
 </div>
 
-
 <!-- 🔹 Tabla -->
-<table mat-table [dataSource]="citasFiltradas" class="mat-elevation-z8" *ngIf="citasFiltradas.length">
+<div class="tabla-citas">
+  <table mat-table [dataSource]="citasFiltradas" class="mat-elevation-z8" *ngIf="citasFiltradas.length">
 
-  <!-- Fecha -->
-  <ng-container matColumnDef="fecha">
-    <th mat-header-cell *matHeaderCellDef> Fecha </th>
-    <td mat-cell *matCellDef="let cita"> {{ cita.fecha | date:'short' }} </td>
-  </ng-container>
+    <!-- Fecha -->
+    <ng-container matColumnDef="fecha">
+      <th mat-header-cell *matHeaderCellDef> Fecha </th>
+      <td mat-cell *matCellDef="let cita"> {{ cita.fecha | date:'short' }} </td>
+    </ng-container>
 
-  <!-- Turno -->
-  <ng-container matColumnDef="turno">
-    <th mat-header-cell *matHeaderCellDef> Turno </th>
-    <td mat-cell *matCellDef="let cita"> {{ cita.turno }} </td>
-  </ng-container>
+    <!-- Turno -->
+    <ng-container matColumnDef="turno">
+      <th mat-header-cell *matHeaderCellDef> Turno </th>
+      <td mat-cell *matCellDef="let cita"> {{ cita.turno }} </td>
+    </ng-container>
 
-  <!-- Peluquero -->
-  <ng-container matColumnDef="peluquero">
-    <th mat-header-cell *matHeaderCellDef> Peluquero </th>
-    <td mat-cell *matCellDef="let cita"> {{ cita.peluquero.usuario.nombre }} </td>
-  </ng-container>
+    <!-- Peluquero -->
+    <ng-container matColumnDef="peluquero">
+      <th mat-header-cell *matHeaderCellDef> Peluquero </th>
+      <td mat-cell *matCellDef="let cita"> {{ cita.peluquero.usuario.nombre }} </td>
+    </ng-container>
 
-  <!-- Servicios -->
-  <ng-container matColumnDef="servicios">
-    <th mat-header-cell *matHeaderCellDef> Servicios </th>
-    <td mat-cell *matCellDef="let cita">
-      {{ getServicios(cita) }}
-    </td>
-  </ng-container>
+    <!-- Servicios -->
+    <ng-container matColumnDef="servicios">
+      <th mat-header-cell *matHeaderCellDef> Servicios </th>
+      <td mat-cell *matCellDef="let cita">
+        {{ getServicios(cita) }}
+      </td>
+    </ng-container>
 
-  <!-- Estado -->
-  <ng-container matColumnDef="estado">
-    <th mat-header-cell *matHeaderCellDef> Estado </th>
-    <td mat-cell *matCellDef="let cita"> {{ cita.estado }} </td>
-  </ng-container>
+    <!-- Estado -->
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef> Estado </th>
+      <td mat-cell *matCellDef="let cita"> {{ cita.estado }} </td>
+    </ng-container>
 
-  <!-- Acciones -->
-  <ng-container matColumnDef="acciones">
-    <th mat-header-cell *matHeaderCellDef> Acciones </th>
-    <td mat-cell *matCellDef="let cita">
-      <button mat-icon-button color="primary" (click)="editarCita(cita)">
-        <mat-icon>edit</mat-icon>
-      </button>
-    </td>
-  </ng-container>
+    <!-- Acciones -->
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef> Acciones </th>
+      <td mat-cell *matCellDef="let cita">
+        <button mat-icon-button color="primary" (click)="editarCita(cita)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <!-- 🔹 Botón de pago -->
+        <button mat-icon-button color="accent" (click)="abrirPagoDialog(cita)">
+          <mat-icon>payment</mat-icon>
+        </button>
+      </td>
+    </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="['fecha','turno','peluquero','servicios','estado','acciones']"></tr>
-  <tr mat-row *matRowDef="let row; columns: ['fecha','turno','peluquero','servicios','estado','acciones'];"></tr>
-</table>
+    <!-- Header & Rows -->
+    <tr mat-header-row *matHeaderRowDef="['fecha','turno','peluquero','servicios','estado','acciones']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['fecha','turno','peluquero','servicios','estado','acciones'];"></tr>
+  </table>
+</div>
 
 <!-- 🔹 Mensaje cuando no hay citas -->
 <div *ngIf="!citasFiltradas.length">

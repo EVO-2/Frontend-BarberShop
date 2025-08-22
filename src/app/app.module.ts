@@ -16,10 +16,9 @@ import { UsuarioDialogComponent } from './pages/usuarios/usuario-dialog/usuario-
 import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component'; 
 import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component'; 
 import { CitaUpdateDialogComponent } from './pages/citas/cita-update-dialog/cita-update-dialog.component'; 
+import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.component'; 
 
 import { LayoutModule } from './layout/layout.module';
-
-
 
 @NgModule({
   declarations: [
@@ -31,6 +30,7 @@ import { LayoutModule } from './layout/layout.module';
     ReservarCitaComponent,
     MisCitasComponent,
     CitaUpdateDialogComponent, 
+    PagoDialogComponent, 
   ],
   imports: [
     BrowserModule,
@@ -41,7 +41,6 @@ import { LayoutModule } from './layout/layout.module';
     HttpClientModule,
     MaterialModule,
     LayoutModule,
-    
   ],
   providers: [
     {

@@ -2,7 +2,7 @@ import { Usuario } from './usuario.model';
 
 export interface Cliente {
   _id?: string;
-  usuario: Usuario; // ahora es un objeto Usuario
+  usuario: Usuario; 
   telefono?: string;
   direccion?: string;
   genero?: 'masculino' | 'femenino' | 'otro';

@@ -13,11 +13,12 @@ export class AuthService {
   private usuarioSubject = new BehaviorSubject<any>(this.getUsuario());
   usuario$ = this.usuarioSubject.asObservable();
 
-  private avatarUrlSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()));
+  // ✅ inicializar correctamente con el campo `foto`
+  private avatarUrlSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()?.foto));
   avatarUrl$ = this.avatarUrlSubject.asObservable();
 
-  private fotoPerfilSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()));
-  fotoPerfilUrl$ = this.fotoPerfilSubject.asObservable();
+  private fotoPerfilSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()?.foto));
+  fotoPerfil$ = this.fotoPerfilSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -34,7 +35,7 @@ export class AuthService {
 
           // Notificar a los Subjects
           this.usuarioSubject.next(usuarioPlano);
-          const nuevaUrl = this.getFotoUrl(usuarioPlano);
+          const nuevaUrl = this.getFotoUrl(usuarioPlano.foto); 
           this.avatarUrlSubject.next(nuevaUrl);
           this.fotoPerfilSubject.next(nuevaUrl);
         }
@@ -49,7 +50,7 @@ export class AuthService {
       nombre: usuario.nombre,
       correo: usuario.correo,
       rol: usuario.rol,
-      foto: usuario.foto ? `${this.apiUrl}/uploads/${usuario.foto}` : undefined,
+      foto: usuario.foto ? usuario.foto : undefined,
 
       // =================== Cliente ===================
       cliente: usuario.cliente
@@ -60,7 +61,7 @@ export class AuthService {
               nombre: usuario.nombre,
               correo: usuario.correo,
               rol: usuario.rol,
-              foto: usuario.foto ? `${this.apiUrl}/uploads/${usuario.foto}` : undefined,
+              foto: usuario.foto ? usuario.foto : undefined,
             },
             telefono: usuario.cliente.telefono,
             direccion: usuario.cliente.direccion,
@@ -124,7 +125,7 @@ export class AuthService {
     localStorage.setItem('usuario', JSON.stringify(usuario));
     this.rolUsuario = usuario.rol;
 
-    const fotoUrl = this.getFotoUrl(usuario);
+    const fotoUrl = this.getFotoUrl(usuario.foto); 
     this.usuarioSubject.next(usuario);
     this.avatarUrlSubject.next(fotoUrl);
     this.fotoPerfilSubject.next(fotoUrl);
@@ -141,7 +142,6 @@ export class AuthService {
     return usuario?.rol || '';
   }
 
-
   obtenerPerfil(): Observable<any> {
     return this.http.get(`${this.apiUrl}/perfil`);
   }
@@ -157,7 +157,7 @@ export class AuthService {
         localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
         this.usuarioSubject.next(usuarioPlano);
 
-        const nuevaUrl = this.getFotoUrl(usuarioPlano);
+        const nuevaUrl = this.getFotoUrl(usuarioPlano.foto); 
         this.avatarUrlSubject.next(nuevaUrl);
         this.fotoPerfilSubject.next(nuevaUrl);
       },
@@ -168,11 +168,21 @@ export class AuthService {
   }
 
   // =================== Foto de Perfil ===================
-  getFotoUrl(usuario: any): string {
-    return usuario?.foto
-      ? `${this.apiUrl}/uploads/${usuario.foto}?t=${Date.now()}`
-      : 'assets/img/default-avatar.png';
+  private getFotoUrl(foto?: string): string {
+  if (!foto) {
+    return 'assets/img/default-avatar.png'; 
   }
+
+  // ✅ soporta si `foto` ya es URL completa o solo filename
+  const esUrlCompleta = /^https?:\/\//i.test(foto);
+
+  // 👇 usamos el host sin `/api/auth`
+  const serverBase = 'http://localhost:3000';  
+
+  const base = esUrlCompleta ? foto : `${serverBase}/uploads/${foto}`;
+  return `${base}${base.includes('?') ? '&' : '?'}t=${Date.now()}`;
+}
+
 
   getUsuarioActual(): any {
     const usuario = localStorage.getItem('usuario');
@@ -187,7 +197,7 @@ export class AuthService {
       this.usuarioSubject.next(usuario);
 
       const url = nombreArchivo
-        ? `${this.apiUrl}/uploads/${nombreArchivo}?t=${Date.now()}`
+        ? this.getFotoUrl(nombreArchivo)
         : 'assets/img/default-avatar.png';
 
       this.avatarUrlSubject.next(url);

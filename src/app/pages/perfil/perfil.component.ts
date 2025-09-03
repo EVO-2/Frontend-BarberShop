@@ -16,7 +16,7 @@ export class PerfilComponent implements OnInit {
   perfilForm!: FormGroup;
   usuario: any;
   rol: string = '';
-  fotoPerfilUrl: string = 'assets/default.jpg';
+  fotoPerfilUrl: string = 'assets/img/default-avatar.png';
   ocultarPassword: boolean = true;
 
   esCliente = false;
@@ -33,109 +33,216 @@ export class PerfilComponent implements OnInit {
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuarioActual();
-    if (!this.usuario) return;
+    console.log('[PerfilComponent] Usuario obtenido de AuthService:', this.usuario);
 
-    this.rol = this.usuario.rol?.nombre || '';
+    if (!this.usuario) {
+      console.warn('[PerfilComponent] ❌ No hay usuario logueado, abortando carga de perfil');
+      return;
+    }
+
+    this.rol = this.usuario.rol?.nombre || this.usuario.rol || '';
+    console.log('[PerfilComponent] Rol detectado:', this.rol);
+
     this.fotoPerfilUrl = this.obtenerFotoUrl(this.usuario.foto);
+    console.log('[PerfilComponent] Foto de perfil inicial:', this.fotoPerfilUrl);
 
+    // 🔹 Ajustamos roles
     this.esCliente = this.rol === 'cliente';
-    this.esPeluquero = this.rol === 'peluquero';
+    this.esPeluquero = this.rol === 'peluquero' || this.rol === 'barbero';
+    console.log('[PerfilComponent] esCliente:', this.esCliente, '| esPeluquero:', this.esPeluquero);
 
     this.inicializarFormulario();
 
-    if (this.esCliente) this.cargarDatosCliente();
-    if (this.esPeluquero) this.cargarDatosPeluquero();
+    if (this.esCliente) {
+      console.log('[PerfilComponent] Cargando datos de cliente para usuarioId:', this.usuario._id);
+      this.cargarDatosCliente();
+    }
+
+    if (this.esPeluquero) {
+      console.log('[PerfilComponent] Cargando datos de peluquero desde usuario:', this.usuario._id);
+      this.cargarDatosPeluquero();
+    }
   }
 
   private inicializarFormulario(): void {
+    console.log('[PerfilComponent] Inicializando formulario con usuario:', this.usuario);
+
     this.perfilForm = this.fb.group({
+      // 🔹 Campos de Usuario
       nombre: [this.usuario?.nombre || '', Validators.required],
-      actual: [''],
-      nueva: [''],
+      correo: [this.usuario?.correo || '', [Validators.required, Validators.email]],
+      actual: [''], // siempre vacío
+      nueva: [''], // siempre vacío
+      confirmarPassword: [''], // siempre vacío
+
+      // 🔹 Campos comunes
       telefono: [''],
-      especialidad: ['']
+      direccion: [''],
+      genero: [''],
+      fecha_nacimiento: [''],
+
+      // 🔹 Campos exclusivos de Peluquero
+      especialidades: [[]],
+      experiencia: [''],
+      telefono_profesional: [''],
+      direccion_profesional: [''],
+      sede: [''],
+      puestoTrabajo: ['']
     });
   }
 
   private cargarDatosCliente(): void {
-    this.clienteService.obtenerPorUsuarioId(this.usuario.id).subscribe({
+    const usuarioId = this.usuario?._id;
+    if (!usuarioId) return;
+
+    this.clienteService.obtenerPorUsuarioId(usuarioId).subscribe({
       next: cliente => {
-        this.perfilForm.patchValue({ telefono: cliente.telefono });
+        console.log('[PerfilComponent] Datos de cliente recibidos:', cliente);
+        this.perfilForm.patchValue({
+          telefono: cliente.telefono || '',
+          direccion: cliente.direccion || '',
+          genero: cliente.genero || '',
+          fecha_nacimiento: cliente.fecha_nacimiento || ''
+        });
       },
-      error: err => console.error('Error al cargar datos del cliente:', err)
+      error: err => console.error('[PerfilComponent] ❌ Error cargando cliente:', err)
     });
   }
 
   private cargarDatosPeluquero(): void {
-    this.peluqueroService.obtenerPorUsuarioId(this.usuario.id).subscribe({
-      next: peluquero => {
-        this.perfilForm.patchValue({
-          telefono: peluquero.telefono,
-          especialidad: peluquero.especialidad
-        });
-      },
-      error: err => console.error('Error al cargar datos del peluquero:', err)
+    const peluquero = this.usuario?.peluquero;
+    console.log('[PerfilComponent] Datos de peluquero obtenidos desde usuario:', peluquero);
+
+    if (!peluquero) {
+      console.warn('[PerfilComponent] ⚠️ Usuario no tiene datos de peluquero asociados');
+      return;
+    }
+
+    this.perfilForm.patchValue({
+      especialidades: peluquero.especialidades || [],
+      experiencia: peluquero.experiencia || '',
+      telefono_profesional: peluquero.telefono_profesional || '',
+      direccion_profesional: peluquero.direccion_profesional || '',
+      genero: peluquero.genero || '',
+      fecha_nacimiento: peluquero.fecha_nacimiento || '',
+      sede: peluquero.sede || '',
+      puestoTrabajo: peluquero.puestoTrabajo || ''
     });
   }
 
   obtenerFotoUrl(foto: string): string {
-    return foto ? `${environment.baseUrl}/uploads/${foto}` : 'assets/default.jpg';
+    const url = foto ? `${environment.baseUrl}/uploads/${foto}` : 'assets/img/default-avatar.png';
+    console.log('[PerfilComponent] obtenerFotoUrl() ->', url);
+    return url;
   }
 
   onFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement)?.files?.[0];
     if (!file) return;
 
+    // Vista previa inmediata
+    const reader = new FileReader();
+    reader.onload = () => (this.fotoPerfilUrl = reader.result as string);
+    reader.readAsDataURL(file);
+
+    // Subir al backend
+    const id = this.usuario?._id;
+    if (!id) {
+      console.error('[PerfilComponent] ❌ No hay _id de usuario para subir foto');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('foto', file);
 
-    this.usuarioService.actualizarFoto(this.usuario.id, formData).subscribe({
+    this.usuarioService.actualizarFoto(id, formData).subscribe({
       next: res => {
-        this.fotoPerfilUrl = this.obtenerFotoUrl(res.foto);
-        this.authService.actualizarFoto(res.foto);
+        console.log('[PerfilComponent] ✅ Foto actualizada correctamente:', res);
+        if (res.foto) {
+          this.fotoPerfilUrl = this.obtenerFotoUrl(res.foto);
+          this.authService.actualizarFoto(res.foto);
+        }
       },
-      error: err => console.error('Error al actualizar la foto de perfil:', err)
+      error: err => console.error('[PerfilComponent] ❌ Error al actualizar foto:', err)
     });
   }
 
   guardarCambios(): void {
-    if (this.perfilForm.invalid || !this.usuario) return;
+    if (this.perfilForm.invalid || !this.usuario) {
+      console.warn('[PerfilComponent] ⚠️ Formulario inválido o usuario no definido');
+      return;
+    }
 
-    const { nombre, telefono, especialidad, actual, nueva } = this.perfilForm.value;
+    const formValues = this.perfilForm.value;
+    const usuarioId = this.usuario._id;
+    if (!usuarioId) {
+      console.error('[PerfilComponent] ❌ No se encontró _id de usuario');
+      return;
+    }
 
-    // Actualizar nombre
-    this.usuarioService.actualizarUsuario(this.usuario.id, { nombre }).subscribe({
+    // 1️⃣ Actualizar datos básicos de Usuario
+    const usuarioPayload = {
+      nombre: formValues.nombre,
+      correo: formValues.correo
+    };
+
+    this.usuarioService.actualizarUsuario(usuarioId, usuarioPayload).subscribe({
       next: res => {
-        this.authService.actualizarFoto(res.foto);
+        console.log('[PerfilComponent] ✅ Usuario actualizado:', res);
+        if (res.foto) this.authService.actualizarFoto(res.foto);
       },
-      error: err => console.error('Error actualizando nombre:', err)
+      error: err => console.error('[PerfilComponent] ❌ Error al actualizar usuario:', err)
     });
 
-    // Cambiar contraseña (si se ingresan ambas)
-    if (actual && nueva) {
-      this.usuarioService.cambiarPassword(this.usuario.id, { actual, nueva }).subscribe({
-        next: () => console.log('Contraseña actualizada correctamente'),
-        error: err => console.error('Error al cambiar contraseña:', err)
-      });
+    // 2️⃣ Cambiar contraseña si el usuario escribe una nueva
+    if (formValues.nueva && formValues.confirmarPassword) {
+      if (formValues.nueva !== formValues.confirmarPassword) {
+        console.warn('[PerfilComponent] ⚠️ La nueva contraseña y su confirmación no coinciden');
+      } else {
+        this.usuarioService.cambiarPassword(usuarioId, { actual: formValues.actual, nueva: formValues.nueva }).subscribe({
+          next: res => console.log('[PerfilComponent] ✅ Contraseña cambiada:', res),
+          error: err => console.error('[PerfilComponent] ❌ Error cambiando contraseña:', err)
+        });
+      }
     }
 
-    // Actualizar datos específicos según el rol
+    // 3️⃣ Actualizar datos de Cliente
     if (this.esCliente) {
-      this.clienteService.actualizarPorUsuarioId(this.usuario.id, { telefono }).subscribe({
-        next: () => console.log('Teléfono del cliente actualizado'),
-        error: err => console.error('Error al actualizar cliente:', err)
+      const clientePayload = {
+        telefono: formValues.telefono,
+        direccion: formValues.direccion,
+        genero: formValues.genero,
+        fecha_nacimiento: formValues.fecha_nacimiento
+      };
+
+      this.clienteService.actualizarPorUsuarioId(usuarioId, clientePayload).subscribe({
+        next: res => console.log('[PerfilComponent] ✅ Cliente actualizado:', res),
+        error: err => console.error('[PerfilComponent] ❌ Error actualizando cliente:', err)
       });
     }
 
+    // 4️⃣ Actualizar datos de Peluquero
     if (this.esPeluquero) {
-      this.peluqueroService.actualizarPorUsuarioId(this.usuario.id, { telefono, especialidad }).subscribe({
-        next: () => console.log('Datos del peluquero actualizados'),
-        error: err => console.error('Error al actualizar peluquero:', err)
+      const peluqueroPayload = {
+        especialidades: formValues.especialidades || [],
+        experiencia: formValues.experiencia,
+        telefono_profesional: formValues.telefono_profesional,
+        direccion_profesional: formValues.direccion_profesional,
+        genero: formValues.genero,
+        fecha_nacimiento: formValues.fecha_nacimiento,
+        sede: formValues.sede,
+        puestoTrabajo: formValues.puestoTrabajo
+      };
+
+      this.peluqueroService.actualizarPorUsuarioId(usuarioId, peluqueroPayload).subscribe({
+        next: res => console.log('[PerfilComponent] ✅ Peluquero actualizado:', res),
+        error: err => console.error('[PerfilComponent] ❌ Error actualizando peluquero:', err)
       });
     }
   }
 
   cancelarCambios(): void {
+    console.log('[PerfilComponent] Cancelando edición, redirigiendo a /dashboard');
     this.router.navigate(['/dashboard']);
   }
 }

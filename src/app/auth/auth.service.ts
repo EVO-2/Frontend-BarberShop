@@ -8,12 +8,12 @@ import { Usuario } from '../shared/models/usuario.model';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiUrl = 'http://localhost:3000/api/auth';
-  private rolUsuario = '';
+  private readonly perfilUrl = 'http://localhost:3000/api/usuarios/perfil';
+  private rolUsuario: string = '';
 
   private usuarioSubject = new BehaviorSubject<any>(this.getUsuario());
   usuario$ = this.usuarioSubject.asObservable();
 
-  // ✅ inicializar correctamente con el campo `foto`
   private avatarUrlSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()?.foto));
   avatarUrl$ = this.avatarUrlSubject.asObservable();
 
@@ -28,70 +28,35 @@ export class AuthService {
       tap((resp: any) => {
         if (resp && resp.usuario) {
           const usuarioPlano = this.mapUsuario(resp.usuario);
-
-          // Guardar token + usuario
           localStorage.setItem('token', resp.token);
           localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
-
-          // Notificar a los Subjects
           this.usuarioSubject.next(usuarioPlano);
-          const nuevaUrl = this.getFotoUrl(usuarioPlano.foto); 
+
+          const nuevaUrl = this.getFotoUrl(usuarioPlano.foto);
           this.avatarUrlSubject.next(nuevaUrl);
           this.fotoPerfilSubject.next(nuevaUrl);
+
+          this.rolUsuario = String(usuarioPlano.rol);
         }
       })
     );
   }
 
-  // 🔹 Método privado para normalizar el usuario
+  // Normaliza usuario, id/_id y rol
   private mapUsuario(usuario: any): Usuario {
+    const idUsuario = usuario._id || usuario.id;
     return {
-      _id: usuario._id,
+      _id: idUsuario,
       nombre: usuario.nombre,
       correo: usuario.correo,
-      rol: usuario.rol,
-      foto: usuario.foto ? usuario.foto : undefined,
-
-      // =================== Cliente ===================
+      rol: typeof usuario.rol === 'string' ? usuario.rol : usuario.rol?.nombre || '',
+      foto: usuario.foto || undefined,
       cliente: usuario.cliente
-        ? {
-            _id: usuario.cliente._id,
-            usuario: {
-              _id: usuario._id,
-              nombre: usuario.nombre,
-              correo: usuario.correo,
-              rol: usuario.rol,
-              foto: usuario.foto ? usuario.foto : undefined,
-            },
-            telefono: usuario.cliente.telefono,
-            direccion: usuario.cliente.direccion,
-            genero: usuario.cliente.genero,
-            fecha_nacimiento: usuario.cliente.fecha_nacimiento,
-            fechaAlta: usuario.cliente.fechaAlta,
-            estado: usuario.cliente.estado,
-            createdAt: usuario.cliente.createdAt,
-            updatedAt: usuario.cliente.updatedAt,
-          }
+        ? { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario }
         : undefined,
-
-      // =================== Peluquero ===================
       peluquero: usuario.peluquero
-        ? {
-            _id: usuario.peluquero._id,
-            usuario: usuario._id,
-            especialidades: usuario.peluquero.especialidades,
-            experiencia: usuario.peluquero.experiencia,
-            telefono_profesional: usuario.peluquero.telefono_profesional,
-            direccion_profesional: usuario.peluquero.direccion_profesional,
-            genero: usuario.peluquero.genero,
-            fecha_nacimiento: usuario.peluquero.fecha_nacimiento,
-            sede: usuario.peluquero.sede,
-            puestoTrabajo: usuario.peluquero.puestoTrabajo,
-            estado: usuario.peluquero.estado,
-            createdAt: usuario.peluquero.createdAt,
-            updatedAt: usuario.peluquero.updatedAt,
-          }
-        : undefined,
+        ? { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario }
+        : undefined
     };
   }
 
@@ -119,21 +84,29 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  // =================== Usuario ===================
   guardarDatos(token: string, usuario: any): void {
+    const usuarioPlano = this.mapUsuario(usuario);
     localStorage.setItem('token', token);
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    this.rolUsuario = usuario.rol;
+    localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+    this.rolUsuario = String(usuarioPlano.rol);
 
-    const fotoUrl = this.getFotoUrl(usuario.foto); 
-    this.usuarioSubject.next(usuario);
+    const fotoUrl = this.getFotoUrl(usuarioPlano.foto);
+    this.usuarioSubject.next(usuarioPlano);
     this.avatarUrlSubject.next(fotoUrl);
     this.fotoPerfilSubject.next(fotoUrl);
   }
 
   getUsuario(): any {
     const data = localStorage.getItem('usuario');
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+
+    const usuario = JSON.parse(data);
+
+    usuario.id = usuario.id || usuario._id || usuario.cliente?._id || usuario.peluquero?._id;
+    usuario._id = usuario._id || usuario.id || usuario.cliente?._id || usuario.peluquero?._id;
+    usuario.rol = typeof usuario.rol === 'string' ? usuario.rol : usuario.rol?.nombre || '';
+
+    return usuario;
   }
 
   obtenerRol(): string {
@@ -142,47 +115,45 @@ export class AuthService {
     return usuario?.rol || '';
   }
 
-  obtenerPerfil(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/perfil`);
-  }
-
-  actualizarPerfil(formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/perfil`, formData);
-  }
-
   refrescarUsuario(): void {
-    this.http.get<any>(`${this.apiUrl}/perfil`).subscribe({
+    this.http.get<any>(this.perfilUrl).subscribe({
       next: (resp) => {
         const usuarioPlano = resp.usuario ? this.mapUsuario(resp.usuario) : resp;
         localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
         this.usuarioSubject.next(usuarioPlano);
 
-        const nuevaUrl = this.getFotoUrl(usuarioPlano.foto); 
+        const nuevaUrl = this.getFotoUrl(usuarioPlano.foto);
         this.avatarUrlSubject.next(nuevaUrl);
         this.fotoPerfilSubject.next(nuevaUrl);
+
+        this.rolUsuario = usuarioPlano.rol;
       },
-      error: (error) => {
-        console.error('❌ Error al refrescar usuario:', error);
-      },
+      error: (error) => console.error('❌ Error al refrescar usuario:', error),
     });
   }
 
-  // =================== Foto de Perfil ===================
-  private getFotoUrl(foto?: string): string {
-  if (!foto) {
-    return 'assets/img/default-avatar.png'; 
+  setUsuarioActual(usuario: any): void {
+    const usuarioPlano = this.mapUsuario(usuario);
+    localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+    this.usuarioSubject.next(usuarioPlano);
+
+    if (usuarioPlano.foto) {
+      const urlFoto = this.getFotoUrl(usuarioPlano.foto);
+      this.avatarUrlSubject.next(urlFoto);
+      this.fotoPerfilSubject.next(urlFoto);
+    }
+
+    this.rolUsuario = String(usuarioPlano.rol);
   }
 
-  // ✅ soporta si `foto` ya es URL completa o solo filename
-  const esUrlCompleta = /^https?:\/\//i.test(foto);
+  private getFotoUrl(foto?: string): string {
+    if (!foto) return 'assets/img/default-avatar.png';
 
-  // 👇 usamos el host sin `/api/auth`
-  const serverBase = 'http://localhost:3000';  
-
-  const base = esUrlCompleta ? foto : `${serverBase}/uploads/${foto}`;
-  return `${base}${base.includes('?') ? '&' : '?'}t=${Date.now()}`;
-}
-
+    const esUrlCompleta = /^https?:\/\//i.test(foto);
+    const serverBase = 'http://localhost:3000';
+    const base = esUrlCompleta ? foto : `${serverBase}/uploads/${foto}`;
+    return `${base}${base.includes('?') ? '&' : '?'}t=${Date.now()}`;
+  }
 
   getUsuarioActual(): any {
     const usuario = localStorage.getItem('usuario');

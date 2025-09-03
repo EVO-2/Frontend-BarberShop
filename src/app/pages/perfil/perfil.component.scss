@@ -57,6 +57,18 @@
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #ccc;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
+/* ✅ Estilos para Snackbar */
+.snackbar-success {
+  background-color: #4caf50 !important; /* verde */
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.snackbar-error {
+  background-color: #f44336 !important; /* rojo */
+  color: #fff !important;
+  font-weight: 500;
+}

@@ -25,4 +25,13 @@ export class ClienteService {
   actualizarPorUsuarioId(usuarioId: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/por-usuario/${usuarioId}`, data);
   }
+
+  obtenerPerfil() {
+    return this.http.get<any>(`${this.apiUrl}/perfil`);
+  }
+
+  actualizarPerfil(payload: any) {
+    return this.http.put<any>(`${this.apiUrl}/perfil`, payload);
+  }
 }
+

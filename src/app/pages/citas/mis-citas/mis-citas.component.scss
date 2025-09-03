@@ -1,4 +1,3 @@
-
 .filtros-container {
   display: flex;
   flex-wrap: wrap;
@@ -32,16 +31,17 @@
   .mdc-data-table__table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: auto !important; /* Permite ajustar celdas */
+    table-layout: auto !important; 
   }
 
   .mat-mdc-header-cell,
   .mat-mdc-cell {
-    text-align: center !important;  /* Centramos encabezados y celdas */
+    text-align: center !important;  
     vertical-align: middle;
     padding: 12px 16px;
   }
 
+  /* 🔹 Encabezados */
   .mat-mdc-header-cell {
     font-weight: 600;
     font-size: 0.95rem;
@@ -49,6 +49,22 @@
     color: #424242;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap; 
+  }
+
+  /* 🔹 Alinear icono + texto en encabezado */
+  .mat-mdc-header-cell .mat-icon {
+    display: inline-block;     
+    vertical-align: middle;    
+    margin-right: 6px;         
+    line-height: 1;
+  }
+
+  /* (Opcional) si se usa un contenedor para texto + icono */
+  .mat-mdc-header-cell .th-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .mat-mdc-cell {

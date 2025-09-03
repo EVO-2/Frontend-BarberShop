@@ -34,4 +34,12 @@ export class PeluqueroService {
     console.log('[PeluqueroService] GET ->', url);
     return this.http.get<any[]>(url);
   }
+
+  obtenerPerfil() {
+    return this.http.get<any>(`${this.apiUrl}/perfil`);
+  }
+
+  actualizarPerfil(payload: any) {
+    return this.http.put<any>(`${this.apiUrl}/perfil`, payload);
+  }
 }

@@ -26,21 +26,18 @@
         <input matInput formControlName="correo" type="email" />
       </mat-form-field>
 
-      <!-- 🔹 Campos comunes: Cliente o Peluquero -->
-      <ng-container *ngIf="esCliente || esPeluquero">
-        <!-- Teléfono -->
+      <!-- 🔹 Cliente -->
+      <ng-container *ngIf="esCliente">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Teléfono</mat-label>
           <input matInput formControlName="telefono" type="tel" />
         </mat-form-field>
 
-        <!-- Dirección -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Dirección</mat-label>
           <input matInput formControlName="direccion" />
         </mat-form-field>
 
-        <!-- Género -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Género</mat-label>
           <mat-select formControlName="genero">
@@ -50,90 +47,90 @@
           </mat-select>
         </mat-form-field>
 
-        <!-- Fecha de nacimiento -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Fecha de nacimiento</mat-label>
-          <input matInput [matDatepicker]="pickerFecha" formControlName="fecha_nacimiento">
-          <mat-datepicker-toggle matSuffix [for]="pickerFecha"></mat-datepicker-toggle>
-          <mat-datepicker #pickerFecha></mat-datepicker>
+          <input matInput [matDatepicker]="pickerFechaCliente" formControlName="fecha_nacimiento">
+          <mat-datepicker-toggle matSuffix [for]="pickerFechaCliente"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFechaCliente></mat-datepicker>
         </mat-form-field>
       </ng-container>
 
-      <!-- 🔹 Campos exclusivos de Peluquero -->
+      <!-- 🔹 Peluquero / Barbero -->
       <ng-container *ngIf="esPeluquero">
-        <!-- Experiencia -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teléfono Profesional</mat-label>
+          <input matInput formControlName="telefono_profesional" type="tel" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Dirección Profesional</mat-label>
+          <input matInput formControlName="direccion_profesional" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="genero">
+            <mat-option value="masculino">Masculino</mat-option>
+            <mat-option value="femenino">Femenino</mat-option>
+            <mat-option value="otro">Otro</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput [matDatepicker]="pickerFechaPeluquero" formControlName="fecha_nacimiento">
+          <mat-datepicker-toggle matSuffix [for]="pickerFechaPeluquero"></mat-datepicker-toggle>
+          <mat-datepicker #pickerFechaPeluquero></mat-datepicker>
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Experiencia (años)</mat-label>
           <input matInput formControlName="experiencia" type="number" min="0" />
         </mat-form-field>
 
-        <!-- Especialidades -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Especialidades (separadas por coma)</mat-label>
           <input matInput formControlName="especialidades" />
         </mat-form-field>
 
-        <!-- Sede -->
+        <!-- 🔹 Sede (solo visualización) -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Sede</mat-label>
-          <input matInput formControlName="sede" />
+          <input matInput 
+                [value]="perfilForm.get('sede')?.value || ''" 
+                readonly />
         </mat-form-field>
 
-        <!-- Puesto de trabajo -->
+        <!-- 🔹 Puesto de trabajo (solo visualización) -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Puesto de trabajo</mat-label>
-          <input matInput formControlName="puestoTrabajo" />
+          <input matInput 
+                [value]="perfilForm.get('puestoTrabajo')?.value || ''" 
+                readonly />
         </mat-form-field>
       </ng-container>
 
-      <!-- 🔹 Gestión de contraseñas -->
+      <!-- 🔹 Contraseñas -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contraseña actual</mat-label>
-        <input
-          matInput
-          [type]="ocultarPassword ? 'password' : 'text'"
-          formControlName="actual"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="ocultarPassword = !ocultarPassword"
-        >
+        <input matInput [type]="ocultarPassword ? 'password' : 'text'" formControlName="actual" />
+        <button mat-icon-button matSuffix type="button" (click)="ocultarPassword = !ocultarPassword">
           <mat-icon>{{ ocultarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nueva contraseña</mat-label>
-        <input
-          matInput
-          [type]="ocultarPassword ? 'password' : 'text'"
-          formControlName="nueva"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="ocultarPassword = !ocultarPassword"
-        >
+        <input matInput [type]="ocultarPassword ? 'password' : 'text'" formControlName="nueva" />
+        <button mat-icon-button matSuffix type="button" (click)="ocultarPassword = !ocultarPassword">
           <mat-icon>{{ ocultarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Confirmar contraseña</mat-label>
-        <input
-          matInput
-          [type]="ocultarPassword ? 'password' : 'text'"
-          formControlName="confirmarPassword"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="ocultarPassword = !ocultarPassword"
-        >
+        <input matInput [type]="ocultarPassword ? 'password' : 'text'" formControlName="confirmarPassword" />
+        <button mat-icon-button matSuffix type="button" (click)="ocultarPassword = !ocultarPassword">
           <mat-icon>{{ ocultarPassword ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
       </mat-form-field>

@@ -34,25 +34,33 @@
 
     <!-- Fecha -->
     <ng-container matColumnDef="fecha">
-      <th mat-header-cell *matHeaderCellDef> Fecha </th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon>event</mat-icon> Fecha
+      </th>
       <td mat-cell *matCellDef="let cita"> {{ cita.fecha | date:'short' }} </td>
     </ng-container>
 
     <!-- Turno -->
     <ng-container matColumnDef="turno">
-      <th mat-header-cell *matHeaderCellDef> Turno </th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon>schedule</mat-icon> Turno
+      </th>
       <td mat-cell *matCellDef="let cita"> {{ cita.turno }} </td>
     </ng-container>
 
     <!-- Peluquero -->
     <ng-container matColumnDef="peluquero">
-      <th mat-header-cell *matHeaderCellDef> Peluquero </th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon>content_cut</mat-icon> Peluquero
+      </th>
       <td mat-cell *matCellDef="let cita"> {{ cita.peluquero.usuario.nombre }} </td>
     </ng-container>
 
     <!-- Servicios -->
     <ng-container matColumnDef="servicios">
-      <th mat-header-cell *matHeaderCellDef> Servicios </th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon>build</mat-icon> Servicios
+      </th>
       <td mat-cell *matCellDef="let cita">
         {{ getServicios(cita) }}
       </td>
@@ -60,13 +68,17 @@
 
     <!-- Estado -->
     <ng-container matColumnDef="estado">
-      <th mat-header-cell *matHeaderCellDef> Estado </th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon>info</mat-icon> Estado
+      </th>
       <td mat-cell *matCellDef="let cita"> {{ cita.estado }} </td>
     </ng-container>
 
     <!-- Acciones -->
     <ng-container matColumnDef="acciones">
-      <th mat-header-cell *matHeaderCellDef> Acciones </th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon>settings</mat-icon> Acciones
+      </th>
       <td mat-cell *matCellDef="let cita">
         <button mat-icon-button color="primary" (click)="editarCita(cita)">
           <mat-icon>edit</mat-icon>

@@ -13,26 +13,18 @@ export class PuestoService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Obtener puestos disponibles (no ocupados) de una sede.
-   * Si se proporciona peluqueroId (modo editar), su puesto actual no será excluido.
+   * Obtener puestos disponibles de una sede.
+   * Si se pasa usuarioId, también se incluye el puesto actual del peluquero.
    * @param sedeId ID de la sede (obligatorio)
-   * @param peluqueroId ID del peluquero (opcional en modo edición)
+   * @param usuarioId ID del usuario/peluquero en edición (opcional)
    */
-  getPuestos(sedeId: string, peluqueroId?: string): Observable<any[]> {
-    let params = new HttpParams().set('sede_id', sedeId);
-
-    if (peluqueroId) {
-      params = params.set('peluquero_id', peluqueroId);
+  getPuestosPorSede(sedeId: string, usuarioId?: string): Observable<any[]> {
+    let params = new HttpParams();
+    if (usuarioId) {
+      // 👇 Enviamos como espera el backend
+      params = params.set('usuario_id', usuarioId);
     }
-
-    console.log(
-      '[PuestoService] GET puestos URL:',
-      this.baseUrl,
-      'params=',
-      params.toString()
-    );
-
-    return this.http.get<any[]>(this.baseUrl, { params });
+    return this.http.get<any[]>(`${this.baseUrl}/por-sede/${sedeId}`, { params });
   }
 
   /**

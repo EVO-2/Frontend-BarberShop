@@ -24,7 +24,9 @@
     <mat-form-field appearance="outline">
       <mat-label>Contraseña</mat-label>
       <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
-      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Toggle password visibility'" [attr.aria-pressed]="!hidePassword">
+      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+        [attr.aria-label]="'Toggle password visibility'"
+        [attr.aria-pressed]="!hidePassword">
         <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
       <mat-error *ngIf="usuarioForm.get('password')?.hasError('required') && modo === 'crear'">Contraseña obligatoria</mat-error>
@@ -37,7 +39,9 @@
     <mat-form-field appearance="outline">
       <mat-label>Confirmar Contraseña</mat-label>
       <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmarPassword" />
-      <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" [attr.aria-label]="'Toggle confirm password visibility'" [attr.aria-pressed]="!hideConfirmPassword">
+      <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword"
+        [attr.aria-label]="'Toggle confirm password visibility'"
+        [attr.aria-pressed]="!hideConfirmPassword">
         <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
       <mat-error *ngIf="usuarioForm.hasError('noCoinciden')">Las contraseñas no coinciden</mat-error>
@@ -138,18 +142,19 @@
       </mat-error>
     </mat-form-field>
 
+    <!-- ✅ Sede -->
     <mat-form-field appearance="outline">
       <mat-label>Sede</mat-label>
-      <mat-select formControlName="sede">
+      <mat-select formControlName="sede" (selectionChange)="cargarPuestosPorSede($event.value)">
         <mat-option *ngFor="let sede of sedes" [value]="sede._id">{{ sede.nombre }}</mat-option>
       </mat-select>
     </mat-form-field>
 
-    <!-- ✅ Puesto de trabajo (solo barbero) -->
+    <!-- ✅ Puesto de trabajo filtrado por sede -->
     <mat-form-field appearance="outline">
       <mat-label>Puesto de trabajo</mat-label>
       <mat-select formControlName="puestoTrabajo">
-        <mat-option *ngFor="let puesto of puestosDisponibles" [value]="puesto._id">
+        <mat-option *ngFor="let puesto of puestosFiltrados" [value]="puesto._id">
           {{ puesto.nombre }}
         </mat-option>
       </mat-select>
@@ -168,4 +173,4 @@
       {{ modo === 'crear' ? 'Crear' : 'Actualizar' }}
     </button>
   </mat-dialog-actions>
-
+</mat-dialog-content>

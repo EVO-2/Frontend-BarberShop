@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { ReservaService } from 'src/app/shared/services/reserva.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-//import { CrearCitaPayload } from 'src/app/interfaces/cita.interface'; 
 
 interface PeluqueroDropdownItem {
   _id: string;
@@ -72,15 +71,40 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   private cargarDatos(): void {
-    this.reservaService.getClientes().subscribe(res => this.clientes = res || []);
-    this.reservaService.getSedes().subscribe(res => this.sedes = res || []);
-    this.reservaService.getServicios().subscribe(res => this.servicios = res || []);
+    this.reservaService.getClientes().subscribe({
+      next: res => {
+        console.log('[ReservarCita] getClientes response:', res);
+        this.clientes = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      },
+      error: err => console.error('[ReservarCita] getClientes error:', err)
+    });
 
-    this.reservaService.getPeluqueros().subscribe(res => {
-      this.peluquerosAll = (res || []).map((p: any) => ({
-        ...p,
-        __nombreCalc: this.getNombrePeluquero(p)
-      }));
+    this.reservaService.getSedes().subscribe({
+      next: res => {
+        console.log('[ReservarCita] getSedes response:', res);
+        this.sedes = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      },
+      error: err => console.error('[ReservarCita] getSedes error:', err)
+    });
+
+    this.reservaService.getServicios().subscribe({
+      next: res => {
+        console.log('[ReservarCita] getServicios response:', res);
+        this.servicios = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      },
+      error: err => console.error('[ReservarCita] getServicios error:', err)
+    });
+
+    this.reservaService.getPeluqueros().subscribe({
+      next: res => {
+        console.log('[ReservarCita] getPeluqueros response:', res);
+        const pelArray = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        this.peluquerosAll = pelArray.map((p: any) => ({
+          ...p,
+          __nombreCalc: this.getNombrePeluquero(p)
+        }));
+      },
+      error: err => console.error('[ReservarCita] getPeluqueros error:', err)
     });
   }
 
@@ -94,37 +118,43 @@ export class ReservarCitaComponent implements OnInit {
 
     if (!sedeId) return;
 
-    this.reservaService.getPuestosPorSede(sedeId).subscribe(puestos => {
-      this.puestos = puestos || [];
+    this.reservaService.getPuestosPorSede(sedeId).subscribe({
+      next: res => {
+        console.log('[ReservarCita] getPuestosPorSede response:', res);
+        const puestosArray = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        this.puestos = puestosArray;
 
-      this.peluquerosFiltrados = (this.peluquerosAll || []).filter(p => {
-        const sedePel = this.extractId(p?.sede);
-        const activo = p?.estado !== false && p?.usuario?.estado !== false;
-        return activo && sedePel === sedeId;
-      });
+        this.peluquerosFiltrados = (this.peluquerosAll || []).filter(p => {
+          const sedePel = this.extractId(p?.sede);
+          const activo = p?.estado !== false && p?.usuario?.estado !== false;
+          return activo && sedePel === sedeId;
+        });
 
-      this.peluquerosDropdown = this.peluquerosFiltrados.map(p => {
-        const puestoId = this.extractId(p?.puestoTrabajo);
-        const puestoNombre =
-          typeof p?.puestoTrabajo === 'object' && p?.puestoTrabajo?.nombre
-            ? p.puestoTrabajo.nombre
-            : (this.puestos.find(pt => pt?._id === puestoId)?.nombre || 'Sin puesto');
-        return {
-          _id: p._id,
-          nombre: p.__nombreCalc,
-          puestoId: puestoId || '',
-          puestoNombre,
-          ocupado: false
-        };
-      });
+        this.peluquerosDropdown = this.peluquerosFiltrados.map(p => {
+          const puestoId = this.extractId(p?.puestoTrabajo);
+          const puestoNombre =
+            typeof p?.puestoTrabajo === 'object' && p?.puestoTrabajo?.nombre
+              ? p.puestoTrabajo.nombre
+              : (this.puestos.find(pt => pt?._id === puestoId)?.nombre || 'Sin puesto');
+          return {
+            _id: p._id,
+            nombre: p.__nombreCalc,
+            puestoId: puestoId || '',
+            puestoNombre,
+            ocupado: false
+          };
+        });
 
-      this.validarFechaHoraYActualizarOcupacion();
+        this.validarFechaHoraYActualizarOcupacion();
+      },
+      error: err => console.error('[ReservarCita] getPuestosPorSede error:', err)
     });
   }
 
   onPeluqueroChange(peluqueroId: string): void {
     const pel = this.peluquerosDropdown.find(p => p._id === peluqueroId);
     if (!pel) {
+      console.warn('[ReservarCita] onPeluqueroChange: peluquero no encontrado:', peluqueroId);
       this.ctrl('puestoTrabajo')?.setValue('');
       this.puestoSeleccionado = null;
       return;
@@ -142,6 +172,8 @@ export class ReservarCitaComponent implements OnInit {
     const hora = this.ctrl('hora')?.value;
     const sedeId = this.ctrl('sede')?.value;
 
+    console.log('[ReservarCita] validarFechaHoraYActualizarOcupacion', { fecha, hora, sedeId });
+
     if (!sedeId || !fecha || !hora) {
       this.fechaHoraInvalida = false;
       this.peluquerosDropdown = (this.peluquerosDropdown || []).map(p => ({ ...p, ocupado: false }));
@@ -154,22 +186,48 @@ export class ReservarCitaComponent implements OnInit {
     }
 
     const fechaISO = this.toISODate(fecha);
+    const [horaStr, minStr] = hora.split(':');
+    const fechaSeleccionada = new Date(fechaISO);
+    fechaSeleccionada.setHours(parseInt(horaStr, 10), parseInt(minStr, 10), 0, 0);
 
-    this.reservaService.getCitasPorFechaYHora(sedeId, fechaISO).subscribe(citas => {
-      const citasPorHora = (citas || []).filter((c: any) => (c?.hora || '').trim() === hora);
-      const idsOcupados = new Set<string>(
-        citasPorHora.map((c: any) => this.extractId(c?.peluquero)).filter(Boolean) as string[]
-      );
+    this.reservaService.getCitasPorFechaYHora(sedeId, fechaISO).subscribe({
+      next: res => {
+        console.log('[ReservarCita] getCitasPorFechaYHora response:', res);
+        const citasArray: any[] = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
 
-      this.peluquerosDropdown = (this.peluquerosDropdown || []).map(item => ({
-        ...item,
-        ocupado: idsOcupados.has(item._id)
-      }));
+        // Solo citas activas (pendientes o completadas)
+        const citasActivas = citasArray.filter(c => c.estado !== 'cancelada');
 
-      const pelSel = this.ctrl('peluquero')?.value;
-      this.fechaHoraInvalida = pelSel && idsOcupados.has(pelSel);
+        const idsOcupados = new Set<string>();
+
+        citasActivas.forEach((c: any) => {
+          const inicioCita = new Date(c.fecha);
+          // Calcular duración real de la cita según servicios
+          const duracionCita: number = (c.servicios || []).reduce((t: number, sId: string) => {
+            const servicio = this.servicios.find(s => s._id === sId);
+            return t + (servicio?.duracion || 30); // 30 min por defecto si no hay duración
+          }, 0);
+          const finCita = new Date(inicioCita.getTime() + duracionCita * 60 * 1000);
+
+          // Si la fecha seleccionada se solapa con la cita
+          if (fechaSeleccionada < finCita && new Date(fechaSeleccionada.getTime() + 60*60*1000) > inicioCita) {
+            const peluqueroId = this.extractId(c.peluquero);
+            if (peluqueroId) idsOcupados.add(peluqueroId);
+          }
+        });
+
+        this.peluquerosDropdown = (this.peluquerosDropdown || []).map(item => ({
+          ...item,
+          ocupado: idsOcupados.has(item._id)
+        }));
+
+        const pelSel = this.ctrl('peluquero')?.value;
+        this.fechaHoraInvalida = pelSel && idsOcupados.has(pelSel);
+      },
+      error: err => console.error('[ReservarCita] getCitasPorFechaYHora error:', err)
     });
   }
+
 
   toggleServicio(servicioId: string, event: any): void {
     if (event?.checked) {
@@ -180,57 +238,93 @@ export class ReservarCitaComponent implements OnInit {
     }
   }
 
-  // ===================== reservar cita =====================
   reservarCita() {
     if (this.reservarForm.invalid) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
+      console.warn('[ReservarCita] reservarCita: formulario inválido', this.reservarForm.value);
       return;
     }
 
     const { fecha, hora, sede, cliente, peluquero, puestoTrabajo, servicios } = this.reservarForm.value;
+    console.log('[ReservarCita] reservarCita datos del formulario:', this.reservarForm.value);
 
-    if (!fecha || !hora) {
-      this.snackBar.open('❌ Falta fecha u hora', 'Cerrar', { duration: 3000 });
-      return;
-    }
-
+    // Validar fecha
     const fechaBase = new Date(fecha);
     if (isNaN(fechaBase.getTime())) {
       this.snackBar.open('❌ Fecha inválida', 'Cerrar', { duration: 3000 });
+      console.error('[ReservarCita] reservarCita: fecha inválida', fecha);
       return;
     }
 
     const [horaStr, minStr] = hora.split(':');
     fechaBase.setHours(parseInt(horaStr, 10), parseInt(minStr, 10), 0, 0);
 
-    const citaData = {
-      cliente: cliente || '',
-      sede: sede || '',
-      peluquero: peluquero || '',      // string obligatorio
-      puestoTrabajo: puestoTrabajo || '', // string obligatorio
-      servicios: servicios || [],
-      fecha: fechaBase.toISOString(),
-      fechaBase: fechaBase.toISOString(),
-      hora: hora || ''
-    };
+    // Calcular duración total de la cita según los servicios
+    const duracionTotal: number = (servicios as string[]).reduce((total: number, sId: string) => {
+      const servicio = this.servicios.find(s => s._id === sId);
+      return total + (servicio?.duracion || 30);
+    }, 0);
 
-    console.log('Cita a enviar:', citaData);
+    const fechaFin = new Date(fechaBase.getTime() + duracionTotal * 60 * 1000);
 
-    this.reservaService.crearCita(citaData).subscribe({
-      next: (res) => {
-        this.snackBar.open('✅ Cita creada exitosamente', 'Cerrar', { duration: 3000 });
-        this.cancelarCita();
+    // Verificar solapamiento con citas existentes
+    this.reservaService.getCitasPorFechaYHora(sede, this.toISODate(fechaBase)).subscribe({
+      next: res => {
+        const citasArray: any[] = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        
+        const conflicto = citasArray.some((c: any) => {
+          if (this.extractId(c?.peluquero) !== peluquero) return false;
+          const inicioCita = new Date(c.fecha);
+          const duracionCita: number = (c.servicios || []).reduce((t: number, sId: string) => {
+            const servicio = this.servicios.find(s => s._id === sId);
+            return t + (servicio?.duracion || 30);
+          }, 0);
+          const finCita = new Date(inicioCita.getTime() + duracionCita * 60 * 1000);
+          return fechaBase < finCita && fechaFin > inicioCita; // si se solapan
+        });
+
+        if (conflicto) {
+          this.snackBar.open('❌ El peluquero ya tiene otra cita que se cruza con este horario', 'Cerrar', { duration: 4000 });
+          console.warn('[ReservarCita] conflicto de horarios', { peluquero, fecha, hora });
+          return;
+        }
+
+        // Si no hay conflicto, se crea la cita
+        const citaData = {
+          cliente: cliente || '',
+          sede: sede || '',
+          peluquero: peluquero || '',
+          puestoTrabajo: puestoTrabajo || '',
+          servicios: servicios || [],
+          fecha: fechaBase.toISOString(),
+          fechaBase: fechaBase.toISOString(),
+          hora: hora || ''
+        };
+
+        console.log('[ReservarCita] citaData a enviar:', citaData);
+
+        this.reservaService.crearCita(citaData).subscribe({
+          next: res => {
+            console.log('[ReservarCita] crearCita response:', res);
+            this.snackBar.open('✅ Cita creada exitosamente', 'Cerrar', { duration: 3000 });
+            this.cancelarCita();
+          },
+          error: err => {
+            console.error('[ReservarCita] crearCita error:', err);
+            const mensajeError = err.error?.mensaje?.includes('duplicate key')
+              ? '❌ El peluquero ya tiene una cita en esa fecha y hora.'
+              : err.error?.mensaje || '❌ Error al crear cita';
+            this.snackBar.open(mensajeError, 'Cerrar', { duration: 4000 });
+          }
+        });
       },
-      error: (err) => {
-        console.error('Error al crear cita', err);
-        this.snackBar.open(err.error?.mensaje || '❌ Error al crear cita', 'Cerrar', { duration: 3000 });
-      }
+      error: err => console.error('[ReservarCita] getCitasPorFechaYHora error:', err)
     });
   }
 
 
-
   cancelarCita(): void {
+    console.log('[ReservarCita] cancelarCita');
     this.reservarForm.reset();
     this.peluquerosDropdown = [];
     this.peluquerosFiltrados = [];
@@ -259,6 +353,7 @@ export class ReservarCitaComponent implements OnInit {
       const date = new Date(d);
       return date.toISOString().split('T')[0];
     } catch {
+      console.error('[ReservarCita] toISODate error con valor:', d);
       return '';
     }
   }

@@ -35,12 +35,33 @@ export class MisCitasComponent implements OnInit {
     this.cargarCitas();
   }
 
+  // Formatear fecha/hora igual que en reservar cita con AM/PM
+  formatFechaHora(fechaStr: string | Date): string {
+    if (!fechaStr) return '';
+    const fecha = new Date(fechaStr);
+    
+    const opcionesFecha: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    };
+
+    const opcionesHora: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    };
+
+    return `${fecha.toLocaleDateString('es-CO', opcionesFecha)} ${fecha.toLocaleTimeString('es-CO', opcionesHora)}`;
+  }
+
   // Cargar citas del usuario
   cargarCitas(): void {
     this.citaService.obtenerMisCitas().subscribe({
       next: (resp) => {
         this.citas = (resp.citas || []).map((c: any) => ({
           ...c,
+          fechaFormateada: this.formatFechaHora(c.fecha),
           sede: c.sede?._id ? c.sede : { _id: c.sede, nombre: 'Desconocida' },
           peluquero: c.peluquero?._id ? c.peluquero : { _id: c.peluquero, usuario: { nombre: 'Desconocido' } },
           puestoTrabajo: c.puestoTrabajo?._id ? c.puestoTrabajo : { _id: c.puestoTrabajo, nombre: 'Desconocido' }
@@ -60,7 +81,7 @@ export class MisCitasComponent implements OnInit {
     return cita.servicios.map((s: any) => s?.nombre || '').join(', ');
   }
 
-  // 🔹 Método para abrir el diálogo de pago
+  // Abrir diálogo de pago
   abrirPagoDialog(cita: any): void {
     if (cita.estado === 'cancelada') {
       alert('❌ No se puede realizar el pago de una cita cancelada');
@@ -84,7 +105,6 @@ export class MisCitasComponent implements OnInit {
     });
   }
 
-
   // Editar cita
   editarCita(cita: any): void {
     const dialogRef = this.dialog.open(CitaUpdateDialogComponent, {
@@ -97,6 +117,8 @@ export class MisCitasComponent implements OnInit {
         const index = this.citas.findIndex(c => c._id === citaActualizada._id);
         if (index !== -1) {
           this.citas[index] = citaActualizada;
+          // Actualizamos también la fecha formateada
+          this.citas[index].fechaFormateada = this.formatFechaHora(citaActualizada.fecha);
         }
         this.aplicarFiltros();
       }
@@ -104,25 +126,24 @@ export class MisCitasComponent implements OnInit {
   }
 
   abrirPago(cita: any): void {
-  const dialogRef = this.dialog.open(PagoDialogComponent, {
-    width: '400px',
-    data: { cita }
-  });
+    const dialogRef = this.dialog.open(PagoDialogComponent, {
+      width: '400px',
+      data: { cita }
+    });
 
-  dialogRef.afterClosed().subscribe(resultado => {
-    if (resultado?.pagado) {
-      const index = this.citas.findIndex(c => c._id === cita._id);
-      if (index !== -1) {
-        this.citas[index].pago = resultado.pago;
-        this.citas[index].estado = 'pagado';
+    dialogRef.afterClosed().subscribe(resultado => {
+      if (resultado?.pagado) {
+        const index = this.citas.findIndex(c => c._id === cita._id);
+        if (index !== -1) {
+          this.citas[index].pago = resultado.pago;
+          this.citas[index].estado = 'pagado';
+        }
+        this.aplicarFiltros();
       }
-      this.aplicarFiltros();
-    }
-  });
-}
+    });
+  }
 
-
-  // 🔹 Manejo de eventos de paginador
+  // Paginador
   cambiarPagina(event: PageEvent): void {
     this.paginaActual = event.pageIndex;
     this.tamanoPagina = event.pageSize;
@@ -150,7 +171,6 @@ export class MisCitasComponent implements OnInit {
     this.paginaActual = 0; 
     this.aplicarFiltros();
   }
-  
 
   aplicarFiltros(): void {
     const fechaFiltro = this.filtroFecha ? new Date(
@@ -166,6 +186,7 @@ export class MisCitasComponent implements OnInit {
       const estado = (c?.estado || '').toLowerCase();
       const turnoStr = c?.turno != null ? String(c.turno) : '';
       const serviciosNombres = (c?.servicios || []).map((s: any) => s?.nombre || '').join(' ').toLowerCase();
+      const fechaStr = c?.fechaFormateada?.toLowerCase() || '';
 
       // Filtro específico: fecha
       if (fechaFiltro) {
@@ -190,7 +211,7 @@ export class MisCitasComponent implements OnInit {
           estado,
           turnoStr.toLowerCase(),
           serviciosNombres,
-          c?.fecha ? new Date(c.fecha).toLocaleString().toLowerCase() : ''
+          fechaStr
         ].join(' ');
         if (!blob.includes(this.filtroGeneral)) return false;
       }
@@ -206,4 +227,16 @@ export class MisCitasComponent implements OnInit {
     const fin = inicio + this.tamanoPagina;
     this.citasFiltradas = filtradas.slice(inicio, fin);
   }
+
+  // Verifica si la cita es hoy
+  esHoy(fechaStr: string | Date): boolean {
+    if (!fechaStr) return false;
+    const fechaCita = new Date(fechaStr);
+    const hoy = new Date();
+
+    return fechaCita.getFullYear() === hoy.getFullYear() &&
+          fechaCita.getMonth() === hoy.getMonth() &&
+          fechaCita.getDate() === hoy.getDate();
+  }
+
 }

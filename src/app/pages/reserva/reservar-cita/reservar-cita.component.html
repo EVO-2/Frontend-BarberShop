@@ -1,7 +1,7 @@
 <form [formGroup]="reservarForm" (ngSubmit)="reservarCita()" class="reserva-form">
 
-  <!-- Cliente -->
-  <mat-form-field appearance="fill" class="full-width">
+  <!-- Cliente (solo si rol es admin) -->
+  <mat-form-field appearance="fill" class="full-width" *ngIf="esAdmin">
     <mat-label>Cliente</mat-label>
     <mat-select formControlName="cliente">
       <mat-option *ngFor="let c of clientes" [value]="c._id">

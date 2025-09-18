@@ -5,6 +5,8 @@ import { CitaUpdateDialogComponent } from 'src/app/pages/citas/cita-update-dialo
 import { PagoDialogComponent } from 'src/app/pages/citas/pago-dialog/pago-dialog.component';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PageEvent } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-mis-citas',
@@ -13,230 +15,165 @@ import { PageEvent } from '@angular/material/paginator';
 })
 export class MisCitasComponent implements OnInit {
 
-  // Datos
   citas: any[] = [];
   citasFiltradas: any[] = [];
+  sinCitas: boolean = false;
 
-  // Paginación con MatPaginator
-  paginaActual: number = 0;   
-  tamanoPagina: number = 10;  
-  totalCitas: number = 0;    
+  paginaActual: number = 0;
+  tamanoPagina: number = 10;
+  totalCitas: number = 0;
+  totalPaginas: number = 0;
 
-  // Filtros
   filtroFecha: Date | null = null;
   filtroGeneral: string = '';
 
+  userRole: string = '';
+
   constructor(
     private citaService: CitaService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.userRole = this.authService.obtenerRol();
     this.cargarCitas();
   }
 
-  // Formatear fecha/hora igual que en reservar cita con AM/PM
   formatFechaHora(fechaStr: string | Date): string {
     if (!fechaStr) return '';
     const fecha = new Date(fechaStr);
-    
-    const opcionesFecha: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    };
-
-    const opcionesHora: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    };
-
+    const opcionesFecha: Intl.DateTimeFormatOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const opcionesHora: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
     return `${fecha.toLocaleDateString('es-CO', opcionesFecha)} ${fecha.toLocaleTimeString('es-CO', opcionesHora)}`;
   }
 
-  // Cargar citas del usuario
   cargarCitas(): void {
-    this.citaService.obtenerMisCitas().subscribe({
+    this.citaService.obtenerMisCitas(
+      this.paginaActual + 1,
+      this.tamanoPagina,
+      this.filtroFecha ? this.filtroFecha.toISOString() : undefined,
+      this.userRole,
+      this.filtroGeneral ? this.filtroGeneral : undefined
+    ).subscribe({
       next: (resp) => {
-        this.citas = (resp.citas || []).map((c: any) => ({
+        this.totalCitas = resp.total || 0;
+        this.totalPaginas = resp.totalPages || 0;
+
+        const citasOrdenadas = (resp.citas || []).slice().sort((a: any, b: any) =>
+          new Date(b.fechaInicio || b.fecha).getTime() - new Date(a.fechaInicio || a.fecha).getTime()
+        );
+
+        this.citas = citasOrdenadas.map((c: any) => ({
           ...c,
-          fechaFormateada: this.formatFechaHora(c.fecha),
+          fechaFormateada: this.formatFechaHora(c.fechaInicio || c.fecha),
           sede: c.sede?._id ? c.sede : { _id: c.sede, nombre: 'Desconocida' },
-          peluquero: c.peluquero?._id ? c.peluquero : { _id: c.peluquero, usuario: { nombre: 'Desconocido' } },
+          peluquero: c.peluquero?._id
+            ? { ...c.peluquero, usuario: { nombre: c.peluquero.usuario?.nombre || c.peluquero.nombre || 'Desconocido' } }
+            : { _id: c.peluquero, usuario: { nombre: 'Desconocido' } },
           puestoTrabajo: c.puestoTrabajo?._id ? c.puestoTrabajo : { _id: c.puestoTrabajo, nombre: 'Desconocido' }
         }));
 
-        this.aplicarFiltros();
+        this.sinCitas = this.citas.length === 0;
+        this.citasFiltradas = [...this.citas];
       },
-      error: (err) => {
-        console.error('❌ Error al cargar citas:', err);
+      error: () => {
+        this.sinCitas = true;
       }
     });
   }
 
-  // Nombres de servicios
   getServicios(cita: any): string {
     if (!cita?.servicios?.length) return '';
     return cita.servicios.map((s: any) => s?.nombre || '').join(', ');
   }
 
-  // Abrir diálogo de pago
   abrirPagoDialog(cita: any): void {
     if (cita.estado === 'cancelada') {
       alert('❌ No se puede realizar el pago de una cita cancelada');
       return;
     }
 
-    const dialogRef = this.dialog.open(PagoDialogComponent, {
-      width: '400px',
-      data: { cita }
-    });
-
+    const dialogRef = this.dialog.open(PagoDialogComponent, { width: '400px', data: { cita } });
     dialogRef.afterClosed().subscribe(resultado => {
       if (resultado?.pagado) {
         const index = this.citas.findIndex(c => c._id === cita._id);
         if (index >= 0) {
           this.citas[index].pago = resultado.pago;
           this.citas[index].estado = 'pagado';
-          this.citasFiltradas = [...this.citas];
+          this.citas[index].fechaFormateada = this.formatFechaHora(this.citas[index].fechaInicio || this.citas[index].fecha);
         }
+        this.citasFiltradas = [...this.citas].sort((a, b) =>
+          new Date(b.fechaInicio || b.fecha).getTime() - new Date(a.fechaInicio || a.fecha).getTime()
+        );
       }
     });
   }
 
-  // Editar cita
   editarCita(cita: any): void {
-    const dialogRef = this.dialog.open(CitaUpdateDialogComponent, {
-      width: '450px',
-      data: cita
-    });
+    const dialogRef = this.dialog.open(CitaUpdateDialogComponent, { width: '450px', data: cita, autoFocus: false });
 
     dialogRef.afterClosed().subscribe((citaActualizada) => {
       if (citaActualizada) {
         const index = this.citas.findIndex(c => c._id === citaActualizada._id);
         if (index !== -1) {
-          this.citas[index] = citaActualizada;
-          // Actualizamos también la fecha formateada
-          this.citas[index].fechaFormateada = this.formatFechaHora(citaActualizada.fecha);
+          this.citas[index] = {
+            ...citaActualizada,
+            fechaFormateada: this.formatFechaHora(citaActualizada.fechaInicio || citaActualizada.fecha)
+          };
+        } else {
+          this.citas.push({
+            ...citaActualizada,
+            fechaFormateada: this.formatFechaHora(citaActualizada.fechaInicio || citaActualizada.fecha)
+          });
         }
-        this.aplicarFiltros();
+
+        this.citasFiltradas = [...this.citas].sort((a, b) =>
+          new Date(b.fechaInicio || b.fecha).getTime() - new Date(a.fechaInicio || a.fecha).getTime()
+        );
+
+        this.snackBar.open('✅ Tu cita fue reprogramada correctamente', 'Cerrar', {
+          duration: 4000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top'
+        });
       }
     });
   }
 
-  abrirPago(cita: any): void {
-    const dialogRef = this.dialog.open(PagoDialogComponent, {
-      width: '400px',
-      data: { cita }
-    });
-
-    dialogRef.afterClosed().subscribe(resultado => {
-      if (resultado?.pagado) {
-        const index = this.citas.findIndex(c => c._id === cita._id);
-        if (index !== -1) {
-          this.citas[index].pago = resultado.pago;
-          this.citas[index].estado = 'pagado';
-        }
-        this.aplicarFiltros();
-      }
-    });
-  }
-
-  // Paginador
   cambiarPagina(event: PageEvent): void {
     this.paginaActual = event.pageIndex;
     this.tamanoPagina = event.pageSize;
-    this.aplicarFiltros();
+    this.cargarCitas();
   }
-
-  /* =========================
-     Manejo de filtros
-     ========================= */
 
   onFiltroGeneralChange(event: Event): void {
     const value = (event.target as HTMLInputElement)?.value ?? '';
     this.filtroGeneral = value.toLowerCase().trim();
-    this.aplicarFiltros();
+    this.paginaActual = 0;
+    this.cargarCitas();
   }
 
   onFechaChange(event: MatDatepickerInputEvent<Date>): void {
     this.filtroFecha = event.value ?? null;
-    this.aplicarFiltros();
+    this.paginaActual = 0;
+    this.cargarCitas();
   }
 
   limpiarFiltros(): void {
     this.filtroFecha = null;
     this.filtroGeneral = '';
-    this.paginaActual = 0; 
-    this.aplicarFiltros();
+    this.paginaActual = 0;
+    this.cargarCitas();
   }
 
-  aplicarFiltros(): void {
-    const fechaFiltro = this.filtroFecha ? new Date(
-      this.filtroFecha.getFullYear(),
-      this.filtroFecha.getMonth(),
-      this.filtroFecha.getDate(), 0, 0, 0, 0
-    ) : null;
-
-    let filtradas = (this.citas || []).filter((c: any) => {
-      const clienteNombre = (c?.cliente?.usuario?.nombre || '').toLowerCase();
-      const barberoNombre = (c?.peluquero?.usuario?.nombre || '').toLowerCase();
-      const sedeNombre = (c?.sede?.nombre || '').toLowerCase();
-      const estado = (c?.estado || '').toLowerCase();
-      const turnoStr = c?.turno != null ? String(c.turno) : '';
-      const serviciosNombres = (c?.servicios || []).map((s: any) => s?.nombre || '').join(' ').toLowerCase();
-      const fechaStr = c?.fechaFormateada?.toLowerCase() || '';
-
-      // Filtro específico: fecha
-      if (fechaFiltro) {
-        const fechaCita = c?.fecha ? new Date(c.fecha) : null;
-        if (!fechaCita) return false;
-
-        const fechaCitaSoloDia = new Date(
-          fechaCita.getFullYear(),
-          fechaCita.getMonth(),
-          fechaCita.getDate(), 0, 0, 0, 0
-        );
-
-        if (fechaCitaSoloDia.getTime() !== fechaFiltro.getTime()) return false;
-      }
-
-      // Filtro general
-      if (this.filtroGeneral) {
-        const blob = [
-          clienteNombre,
-          barberoNombre,
-          sedeNombre,
-          estado,
-          turnoStr.toLowerCase(),
-          serviciosNombres,
-          fechaStr
-        ].join(' ');
-        if (!blob.includes(this.filtroGeneral)) return false;
-      }
-
-      return true;
-    });
-
-    // Guardar total para el paginador
-    this.totalCitas = filtradas.length;
-
-    // Paginación real
-    const inicio = this.paginaActual * this.tamanoPagina;
-    const fin = inicio + this.tamanoPagina;
-    this.citasFiltradas = filtradas.slice(inicio, fin);
-  }
-
-  // Verifica si la cita es hoy
   esHoy(fechaStr: string | Date): boolean {
     if (!fechaStr) return false;
     const fechaCita = new Date(fechaStr);
     const hoy = new Date();
-
     return fechaCita.getFullYear() === hoy.getFullYear() &&
-          fechaCita.getMonth() === hoy.getMonth() &&
-          fechaCita.getDate() === hoy.getDate();
+           fechaCita.getMonth() === hoy.getMonth() &&
+           fechaCita.getDate() === hoy.getDate();
   }
-
 }

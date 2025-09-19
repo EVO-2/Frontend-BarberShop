@@ -20,6 +20,9 @@ import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.compo
 
 import { LayoutModule } from './layout/layout.module';
 
+// 👇 Importa el nuevo componente de gestión de citas
+import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,6 +34,7 @@ import { LayoutModule } from './layout/layout.module';
     MisCitasComponent,
     CitaUpdateDialogComponent, 
     PagoDialogComponent, 
+    GestionarCitasComponent   
   ],
   imports: [
     BrowserModule,

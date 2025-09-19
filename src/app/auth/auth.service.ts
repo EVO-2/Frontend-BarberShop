@@ -179,4 +179,10 @@ export class AuthService {
   subirFotoPerfil(id: string, formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/usuarios/${id}/foto`, formData);
   }
+
+  // =================== NUEVO: obtener ID del usuario actual ===================
+  getCurrentUserId(): string | null {
+    const usuario = this.getUsuario();
+    return usuario?._id || usuario?.id || null;
+  }
 }

@@ -1,4 +1,8 @@
-<h2>Mis Citas</h2>
+<!-- 🔹 Encabezado de la vista Mis Citas -->
+<div class="titulo-citas">
+  <mat-icon>event</mat-icon>
+  <h1>Mis Citas</h1>
+</div>
 
 <!-- 🔹 Filtros -->
 <div class="filtros-container">
@@ -22,10 +26,14 @@
       type="text" 
       (input)="onFiltroGeneralChange($event)" 
       placeholder="Ej: peluquero, sede, servicio...">
+      <mat-icon matPrefix>search</mat-icon>
   </mat-form-field>
 
   <!-- Botón limpiar -->
-  <button mat-stroked-button color="warn" (click)="limpiarFiltros()">Limpiar</button>
+  <button mat-stroked-button color="warn" class="btn-limpiar" (click)="limpiarFiltros()">
+    <mat-icon>clear</mat-icon>
+    Limpiar
+  </button>
 </div>
 
 <!-- 🔹 Tabla -->

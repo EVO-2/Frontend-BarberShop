@@ -1,22 +1,49 @@
-.filtros-container {
+/* 🎨 Título Mis Citas */
+.titulo-citas {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-end;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 
-  mat-form-field {
-    flex: 1 1 220px;
+  mat-icon {
+    font-size: 28px;
+    color: #1976d2; /* Azul Material */
   }
 
-  button {
-    align-self: flex-end;
-    height: 56px;
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #333;
     margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
+}
+
+/* 🎯 Contenedor de filtros */
+.filtros-container {
+  display: flex;
+  align-items: center; 
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filtros-container .filtro-fecha {
+  flex: 1;
+  min-width: 220px;
+}
+
+.filtros-container .full-width {
+  flex: 2;
+  min-width: 400px;
+}
+
+.filtros-container .btn-limpiar {
+  height: 56px; /* mismo alto que los mat-form-field */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: -21px; /* 🔹 ajuste fino */
 }
 
 /* 🎨 Tabla de citas */
@@ -60,7 +87,6 @@
     line-height: 1;
   }
 
-  /* (Opcional) si se usa un contenedor para texto + icono */
   .mat-mdc-header-cell .th-inline {
     display: inline-flex;
     align-items: center;
@@ -82,22 +108,20 @@
   }
 
   .cita-hoy {
-  font-weight: 600;
-}
+    font-weight: 600;
+  }
 
-/* Turno con estilo de badge profesional */
-.turno-badge {
-  display: inline-block;
-  background-color: #8cc0f5; /* azul material */
-  color: #fff;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 16px;
-  min-width: 32px;
-  text-align: center;
-  font-size: 0.85rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-
+  /* Turno con estilo de badge profesional */
+  .turno-badge {
+    display: inline-block;
+    background-color: #8cc0f5; /* azul material */
+    color: #fff;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 16px;
+    min-width: 32px;
+    text-align: center;
+    font-size: 0.85rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
 }

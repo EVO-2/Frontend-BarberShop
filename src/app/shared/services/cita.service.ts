@@ -76,4 +76,32 @@ export class CitaService {
   obtenerServicios(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/servicios`);
   }
+
+  // =============================
+  // 📌 Nuevos métodos de gestión
+  // =============================
+
+  // Iniciar servicio de una cita
+  iniciarServicio(citaId: number | string, peluqueroId: number | string): Observable<Cita> {
+    const payload = { peluqueroId };
+    return this.http.put<Cita>(`${this.apiUrl}/${citaId}/iniciar`, payload).pipe(
+      catchError(err => { throw err; })
+    );
+  }
+
+  // Finalizar servicio de una cita
+  finalizarServicio(citaId: number | string, peluqueroId: number | string, notas?: string): Observable<Cita> {
+    const payload = { peluqueroId, notas };
+    return this.http.put<Cita>(`${this.apiUrl}/${citaId}/finalizar`, payload).pipe(
+      catchError(err => { throw err; })
+    );
+  }
+
+  // Cancelar una cita
+  cancelarCita(citaId: number | string, razon?: string): Observable<Cita> {
+    const payload = { razon };
+    return this.http.put<Cita>(`${this.apiUrl}/${citaId}/cancelar`, payload).pipe(
+      catchError(err => { throw err; })
+    );
+  }
 }

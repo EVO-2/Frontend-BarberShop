@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core'; 
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -9,6 +9,9 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component'; 
 import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component';
 import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component'; 
+import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component'; 
+import { RoleGuard } from './guards/role.guard';
+
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -20,13 +23,35 @@ const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard], // primero valida si hay token
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'perfil', component: PerfilComponent },
-      { path: 'usuarios', component: UsuariosComponent },
-      { path: 'reservar', component: ReservarCitaComponent },
-      { path: 'mis-citas', component: MisCitasComponent } 
+
+      { 
+        path: 'usuarios', 
+        component: UsuariosComponent, 
+        canActivate: [RoleGuard], 
+        data: { roles: ['admin'] } 
+      },
+      { 
+        path: 'reservar', 
+        component: ReservarCitaComponent, 
+        canActivate: [RoleGuard], 
+        data: { roles: ['cliente', 'admin'] } 
+      },
+      { 
+        path: 'mis-citas', 
+        component: MisCitasComponent, 
+        canActivate: [RoleGuard], 
+        data: { roles: ['cliente', 'barbero', 'admin'] } 
+      },
+      { 
+        path: 'gestionar-citas', 
+        component: GestionarCitasComponent, 
+        canActivate: [RoleGuard], 
+        data: { roles: ['barbero', 'admin'] } 
+      }
     ]
   },
 

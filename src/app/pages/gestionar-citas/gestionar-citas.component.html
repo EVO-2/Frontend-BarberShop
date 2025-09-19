@@ -1,0 +1,145 @@
+<div class="gestionar-citas-container">
+
+  <h2 class="titulo-citas">
+    <mat-icon>event_note</mat-icon>
+    Gestión de Citas
+  </h2>
+
+  <!-- 🔎 Filtros -->
+  <div class="filtros-container">
+    <!-- Buscar cliente más largo -->
+    <mat-form-field class="buscar-cliente" appearance="outline">
+      <mat-label>Buscar cliente</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input 
+        matInput 
+        [(ngModel)]="filtroCliente" 
+        (keyup)="aplicarFiltros()" 
+        placeholder="Nombre del cliente">
+    </mat-form-field>
+
+    <!-- Filtro por fecha -->
+    <mat-form-field class="filtro-fecha" appearance="outline">
+      <mat-label>Filtrar por fecha</mat-label>
+      <input 
+        matInput 
+        [matDatepicker]="picker" 
+        [(ngModel)]="filtroFecha" 
+        (dateChange)="aplicarFiltros()">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Botón limpiar -->
+    <button mat-raised-button class="btn-limpiar" (click)="limpiarFiltros()">
+      <mat-icon>clear</mat-icon>
+      Limpiar filtros
+    </button>
+  </div>
+
+
+  <!-- 📋 Tabla de citas -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 tabla-citas">
+
+    <!-- Cliente -->
+    <ng-container matColumnDef="cliente">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon class="icon-header">person</mat-icon> Cliente
+      </th>
+      <td mat-cell *matCellDef="let element" class="celda-centrada">
+        {{ element.clienteNombre }}
+      </td>
+    </ng-container>
+
+    <!-- Fecha -->
+    <ng-container matColumnDef="fecha">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon class="icon-header">event</mat-icon> Fecha
+      </th>
+      <td mat-cell *matCellDef="let element" class="celda-centrada">
+        {{ element.fecha | date:'shortDate' }}
+      </td>
+    </ng-container>
+
+    <!-- Hora -->
+    <ng-container matColumnDef="hora">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon class="icon-header">schedule</mat-icon> Hora
+      </th>
+      <td mat-cell *matCellDef="let element" class="celda-centrada">
+        {{ element.hora }}
+      </td>
+    </ng-container>
+
+    <!-- Turno -->
+    <ng-container matColumnDef="turno">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon class="icon-header">format_list_numbered</mat-icon> Turno
+      </th>
+      <td mat-cell *matCellDef="let element" class="celda-centrada">
+        <span class="turno-badge">{{ element.turno }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Estado -->
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon class="icon-header">info</mat-icon> Estado
+      </th>
+      <td mat-cell *matCellDef="let element" class="celda-centrada">
+        <span [ngClass]="{
+          'estado-pendiente': element.estado === 'pendiente',
+          'estado-en-progreso': element.estado === 'en_progreso',
+          'estado-finalizado': element.estado === 'finalizado',
+          'estado-cancelado': element.estado === 'cancelado'
+        }">
+          {{ element.estado | titlecase }}
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- Acciones -->
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-icon class="icon-header">build</mat-icon> Acciones
+      </th>
+      <td mat-cell *matCellDef="let element" class="acciones">
+
+        <!-- Iniciar -->
+        <button mat-mini-fab color="primary"
+                (click)="iniciarServicio(element)"
+                [disabled]="element.estado !== 'pendiente'">
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+
+        <!-- Finalizar -->
+        <button mat-mini-fab color="accent"
+                (click)="finalizarServicio(element)"
+                [disabled]="element.estado !== 'en_progreso'">
+          <mat-icon>check</mat-icon>
+        </button>
+
+        <!-- Cancelar -->
+        <button mat-mini-fab color="warn"
+                (click)="cancelarCita(element)"
+                [disabled]="element.estado === 'finalizado' || element.estado === 'cancelado'">
+          <mat-icon>close</mat-icon>
+        </button>
+
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+  </table>
+
+  <!-- 📌 Paginador -->
+  <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons></mat-paginator>
+
+  <!-- Mensaje si no hay citas -->
+  <div *ngIf="dataSource.data.length === 0" class="no-citas">
+    <p>No hay citas disponibles para gestionar.</p>
+  </div>
+
+</div>

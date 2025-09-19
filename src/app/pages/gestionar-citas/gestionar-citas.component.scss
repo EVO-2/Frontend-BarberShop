@@ -1,0 +1,136 @@
+.gestionar-citas-container {
+  padding: 2rem;
+  background: #fafafa;
+  border-radius: 12px;
+}
+
+.titulo-citas {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2rem;
+
+  mat-icon {
+    color: #1976d2;
+  }
+}
+
+.filtros-container {
+  display: flex;
+  align-items: center; 
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filtros-container mat-form-field {
+  min-width: 250px;
+}
+
+/* Buscar cliente más largo */
+.filtros-container .buscar-cliente {
+  flex: 2;
+  min-width: 400px;
+}
+
+.filtros-container .filtro-fecha {
+  flex: 1;
+  min-width: 220px;
+}
+
+.filtros-container  .btn-limpiar{
+  height: 56px; 
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: -21px; 
+  background-color: #f0f0f0
+}
+
+.tabla-citas {
+  width: 100%;
+  margin-top: 1rem;
+
+  th {
+    text-align: center;
+    background: #f5f5f5;
+    font-weight: bold;
+  }
+
+  td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .icon-header {
+    vertical-align: middle;
+    margin-right: 4px;
+    color: #616161;
+  }
+}
+
+/* 🔹 Turno con estilo de badge */
+.turno-badge {
+  display: inline-block;
+  background-color: #8cc0f5; 
+  color: #fff;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 16px;
+  min-width: 32px;
+  text-align: center;
+  font-size: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.celda-centrada {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* 🔹 Estados con colores */
+.estado-pendiente {
+  color: #ff9800;
+  font-weight: bold;
+}
+.estado-en-progreso {
+  color: #2196f3;
+  font-weight: bold;
+}
+.estado-finalizado {
+  color: #4caf50;
+  font-weight: bold;
+}
+.estado-cancelado {
+  color: #f44336;
+  font-weight: bold;
+}
+
+/* 🔹 Botones de acciones alineados al centro vertical */
+.acciones {
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  gap: 0.5rem;
+  height: 100%; 
+  margin-top: 6.5%;  
+      
+}
+
+.acciones button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;  
+  margin-bottom: 4%;
+}
+
+.no-citas {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}

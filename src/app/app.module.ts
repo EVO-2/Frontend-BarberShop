@@ -19,9 +19,8 @@ import { CitaUpdateDialogComponent } from './pages/citas/cita-update-dialog/cita
 import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.component'; 
 
 import { LayoutModule } from './layout/layout.module';
-
-// 👇 Importa el nuevo componente de gestión de citas
 import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
+import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +33,8 @@ import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas
     MisCitasComponent,
     CitaUpdateDialogComponent, 
     PagoDialogComponent, 
-    GestionarCitasComponent   
+    GestionarCitasComponent,
+    ConfirmDialogComponent 
   ],
   imports: [
     BrowserModule,
@@ -43,7 +43,7 @@ import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    MaterialModule,
+    MaterialModule, 
     LayoutModule,
   ],
   providers: [

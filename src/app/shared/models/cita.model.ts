@@ -23,6 +23,9 @@ export interface Cita {
   estado?: EstadoCita;
   observaciones?: string;
 
+  // 🔹 propiedad agregada
+  duracionRealMin?: number;
+
   createdAt?: string;
   updatedAt?: string;
 }

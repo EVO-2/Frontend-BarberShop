@@ -2,8 +2,10 @@
   padding: 2rem;
   background: #fafafa;
   border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
+/* 🔹 Título con ícono */
 .titulo-citas {
   display: flex;
   align-items: center;
@@ -15,12 +17,14 @@
 
   mat-icon {
     color: #1976d2;
+    font-size: 28px;
   }
 }
 
+/* 🔹 Contenedor de filtros */
 .filtros-container {
   display: flex;
-  align-items: center; 
+  align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2rem;
@@ -30,7 +34,7 @@
   min-width: 250px;
 }
 
-/* Buscar cliente más largo */
+/* Campo de búsqueda de cliente más largo */
 .filtros-container .buscar-cliente {
   flex: 2;
   min-width: 400px;
@@ -41,15 +45,27 @@
   min-width: 220px;
 }
 
-.filtros-container  .btn-limpiar{
-  height: 56px; 
+/* Botón limpiar */
+.filtros-container .btn-limpiar {
+  height: 56px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: -21px; 
-  background-color: #f0f0f0
+  margin-top: -21px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  mat-icon {
+    font-size: 18px;
+  }
 }
 
+/* 🔹 Tabla de citas */
 .tabla-citas {
   width: 100%;
   margin-top: 1rem;
@@ -58,11 +74,14 @@
     text-align: center;
     background: #f5f5f5;
     font-weight: bold;
+    padding: 0.8rem;
+    color: #444;
   }
 
   td {
     text-align: center;
     vertical-align: middle;
+    padding: 0.6rem;
   }
 
   .icon-header {
@@ -72,10 +91,10 @@
   }
 }
 
-/* 🔹 Turno con estilo de badge */
+/* 🔹 Turno con estilo badge */
 .turno-badge {
   display: inline-block;
-  background-color: #8cc0f5; 
+  background: linear-gradient(135deg, #64b5f6, #1976d2);
   color: #fff;
   font-weight: 600;
   padding: 4px 10px;
@@ -83,54 +102,74 @@
   min-width: 32px;
   text-align: center;
   font-size: 0.85rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
-.celda-centrada {
-  text-align: center;
-  vertical-align: middle;
-}
-
-/* 🔹 Estados con colores */
+/* 🔹 Estados de citas */
 .estado-pendiente {
-  color: #ff9800;
+  color: #ff9800; /* Naranja */
   font-weight: bold;
 }
-.estado-en-progreso {
-  color: #2196f3;
+
+.estado-en-proceso {
+  color: #2196f3; /* Azul */
   font-weight: bold;
 }
+
 .estado-finalizado {
-  color: #4caf50;
+  color: #4caf50; /* Verde */
   font-weight: bold;
 }
+
+.estado-cancelado {
+  color: #f44336; /* Rojo */
+  font-weight: bold;
+}
+
+/* 🔹 Forzar botón verde al habilitarse */
+button.finalizar-btn[ng-reflect-disabled="false"] {
+  background-color: #4caf50 !important; /* Verde */
+  color: #fff !important;
+}
+
 .estado-cancelado {
   color: #f44336;
   font-weight: bold;
 }
 
-/* 🔹 Botones de acciones alineados al centro vertical */
+/* 🔹 Acciones alineadas */
 .acciones {
   display: flex;
   justify-content: center;
-  align-items: center;  
-  gap: 0.5rem;
-  height: 100%; 
-  margin-top: 6.5%;  
-      
+  align-items: center;
+  gap: 0.6rem;
+  height: 100%;
+  margin-top: 6.5%;
 }
 
 .acciones button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 36px;  
-  margin-bottom: 4%;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  padding: 0 10px;
+
+  mat-icon {
+    font-size: 18px;
+  }
 }
 
+/* 🔹 Sin citas */
 .no-citas {
   margin-top: 1.5rem;
   text-align: center;
   color: #777;
   font-style: italic;
 }
+
+.tooltip-preline {
+  white-space: pre-line;
+}
+

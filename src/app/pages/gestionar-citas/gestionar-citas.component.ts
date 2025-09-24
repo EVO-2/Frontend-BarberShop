@@ -93,7 +93,8 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
               finServicio,
               clienteNombre,
               cliente: c.cliente,
-              peluqueroNombre
+              peluqueroNombre,
+              servicios: c.servicios
             };
           });
 
@@ -142,7 +143,7 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
     this.aplicarFiltros();
   }
 
-  iniciarServicio(cita: any): void {
+  iniciarCita(cita: any): void {
     const peluqueroId = String(this.auth.getCurrentUserId());
     if (!peluqueroId) return;
 
@@ -150,8 +151,8 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
       ConfirmDialogComponent,
       {
         data: {
-          title: 'Iniciar servicio',
-          message: `¿Deseas iniciar el servicio de ${cita.clienteNombre}?`,
+          title: 'Iniciar cita',
+          message: `¿Deseas iniciar la cita de ${cita.clienteNombre}?`,
           confirmText: 'Iniciar',
           cancelText: 'Cancelar'
         }
@@ -163,15 +164,16 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
 
       const horaInicio = this.obtenerHoraActual();
 
-      this.citaService.iniciarServicio(String(cita.id), horaInicio).subscribe({
+      this.citaService.iniciarCita(String(cita.id), peluqueroId, horaInicio).subscribe({
         next: (res: any) => {
           this.cargarCitas();
+
           const citaActualizada = {
             ...cita,
-            inicioServicio: res.cita.inicioServicio || res.cita.inicio_servicio || horaInicio,
-            finServicio: res.cita.finServicio || res.cita.fin_servicio || null,
-            duracionRealMin: res.cita.duracionRealMin || res.cita.duracion_real_min || 0,
-            estado: res.cita.estado || 'en_proceso',
+            inicioServicio: res.inicioServicio || cita.inicioServicio || horaInicio,
+            finServicio: res.finServicio || null,
+            duracionRealMin: res.duracionRealMin || 0,
+            estado: res.estado || 'en_proceso',
           };
 
           const index = this.dataSource.data.findIndex(c => c.id === cita.id);
@@ -182,17 +184,17 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
             this.dataSource.data = [...this.dataSource.data, citaActualizada];
           }
 
-          this.snack.open('✅ Servicio iniciado', 'Cerrar', { duration: 3500 });
+          this.snack.open('✅ Cita iniciada', 'Cerrar', { duration: 3500 });
         },
         error: (err: any) => {
-          this.snack.open(err.error?.mensaje || `❌ Error al iniciar servicio`, 'Cerrar', { duration: 3500 });
+          this.snack.open(err.error?.mensaje || `❌ Error al iniciar cita`, 'Cerrar', { duration: 3500 });
           this.cargarCitas();
         }
       });
     });
   }
 
-  finalizarServicio(cita: any): void {
+  finalizarCita(cita: any): void {
     if (cita.estado !== 'en_proceso') {
       this.snack.open('⚠️ La cita no está en proceso y no puede finalizarse', 'Cerrar', { duration: 3500 });
       return;
@@ -205,8 +207,8 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
       ConfirmDialogComponent,
       {
         data: {
-          title: 'Finalizar servicio',
-          message: `¿Quieres finalizar el servicio de ${cita.clienteNombre}?`,
+          title: 'Finalizar cita',
+          message: `¿Quieres finalizar la cita de ${cita.clienteNombre}?`,
           confirmText: 'Finalizar',
           cancelText: 'Cancelar'
         }
@@ -216,14 +218,14 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
 
-      const inicio = cita.inicioServicio || cita.fecha || new Date().toISOString();
       const ahora = new Date();
       const horaFin = `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
       const horaPayload = horaFin && horaFin.trim() !== '' ? horaFin.trim() : undefined;
 
-      this.citaService.finalizarServicio(String(cita.id), peluqueroId, horaPayload).subscribe({
+      this.citaService.finalizarCita(String(cita.id), peluqueroId, horaPayload).subscribe({
         next: (updated: Cita) => {
           this.cargarCitas();
+
           const index = this.dataSource.data.findIndex(c => c.id === cita.id);
           if (index !== -1) {
             this.dataSource.data[index] = { ...this.dataSource.data[index], ...updated };
@@ -233,10 +235,10 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
           }
 
           const duracion = updated.duracionRealMin || 0;
-          this.snack.open(`✅ Servicio finalizado — duración: ${duracion} min`, 'Cerrar', { duration: 3500 });
+          this.snack.open(`✅ Cita finalizada — duración: ${duracion} min`, 'Cerrar', { duration: 3500 });
         },
         error: (err) => {
-          this.snack.open(err.error?.mensaje || `❌ Error al finalizar servicio`, 'Cerrar', { duration: 3500 });
+          this.snack.open(err.error?.mensaje || `❌ Error al finalizar cita`, 'Cerrar', { duration: 3500 });
           this.cargarCitas();
         }
       });
@@ -259,15 +261,81 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
 
   calcularDuracion(cita: any): string {
     if (!cita) return '-';
-    if (cita.estado === 'finalizada') {
-      if (cita.duracionRealMin != null) return `${cita.duracionRealMin} min`;
-      if (cita.inicioServicio && cita.finServicio) {
-        const duracion = Math.round((new Date(cita.finServicio).getTime() - new Date(cita.inicioServicio).getTime()) / 60000);
-        return duracion > 0 ? `${duracion} min` : 'Duración desconocida';
-      }
-      return 'Duración desconocida';
+
+    if (cita.estado !== 'finalizada') return '-';
+
+    const stored = cita.duracionRealMin ?? cita.duracion_real_min;
+    if (typeof stored === 'number' && !isNaN(stored)) {
+      return `${stored} min`;
     }
-    return '-';
+
+    const inicio = cita.inicioServicio ?? cita.inicio_servicio ?? cita.fecha ?? null;
+    const fin = cita.finServicio ?? cita.fin_servicio ?? null;
+
+    if (inicio && fin) {
+      const inicioMs = new Date(inicio).getTime();
+      const finMs = new Date(fin).getTime();
+
+      if (!isNaN(inicioMs) && !isNaN(finMs) && finMs > inicioMs) {
+        const minutos = Math.round((finMs - inicioMs) / 60000);
+        return `${minutos} min`;
+      }
+    }
+
+    if (Array.isArray(cita.servicios) && cita.servicios.length > 0) {
+      let total = 0;
+      let any = false;
+
+      for (const s of cita.servicios) {
+        if (!s) continue;
+
+        if (typeof s.duracionRealMin === 'number' && !isNaN(s.duracionRealMin)) {
+          total += s.duracionRealMin;
+          any = true;
+        } else if (typeof s.duracion === 'number' && !isNaN(s.duracion)) {
+          total += s.duracion;
+          any = true;
+        } else if (typeof s.duracion_min === 'number' && !isNaN(s.duracion_min)) {
+          total += s.duracion_min;
+          any = true;
+        }
+      }
+
+      if (any) {
+        return `${total} min`;
+      }
+    }
+
+    return 'Duración desconocida';
+  }
+
+  getServicios(cita: Cita): string {
+    if (!cita?.servicios?.length) return 'N/A';
+
+    return cita.servicios
+      .map((s) => {
+        if (typeof s === 'string') {
+          return `ID:${s.substring(0, 6)}`;
+        }
+        return s?.nombre || '';
+      })
+      .filter((nombre: string) => nombre)
+      .join(', ') || 'N/A';
+  }
+
+  private formatDuracion(minutos: number): string {
+    if (!minutos || minutos <= 0) return 'N/A';
+
+    const horas = Math.floor(minutos / 60);
+    const mins = minutos % 60;
+
+    const hStr = horas.toString().padStart(2, '0');
+    const mStr = mins.toString().padStart(2, '0');
+    return `${hStr}:${mStr} hrs`;
+  }
+
+  getServiciosTooltip(cita: any): string {
+    return `📌 Servicios: ${this.getServicios(cita)}\n⏱️ Duración real: ${this.formatDuracion(cita?.duracionRealMin || 0)}`;
   }
 
   cancelarCita(cita: any): void {

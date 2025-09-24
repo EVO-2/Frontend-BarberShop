@@ -90,8 +90,9 @@
         <mat-icon class="icon-header">info</mat-icon> Estado
       </th>
       <td mat-cell *matCellDef="let element" class="celda-centrada"
-          [matTooltip]="element.estado === 'finalizada' ? 'Duración real: ' + (element.duracionRealMin || 0) + ' min' : ''"
+          [matTooltip]="element.estado === 'finalizada' ? getServiciosTooltip(element) : ''"
           matTooltipClass="tooltip-preline">
+          
         <span [ngClass]="{
           'estado-pendiente': element.estado === 'pendiente',
           'estado-en-proceso': element.estado === 'en_proceso',
@@ -112,7 +113,7 @@
 
         <!-- Iniciar -->
         <button mat-mini-fab color="primary"
-                (click)="iniciarServicio(element)"
+                (click)="iniciarCita(element)"
                 [disabled]="!(element.estado === 'pendiente' || element.estado === 'confirmada')"
                 matTooltip="Solo se puede iniciar un servicio pendiente o confirmado">
           <mat-icon>play_arrow</mat-icon>
@@ -120,7 +121,7 @@
 
         <!-- Finalizar -->
         <button mat-mini-fab class="finalizar-btn"
-                (click)="finalizarServicio(element)"
+                (click)="finalizarCita(element)"
                 [disabled]="element.estado !== 'en_proceso'"
                 matTooltip="Solo se puede finalizar un servicio que está en progreso">
           <mat-icon>check</mat-icon>

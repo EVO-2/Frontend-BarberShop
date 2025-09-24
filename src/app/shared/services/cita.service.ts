@@ -130,14 +130,18 @@ export class CitaService {
   }
 
   // ==============================
-  // Métodos de gestión de estado
+  // Métodos de gestión de estado de Citas
   // ==============================
-  iniciarServicio(citaId: number | string, peluqueroId: number | string, hora?: string): Observable<Cita> {
+  iniciarCita(
+    citaId: number | string,
+    peluqueroId: number | string,
+    hora?: string
+  ): Observable<Cita> {
     return this.http.put<Cita>(`${this.apiUrl}/${citaId}/iniciar`, { peluqueroId, hora })
       .pipe(catchError(err => throwError(() => err)));
   }
 
-  finalizarServicio(
+  finalizarCita(
     citaId: number | string,
     peluqueroId: number | string,
     hora?: string,

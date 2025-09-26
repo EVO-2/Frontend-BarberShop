@@ -65,7 +65,7 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
   }
 
   private cargarCitas(filtros: any = {}): void {
-    filtros.rol = this.auth.obtenerRol();
+    // ⚡ Eliminamos el envío del rol, lo maneja el backend desde req.user
 
     this.citaService.obtenerCitasPaginadas(this.pageIndex + 1, this.pageSize, filtros)
       .subscribe({
@@ -131,7 +131,12 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
     const filtros: any = {};
 
     if (this.filtroCliente?.trim()) filtros.filtroGeneral = this.filtroCliente.trim();
-    if (this.filtroFecha) filtros.fecha = this.filtroFecha.toISOString();
+    if (this.filtroFecha) {
+      filtros.fecha = {
+        inicio: new Date(this.filtroFecha.setHours(0, 0, 0, 0)).toISOString(),
+        fin: new Date(this.filtroFecha.setHours(23, 59, 59, 999)).toISOString()
+      };
+    }
 
     this.pageIndex = 0;
     this.cargarCitas(filtros);

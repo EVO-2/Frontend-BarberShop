@@ -54,19 +54,26 @@ export class CitaService {
   }
 
   // ==============================
-  // Métodos de administración
-  // ==============================
-  obtenerCitasPaginadas(
-    page: number,
-    limit: number,
-    filtros?: any
-  ): Observable<any> {
-    let params: any = { page: page.toString(), limit: limit.toString() };
+// Métodos de administración
+// ==============================
+// ==============================
+// Métodos de administración
+// ==============================
+obtenerCitasPaginadas(
+  page: number,
+  limit: number,
+  filtros?: any
+): Observable<any> {
+  let params: any = { page: page.toString(), limit: limit.toString() };
 
-    if (filtros) {
-      if (filtros.cliente) params.cliente = filtros.cliente;
+  if (filtros) {
+    if (filtros.cliente) {
+      params.cliente = filtros.cliente;
+    }
 
-      if (filtros.fecha) {
+    if (filtros.fecha) {
+      // 👉 Caso 1: viene un string (ej: '2025-09-26')
+      if (typeof filtros.fecha === 'string') {
         const fecha = new Date(filtros.fecha);
         if (!isNaN(fecha.getTime())) {
           const inicio = new Date(fecha);
@@ -74,18 +81,40 @@ export class CitaService {
           const fin = new Date(fecha);
           fin.setHours(23, 59, 59, 999);
 
-          params.fecha = JSON.stringify({ inicio: inicio.toISOString(), fin: fin.toISOString() });
+          params.fecha = JSON.stringify({
+            inicio: inicio.toISOString(),
+            fin: fin.toISOString()
+          });
         }
       }
 
-      if (filtros.rol) params.rol = filtros.rol;
-      if (filtros.filtroGeneral?.trim()) params.filtroGeneral = filtros.filtroGeneral.trim();
+      // 👉 Caso 2: viene como rango { inicio, fin }
+      else if (typeof filtros.fecha === 'object' && filtros.fecha.inicio && filtros.fecha.fin) {
+        const inicio = new Date(filtros.fecha.inicio);
+        const fin = new Date(filtros.fecha.fin);
+
+        if (!isNaN(inicio.getTime()) && !isNaN(fin.getTime())) {
+          inicio.setHours(0, 0, 0, 0);
+          fin.setHours(23, 59, 59, 999);
+
+          params.fecha = JSON.stringify({
+            inicio: inicio.toISOString(),
+            fin: fin.toISOString()
+          });
+        }
+      }
     }
 
-    return this.http
-      .get<any>(`${this.apiUrl}/paginadas`, { params })
-      .pipe(catchError(err => throwError(() => err)));
+    if (filtros.filtroGeneral?.trim()) {
+      params.filtroGeneral = filtros.filtroGeneral.trim();
+    }
   }
+
+  return this.http
+    .get<any>(`${this.apiUrl}/paginadas`, { params })
+    .pipe(catchError(err => throwError(() => err)));
+}
+
 
   // ==============================
   // Métodos de gestión

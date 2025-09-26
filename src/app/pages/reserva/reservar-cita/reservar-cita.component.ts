@@ -269,7 +269,7 @@ export class ReservarCitaComponent implements OnInit {
       fecha: fechaBase.toISOString(),   
       fechaBase: fechaBase.toISOString(), 
       hora,
-      observaciones: observaciones || ''
+      observacion: observaciones || ''
     };
 
     this.reservaService.crearCita(citaData).subscribe({

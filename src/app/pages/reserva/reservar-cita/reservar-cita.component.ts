@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReservaService } from 'src/app/shared/services/reserva.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/auth/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ServicioCardDialogComponent } from 'src/app/shared/components/servicio-card-dialog/servicio-card-dialog.component';
 
 interface PeluqueroDropdownItem {
   _id: string;
@@ -48,11 +50,11 @@ export class ReservarCitaComponent implements OnInit {
     private fb: FormBuilder,
     private reservaService: ReservaService,
     private snackBar: MatSnackBar,
-    private authService: AuthService
+    private authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    // ✅ Obtener usuario logueado y rol
     this.usuarioLogueado = this.authService.getUsuario();
     this.rolUsuario = this.usuarioLogueado?.rol || '';
     this.esAdmin = this.rolUsuario === 'admin';
@@ -75,13 +77,48 @@ export class ReservarCitaComponent implements OnInit {
       puestoTrabajo: ['', Validators.required],
       fecha: ['', Validators.required],
       hora: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
-      servicios: this.fb.array([], Validators.required),
+      servicios: [[], Validators.required], // ✅ array de ids
       observaciones: ['']
     });
   }
 
-  get serviciosArray(): FormArray {
-    return this.reservarForm.get('servicios') as FormArray;
+  // ✅ Getter para acceder al control de servicios
+  get serviciosArray() {
+    return this.reservarForm.get('servicios') as any; // FormControl que contiene array de ids
+  }
+
+  // ✅ Comprueba si un servicio está seleccionado
+  isServicioSelected(id: string): boolean {
+    const current = this.serviciosArray?.value || [];
+    return Array.isArray(current) && current.includes(id);
+  }
+
+  // ✅ Toggle manual (checkbox o card)
+  toggleServicio(id: string, event: any) {
+    const checked = (event && typeof event.checked !== 'undefined')
+      ? !!event.checked
+      : !this.isServicioSelected(id);
+
+    const current: string[] = Array.isArray(this.serviciosArray.value)
+      ? [...this.serviciosArray.value]
+      : [];
+
+    if (checked) {
+      if (!current.includes(id)) current.push(id);
+    } else {
+      const idx = current.indexOf(id);
+      if (idx > -1) current.splice(idx, 1);
+    }
+
+    this.serviciosArray.setValue(current);
+    this.serviciosArray.markAsTouched();
+  }
+
+  // ✅ Toggle al hacer click sobre la card
+  toggleServicioOnCard(id: string, event: Event) {
+    event?.stopPropagation();
+    const selected = this.isServicioSelected(id);
+    this.toggleServicio(id, { checked: !selected });
   }
 
   private ctrl(name: string): AbstractControl | null {
@@ -106,7 +143,6 @@ export class ReservarCitaComponent implements OnInit {
       error: err => console.error('[ReservarCita] getServicios error:', err)
     });
 
-    // 🔹 Diferenciar carga de peluqueros según el rol
     const obs$ = this.rolUsuario === 'cliente'
       ? this.reservaService.getPeluquerosDisponibles()
       : this.reservaService.getPeluqueros();
@@ -142,7 +178,7 @@ export class ReservarCitaComponent implements OnInit {
         });
 
         this.peluquerosDropdown = this.peluquerosFiltrados.map(p => {
-          const puestoId = this.extractId(p?.puestoTrabajo) || ''; 
+          const puestoId = this.extractId(p?.puestoTrabajo) || '';
           const puestoNombre =
             typeof p?.puestoTrabajo === 'object' && p?.puestoTrabajo?.nombre
               ? p.puestoTrabajo.nombre
@@ -231,12 +267,12 @@ export class ReservarCitaComponent implements OnInit {
     });
   }
 
-  toggleServicio(servicioId: string, event: any): void {
-    if (event?.checked) this.serviciosArray.push(this.fb.control(servicioId));
-    else {
-      const idx = this.serviciosArray.controls.findIndex(c => c.value === servicioId);
-      if (idx >= 0) this.serviciosArray.removeAt(idx);
-    }
+  // ✅ Nuevo método para abrir el diálogo de detalles del servicio
+  verDetalleServicio(servicio: any): void {
+    this.dialog.open(ServicioCardDialogComponent, {
+      width: '600px',
+      data: servicio
+    });
   }
 
   reservarCita(): void {
@@ -247,7 +283,6 @@ export class ReservarCitaComponent implements OnInit {
 
     const { fecha, hora, sede, cliente, peluquero, puestoTrabajo, servicios, observaciones } = this.reservarForm.value;
 
-    // 🔗 Combinar fecha y hora en un objeto Date
     const fechaBase = this.combinarFechaHora(fecha, hora);
 
     if (isNaN(fechaBase.getTime())) {
@@ -255,7 +290,6 @@ export class ReservarCitaComponent implements OnInit {
       return;
     }
 
-    // 🔑 Forzar cliente si el rol es "cliente"
     const clienteId = this.rolUsuario === 'cliente'
       ? this.usuarioLogueado?.clienteId 
       : cliente;
@@ -326,5 +360,11 @@ export class ReservarCitaComponent implements OnInit {
   private toISODate(d: any): string {
     try { return new Date(d).toISOString().split('T')[0]; } 
     catch { return ''; }
+  }
+
+  // 🔹 Mantengo este método para compatibilidad con mat-selection-list
+  onServiciosChange(selectedIds: string[]) {
+    this.serviciosArray.setValue(selectedIds);
+    this.serviciosArray.markAsTouched();
   }
 }

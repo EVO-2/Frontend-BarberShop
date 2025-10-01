@@ -1,0 +1,62 @@
+<mat-card class="servicio-dialog-card mat-elevation-z8">
+
+  <!-- Header separado -->
+  <div class="header">
+    <div class="avatar">
+      <mat-icon>content_cut</mat-icon>
+    </div>
+    <div class="info">
+      <h3>{{ servicio?.nombre }}</h3>
+      <p>⏱ {{ servicio?.duracion || 0 }} min · 💲 {{ servicio?.precio | currency:'COP':'symbol' }}</p>
+    </div>
+  </div>
+
+  <!-- Carrusel -->
+  <div class="carousel">
+    <button mat-icon-button class="nav left" (click)="prev()" aria-label="Anterior">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <div class="carousel-window" *ngIf="images.length; else noImage">
+      <div
+        class="carousel-track"
+        [style.transform]="'translateX(-' + currentIndex * 100 + '%)'">
+        <div class="image-wrap" *ngFor="let img of images">
+          <img [src]="getImageUrl(img)" alt="{{ servicio?.nombre }}" />
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noImage>
+      <div class="no-image">Sin imágenes</div>
+    </ng-template>
+
+    <button mat-icon-button class="nav right" (click)="next()" aria-label="Siguiente">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- Dots -->
+  <div class="dots" *ngIf="images.length > 1">
+    <button
+      mat-mini-fab
+      [color]="i === currentIndex ? 'primary' : 'accent'"
+      *ngFor="let _ of images; index as i"
+      (click)="selectIndex(i)">
+    </button>
+  </div>
+
+  <!-- Descripción -->
+  <mat-card-content>
+    <p class="descripcion">
+      {{ servicio?.descripcion || 'Sin descripción disponible.' }}
+    </p>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-stroked-button color="warn" (click)="close()">
+      <mat-icon>close</mat-icon>
+      Cerrar
+    </button>
+  </mat-card-actions>
+</mat-card>

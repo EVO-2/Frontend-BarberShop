@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core'; 
+import { NgModule } from '@angular/core';  
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,6 +21,7 @@ import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.compo
 import { LayoutModule } from './layout/layout.module';
 import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
+import { ServicioCardDialogComponent} from './shared/components/servicio-card-dialog/servicio-card-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confi
     CitaUpdateDialogComponent, 
     PagoDialogComponent, 
     GestionarCitasComponent,
-    ConfirmDialogComponent 
+    ConfirmDialogComponent,
+    ServicioCardDialogComponent 
   ],
   imports: [
     BrowserModule,

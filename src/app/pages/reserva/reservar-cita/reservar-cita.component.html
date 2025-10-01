@@ -55,7 +55,12 @@
   <!-- Fecha -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Fecha</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="fecha" (dateChange)="validarFechaHoraYActualizarOcupacion()">
+    <input 
+      matInput 
+      [matDatepicker]="picker" 
+      formControlName="fecha" 
+      (dateChange)="validarFechaHoraYActualizarOcupacion()"
+    >
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
     <mat-error *ngIf="reservarForm.get('fecha')?.hasError('required')">
@@ -69,7 +74,12 @@
   <!-- Hora -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Hora</mat-label>
-    <input matInput type="time" formControlName="hora" (change)="validarFechaHoraYActualizarOcupacion()">
+    <input 
+      matInput 
+      type="time" 
+      formControlName="hora" 
+      (change)="validarFechaHoraYActualizarOcupacion()"
+    >
     <mat-error *ngIf="reservarForm.get('hora')?.hasError('required')">
       La hora es obligatoria
     </mat-error>
@@ -80,13 +90,51 @@
 
   <!-- Servicios -->
   <label class="servicios-label">Servicios</label>
-  <div class="servicios-list">
-    <mat-checkbox *ngFor="let s of servicios"
-                  [checked]="serviciosArray.value.includes(s._id)"
-                  (change)="toggleServicio(s._id, $event)">
-      {{ s?.nombre || 'Sin nombre' }} ({{ s?.duracion || 0 }} min - ${{ s?.precio || 0 }})
-    </mat-checkbox>
+
+  <div class="servicios-container">
+    <!-- Reemplazamos mat-selection-list por un listado controlado -->
+    <div class="servicio-row" *ngFor="let s of servicios">
+      <div
+        class="servicio-card"
+        [class.selected]="isServicioSelected(s._id)"
+        (click)="toggleServicioOnCard(s._id, $event)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="toggleServicioOnCard(s._id, $event)"
+        (keydown.space)="toggleServicioOnCard(s._id, $event)"
+      >
+        <div class="servicio-info">
+          <span class="nombre">{{ s?.nombre || 'Sin nombre' }}</span>
+          <span class="detalles">{{ s?.duracion || 0 }} min · ${{ s?.precio || 0 }}</span>
+        </div>
+
+        <div class="servicio-actions">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="verDetalleServicio(s); $event.stopPropagation()"
+            matTooltip="Ver detalles"
+            type="button"
+            aria-label="Ver detalles servicio"
+          >
+            <mat-icon>info</mat-icon>
+          </button>
+
+          <!-- Checkbox con disableRipple para evitar cualquier óvalo -->
+          <mat-checkbox
+            class="servicio-checkbox"
+            disableRipple
+            [checked]="isServicioSelected(s._id)"
+            (change)="toggleServicio(s._id, $event)"
+            (click)="$event.stopPropagation()"
+            aria-label="Seleccionar servicio"
+          >
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
   </div>
+
   <mat-error *ngIf="serviciosArray.invalid || serviciosArray.length === 0">
     Debes seleccionar al menos un servicio
   </mat-error>
@@ -99,10 +147,20 @@
 
   <!-- Botones -->
   <div class="botones">
-    <button mat-raised-button color="primary" type="submit" [disabled]="reservarForm.invalid || fechaHoraInvalida || loading">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      type="submit" 
+      [disabled]="reservarForm.invalid || fechaHoraInvalida || loading"
+    >
       Reservar Cita
     </button>
-    <button mat-raised-button color="warn" type="button" (click)="cancelarCita()">
+    <button 
+      mat-raised-button 
+      color="warn" 
+      type="button" 
+      (click)="cancelarCita()"
+    >
       Cancelar
     </button>
   </div>

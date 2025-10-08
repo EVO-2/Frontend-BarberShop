@@ -228,7 +228,8 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
       const horaPayload = horaFin && horaFin.trim() !== '' ? horaFin.trim() : undefined;
 
       this.citaService.finalizarCita(String(cita.id), peluqueroId, horaPayload).subscribe({
-        next: (updated: Cita) => {
+        next: (response: any) => {
+          const updated: Cita = response.data || response; // ✅ soporte flexible
           this.cargarCitas();
 
           const index = this.dataSource.data.findIndex(c => c.id === cita.id);
@@ -239,8 +240,10 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
             this.cargarCitas();
           }
 
-          const duracion = updated.duracionRealMin || 0;
-          this.snack.open(`✅ Cita finalizada — duración: ${duracion} min`, 'Cerrar', { duration: 3500 });
+          const duracion = updated?.duracionRealMin ?? 0;
+          const duracionFormateada = this.formatDuracion(duracion);
+
+          this.snack.open(`✅ Cita finalizada — duración: ${duracionFormateada}`, 'Cerrar', { duration: 3500 });
         },
         error: (err) => {
           this.snack.open(err.error?.mensaje || `❌ Error al finalizar cita`, 'Cerrar', { duration: 3500 });
@@ -315,33 +318,45 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
   }
 
   getServicios(cita: Cita): string {
-    if (!cita?.servicios?.length) return 'N/A';
+  if (!cita?.servicios?.length) return 'N/A';
 
-    return cita.servicios
-      .map((s) => {
-        if (typeof s === 'string') {
-          return `ID:${s.substring(0, 6)}`;
-        }
-        return s?.nombre || '';
-      })
-      .filter((nombre: string) => nombre)
-      .join(', ') || 'N/A';
+  return cita.servicios
+    .map((s) => {
+      if (typeof s === 'string') {
+        return `ID:${s.substring(0, 6)}`;
+      }
+      return s?.nombre || '';
+    })
+    .filter((nombre: string) => nombre)
+    .join(', ') || 'N/A';
+}
+
+private formatDuracion(minutos: number): string {
+  if (!minutos || minutos <= 0) return 'N/A';
+
+  // Si es menor a 60 minutos, muestra en minutos
+  if (minutos < 60) {
+    return `${minutos} min`;
   }
 
-  private formatDuracion(minutos: number): string {
-    if (!minutos || minutos <= 0) return 'N/A';
+  // Si es 60 o más, muestra en formato hora:minutos
+  const horas = Math.floor(minutos / 60);
+  const mins = minutos % 60;
 
-    const horas = Math.floor(minutos / 60);
-    const mins = minutos % 60;
-
-    const hStr = horas.toString().padStart(2, '0');
-    const mStr = mins.toString().padStart(2, '0');
-    return `${hStr}:${mStr} hrs`;
+  if (mins === 0) {
+    // Ejemplo: "1 hr" o "2 hrs"
+    return `${horas} ${horas === 1 ? 'hr' : 'hrs'}`;
   }
+
+  const hStr = horas.toString();
+  const mStr = mins.toString().padStart(2, '0');
+  return `${hStr}:${mStr} hrs`;
+}
 
   getServiciosTooltip(cita: any): string {
     return `📌 Servicios: ${this.getServicios(cita)}\n⏱️ Duración real: ${this.formatDuracion(cita?.duracionRealMin || 0)}`;
   }
+
 
   cancelarCita(cita: any): void {
     const dialogRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(

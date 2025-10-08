@@ -6,11 +6,12 @@ import { LayoutComponent } from './layout/layout/layout.component';
 import { AuthGuard } from './guards/auth.guard';
 import { RegistroComponent } from './auth/registro/registro.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
-import { UsuariosComponent } from './pages/usuarios/usuarios.component'; 
+import { UsuariosComponent } from './pages/usuarios/usuarios.component';
 import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component';
-import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component'; 
-import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component'; 
+import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component';
+import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
 import { RoleGuard } from './guards/role.guard';
+import { SedesComponent } from './pages/sedes/sedes.component'; // ✅ import agregado
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -33,6 +34,12 @@ const routes: Routes = [
         component: UsuariosComponent, 
         canActivate: [RoleGuard], 
         data: { roles: ['admin'] } 
+      },
+      { 
+        path: 'sedes',                        
+        component: SedesComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
       { 
         path: 'reservar', 

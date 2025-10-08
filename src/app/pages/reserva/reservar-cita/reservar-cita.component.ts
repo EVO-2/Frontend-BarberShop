@@ -282,11 +282,17 @@ export class ReservarCitaComponent implements OnInit {
     }
 
     const { fecha, hora, sede, cliente, peluquero, puestoTrabajo, servicios, observaciones } = this.reservarForm.value;
-
     const fechaBase = this.combinarFechaHora(fecha, hora);
 
     if (isNaN(fechaBase.getTime())) {
       this.snackBar.open('❌ Fecha u hora inválida', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // 🕓 VALIDACIÓN: no permitir fechas pasadas
+    const ahora = new Date();
+    if (fechaBase.getTime() < ahora.getTime()) {
+      this.snackBar.open('⚠️ No puedes agendar una cita en una fecha u hora pasada', 'Cerrar', { duration: 3500 });
       return;
     }
 
@@ -300,8 +306,8 @@ export class ReservarCitaComponent implements OnInit {
       peluquero,
       puestoTrabajo,
       servicios,
-      fecha: fechaBase.toISOString(),   
-      fechaBase: fechaBase.toISOString(), 
+      fecha: fechaBase.toISOString(),
+      fechaBase: fechaBase.toISOString(),
       hora,
       observacion: observaciones || ''
     };
@@ -322,6 +328,7 @@ export class ReservarCitaComponent implements OnInit {
       }
     });
   }
+
 
   cancelarCita(): void {
     this.reservarForm.reset();

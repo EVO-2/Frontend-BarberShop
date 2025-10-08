@@ -12,7 +12,16 @@ export class MenuService {
     { label: 'Mis Citas', ruta: '/mis-citas', icono: 'calendar_month', roles: ['cliente', 'barbero', 'admin'] },
     { label: 'Gestionar Citas', ruta: '/gestionar-citas', icono: 'content_cut', roles: ['barbero', 'admin'] },
     { label: 'Reportes', ruta: '/reportes', icono: 'bar_chart', roles: ['admin'] },
-    { label: 'Configuración', ruta: '/configuracion', icono: 'settings', roles: ['admin'] },
+    {
+      label: 'Configuración',
+      icono: 'settings',
+      roles: ['admin'],
+      children: [
+        { label: 'Sedes', ruta: 'sedes', icono: 'store' },
+        { label: 'Puestos de Trabajo', ruta: 'puestos', icono: 'chair' },
+        { label: 'Servicios', ruta: 'servicios', icono: 'build' },
+      ]
+    }
   ];
 
   constructor() {}

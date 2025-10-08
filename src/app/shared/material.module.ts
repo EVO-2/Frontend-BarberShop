@@ -25,13 +25,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-
-
-
-// Locale ES (España / Colombia)
+// ✅ Registrar el locale español (Colombia)
 registerLocaleData(localeEs);
 
-// Custom Date Adapter para formato DD/MM/YYYY
+// ✅ Adaptador personalizado de fechas en formato DD/MM/YYYY
 import { NativeDateAdapter } from '@angular/material/core';
 
 export class EsDateAdapter extends NativeDateAdapter {
@@ -53,7 +50,13 @@ export const MY_DATE_FORMATS = {
   }
 };
 
+// ✅ Agrupamos todos los módulos en un array
 const materialModules = [
+  CommonModule,
+  ReactiveFormsModule,
+  FormsModule,
+
+  // Angular Material
   MatInputModule,
   MatFormFieldModule,
   MatButtonModule,
@@ -66,11 +69,8 @@ const materialModules = [
   MatSnackBarModule,
   MatDialogModule,
   MatMenuModule,
-  ReactiveFormsModule,
-  FormsModule,
   MatCheckboxModule,
   MatTableModule,
-  CommonModule,
   MatPaginatorModule,
   MatSortModule,
   MatSlideToggleModule,

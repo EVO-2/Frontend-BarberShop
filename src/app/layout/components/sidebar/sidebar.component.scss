@@ -5,8 +5,8 @@
   flex-direction: column;
   align-items: stretch;
   box-sizing: border-box;
-  
-  
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
 
   .sidebar-logo {
     width: 100%;
@@ -15,7 +15,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #e0e0e0; // opcional, línea decorativa
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fafafa;
 
     img {
       max-width: 100%;
@@ -23,36 +24,134 @@
       height: auto;
       object-fit: contain;
       display: block;
+      transition: transform 0.3s ease;
+    }
+
+    img:hover {
+      transform: scale(1.05);
     }
   }
 
   .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 12px; // espacio entre icono y texto
-    padding: 12px 16px;
+    gap: 12px;
+    padding: 2px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      background-color: #f3f4f6;
+      color: #111827;
+      box-shadow: inset 3px 0 0 #3b82f6;
+    }
+
+    &.active-link {
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+      box-shadow: inset 3px 0 0 #3b82f6;
+    }
   }
 
   .sidebar-icon {
-  font-size: 20px;
-  color: #4b5563;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  line-height: 1;
-  position: relative;
-  top: 1px; 
-}
+    font-size: 20px;
+    color: #4b5563;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 1;
+    position: relative;
+    top: 1px;
+    transition: color 0.3s ease;
+  }
 
-.sidebar-label {
-  font-size: 17px;
-  font-weight: 500;
-  color: #1f2937;
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
-  position: relative;
-  top: 1px; 
-}
+  .sidebar-label {
+    font-size: 17px;
+    font-weight: 500;
+    color: #1f2937;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    position: relative;
+    top: 1px;
+    transition: color 0.3s ease;
+  }
+
+  /* Submenú refinado */
+  .sidebar-parent {
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+  }
+
+  .expand-icon {
+    margin-left: auto;
+    font-size: 18px;
+    color: #6b7280;
+    transition: transform 0.3s ease;
+  }
+
+  /* Animación de rotación cuando está expandido */
+  .sidebar-parent button[aria-expanded='true'] .expand-icon {
+    transform: rotate(180deg);
+  }
+
+  .submenu {
+    display: flex;
+    flex-direction: column;
+    margin-left: 1.5rem;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 0.5rem;
+    background-color: #fafafa;
+    border-radius: 4px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .submenu-link {
+    padding-left: 1rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    color: #374151;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      background-color: #f0f9ff;
+      color: #1d4ed8;
+    }
+  }
+
+  .small {
+    font-size: 18px !important;
+  }
+
+    /* ✅ Asegurar que el texto se ajuste y no se oculte por flex */
+  .sidebar-link,
+  .submenu-link {
+    display: flex;
+    align-items: flex-start; /* Permite que varias líneas se acomoden */
+    flex-wrap: wrap; /* Permite que el texto baje a otra línea */
+    width: 100%; /* Evita que el contenedor recorte el texto */
+  }
+
+  /* ✅ Asegurar que los textos ocupen todo el espacio disponible */
+  .sidebar-label {
+    flex: 1 1 auto;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    word-wrap: break-word;
+  }
+
+  /* ✅ Si algún contenedor padre limita el ancho */
+  .submenu {
+    width: 100%;
+  }
+
+  /* ✅ Para íconos con textos largos: que no se colapse el espacio */
+  .sidebar-icon {
+    flex-shrink: 0;
+  }
 }

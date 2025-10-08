@@ -1,0 +1,109 @@
+<div class="sedes-container">
+  <mat-card class="sedes-card mat-elevation-z4">
+    <mat-card-title>Gestión de Sedes</mat-card-title>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button mat-raised-button color="primary" (click)="abrirDialog()" matTooltip="Agregar nueva sede">
+        + Nueva Sede
+      </button>
+
+      <div class="filtro-container">
+        <mat-form-field appearance="outline" class="filter-input">
+          <mat-label>Filtrar por nombre o dirección</mat-label>
+          <input matInput (keyup)="aplicarFiltro($event)" #filtroInput placeholder="Buscar..." />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="filtroInput.value=''; aplicarFiltro($event)"
+          matTooltip="Limpiar filtro"
+        >
+          <mat-icon>clear</mat-icon> Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="tabla-sedes mt-4">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2 w-full">
+
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <mat-icon fontIcon="tag" class="mr-1"></mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let sede; let i = index">
+            {{ i + 1 }}
+          </td>
+        </ng-container>
+
+        <!-- Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <mat-icon fontIcon="location_on" class="mr-2"></mat-icon> Nombre
+          </th>
+          <td mat-cell *matCellDef="let sede">{{ sede.nombre }}</td>
+        </ng-container>
+
+        <!-- Dirección -->
+        <ng-container matColumnDef="direccion">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <mat-icon fontIcon="place" class="mr-2"></mat-icon> Dirección
+          </th>
+          <td mat-cell *matCellDef="let sede">{{ sede.direccion }}</td>
+        </ng-container>
+
+        <!-- Teléfono -->
+        <ng-container matColumnDef="telefono">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <mat-icon fontIcon="phone" class="mr-2"></mat-icon> Teléfono
+          </th>
+          <td mat-cell *matCellDef="let sede">{{ sede.telefono || '—' }}</td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <mat-icon fontIcon="toggle_on" class="mr-2"></mat-icon> Estado
+          </th>
+          <td mat-cell *matCellDef="let sede">
+            <span class="estado" [ngClass]="sede.estado ? 'activo' : 'inactivo'">
+              {{ sede.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon fontIcon="settings" class="mr-1"></mat-icon> Acciones
+          </th>
+          <td mat-cell *matCellDef="let sede">
+            <button mat-icon-button color="primary" (click)="abrirDialog(sede)" matTooltip="Editar sede">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              [color]="sede.estado ? 'warn' : 'primary'"
+              (click)="cambiarEstado(sede)"
+              [matTooltip]="sede.estado ? 'Desactivar sede' : 'Activar sede'"
+            >
+              <mat-icon>{{ sede.estado ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Encabezados y Filas -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Paginador -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </mat-card>
+</div>

@@ -11,7 +11,8 @@ import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-ci
 import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component';
 import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
 import { RoleGuard } from './guards/role.guard';
-import { SedesComponent } from './pages/sedes/sedes.component'; // ✅ import agregado
+import { SedesComponent } from './pages/sedes/sedes.component';
+import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-puestos.component'; // ✅ Import agregado
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -24,7 +25,7 @@ const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard], // primero valida si hay token
+    canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'perfil', component: PerfilComponent },
@@ -40,6 +41,12 @@ const routes: Routes = [
         component: SedesComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
+      },
+      { 
+        path: 'puestos',                        
+        component: GestionarPuestosComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] } // solo admin puede gestionar puestos
       },
       { 
         path: 'reservar', 

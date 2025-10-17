@@ -1,0 +1,183 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* ======= TÍTULO PRINCIPAL ======= */
+.titulo-pagina {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+
+  .icono-titulo {
+    margin-right: 10px;
+    color: #1976d2;
+    font-size: 2rem;
+  }
+}
+
+/* ======= SELECTORES Y FORMULARIOS ======= */
+mat-form-field {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* ======= BOTÓN CREAR PUESTO (animado y posicionado arriba) ======= */
+.boton-crear-puesto {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  button {
+    font-weight: 600;
+    mat-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+/* ======= TABLA DE PUESTOS (animación al aparecer) ======= */
+.tabla-contenedor {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabla-personalizada {
+  width: 100%;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+
+  th.mat-header-cell {
+    background: #f4f6f8;
+    color: #37474f;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 2px solid #e0e0e0;
+
+    .icono-header {
+      vertical-align: middle;
+      margin-right: 6px;
+      color: #1976d2;
+    }
+  }
+
+  td.mat-cell {
+    padding: 0.9rem;
+    text-align: center;
+    color: #424242;
+  }
+
+  tr.mat-row:hover {
+    background-color: #f9fafb;
+    transition: background-color 0.25s ease;
+  }
+}
+
+/* ======= ESTADOS ======= */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.3rem 0.8rem;
+
+  &.activo {
+    background: #e8f5e9;
+    color: #2e7d32;
+
+    .estado-icono {
+      color: #2e7d32;
+      margin-right: 4px;
+    }
+  }
+
+  &.inactivo {
+    background: #ffebee;
+    color: #c62828;
+
+    .estado-icono {
+      color: #c62828;
+      margin-right: 4px;
+    }
+  }
+}
+
+/* ======= BOTONES DE ACCIÓN ======= */
+button[mat-icon-button] {
+  margin: 0 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+/* ======= TEXTO Y DETALLES ======= */
+.no-asignado {
+  color: #9e9e9e;
+  font-style: italic;
+}
+
+/* ======= ICONO CUANDO NO HAY DATOS ======= */
+.icono-vacio {
+  color: #9e9e9e;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ======= MENSAJE SIN SEDE SELECCIONADA ======= */
+.mensaje-sin-sede {
+  text-align: center;
+  color: #607d8b;
+  font-style: italic;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  animation: aparecerSuave 0.5s ease;
+
+  mat-icon {
+    color: #9e9e9e;
+    vertical-align: middle;
+  }
+}
+
+/* ======= ANIMACIONES ======= */
+@keyframes aparecerSuave {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

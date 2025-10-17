@@ -1,0 +1,122 @@
+<div class="container mt-4">
+  <!-- Encabezado con título -->
+  <div class="flex items-center justify-center mb-4">
+    <h2 class="titulo-pagina flex items-center gap-2">
+      <mat-icon class="icono-titulo">chair</mat-icon>
+      Gestión de Puestos de Trabajo
+    </h2>
+  </div>
+
+  <!-- Selector de sede -->
+  <mat-form-field appearance="outline" class="w-full mb-4">
+    <mat-label>Seleccionar sede</mat-label>
+    <mat-select [(value)]="sedeSeleccionada" (selectionChange)="onSedeSeleccionada()">
+      <mat-option *ngFor="let sede of sedes" [value]="sede._id">
+        <mat-icon class="mr-2">storefront</mat-icon>
+        {{ sede.nombre }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Mostrar mensaje si no hay sede seleccionada -->
+  <ng-container *ngIf="!sedeSeleccionada">
+    <p class="mensaje-sin-sede">
+      <mat-icon>info</mat-icon>
+      Selecciona una sede para ver o crear puestos de trabajo.
+    </p>
+  </ng-container>
+
+  <!-- Mostrar botón y tabla solo si hay sede -->
+  <ng-container *ngIf="sedeSeleccionada">
+    <!-- Botón Crear Puesto -->
+    <div class="boton-crear-puesto visible">
+      <button mat-raised-button color="primary" (click)="abrirDialogoCrear()">
+        <mat-icon>add_circle</mat-icon>
+        Crear Puesto
+      </button>
+    </div>
+
+    <!-- Tabla de puestos -->
+    <div class="tabla-contenedor visible" *ngIf="puestos.length > 0; else noData">
+      <table mat-table [dataSource]="puestos" class="mat-elevation-z8 w-full tabla-personalizada">
+
+        <!-- Columna nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon class="icono-header">badge</mat-icon> Nombre
+          </th>
+          <td mat-cell *matCellDef="let puesto"> {{ puesto.nombre }} </td>
+        </ng-container>
+
+        <!-- Columna peluquero -->
+        <ng-container matColumnDef="peluquero">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon class="icono-header">content_cut</mat-icon> Peluquero
+          </th>
+          <td mat-cell *matCellDef="let puesto">
+            <span [ngClass]="{'no-asignado': obtenerNombrePeluquero(puesto) === 'No asignado'}">
+              {{ obtenerNombrePeluquero(puesto) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Columna estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon class="icono-header">circle</mat-icon> Estado
+          </th>
+          <td mat-cell *matCellDef="let puesto">
+            <span class="estado"
+              [ngClass]="{
+                'activo': puesto.estado,
+                'inactivo': !puesto.estado
+              }">
+              <mat-icon class="estado-icono">
+                {{ puesto.estado ? 'check_circle' : 'cancel' }}
+              </mat-icon>
+              {{ puesto.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Columna acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon class="icono-header">settings</mat-icon> Acciones
+          </th>
+          <td mat-cell *matCellDef="let puesto">
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="abrirDialogoEditar(puesto)"
+              matTooltip="Editar puesto"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              [color]="puesto.estado ? 'warn' : 'accent'"
+              (click)="cambiarEstadoPuesto(puesto)"
+              [matTooltip]="puesto.estado ? 'Desactivar puesto' : 'Activar puesto'"
+            >
+              <mat-icon>{{ puesto.estado ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Filas -->
+        <tr mat-header-row *matHeaderRowDef="['nombre', 'peluquero', 'estado', 'acciones']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['nombre', 'peluquero', 'estado', 'acciones'];"></tr>
+      </table>
+    </div>
+  </ng-container>
+
+  <!-- Mensaje si no hay datos -->
+  <ng-template #noData>
+    <p class="text-center text-gray-500 mt-4" *ngIf="sedeSeleccionada">
+      <mat-icon class="icono-vacio">info</mat-icon>
+      No hay puestos de trabajo registrados para esta sede.
+    </p>
+  </ng-template>
+</div>

@@ -25,6 +25,9 @@ import { LayoutModule } from './layout/layout.module';
 
 import { SedesComponent } from './pages/sedes/sedes.component';
 import { SedeDialogComponent } from './shared/components/sede-dialog/sede-dialog.component'; 
+import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-puestos.component';
+import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-dialog.component';  
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,7 +43,9 @@ import { SedeDialogComponent } from './shared/components/sede-dialog/sede-dialog
     ConfirmDialogComponent,
     ServicioCardDialogComponent,
     SedesComponent,
-    SedeDialogComponent 
+    SedeDialogComponent,
+    GestionarPuestosComponent,
+    PuestoDialogComponent   
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,61 @@
+<h2 mat-dialog-title class="flex items-center gap-2">
+  <mat-icon color="primary">
+    {{ modoEdicion ? 'edit' : 'add_circle' }}
+  </mat-icon>
+  {{ modoEdicion ? 'Editar Puesto de Trabajo' : 'Nuevo Puesto de Trabajo' }}
+</h2>
+
+<mat-dialog-content [formGroup]="formPuesto" class="dialog-content space-y-5">
+  <!-- Campo: Nombre del puesto -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Nombre del puesto</mat-label>
+    <input
+      matInput
+      formControlName="nombre"
+      placeholder="Ej: Puesto 1"
+      maxlength="50"
+    />
+    <mat-error *ngIf="formPuesto.get('nombre')?.hasError('required')">
+      El nombre es obligatorio
+    </mat-error>
+    <mat-error *ngIf="formPuesto.get('nombre')?.hasError('minlength')">
+      Mínimo 3 caracteres
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Campo: Sede (solo lectura) -->
+  <mat-form-field appearance="outline" class="w-full">
+  <mat-label>Sede</mat-label>
+  <input
+    matInput
+    formControlName="sede_nombre"
+    readonly
+  />
+</mat-form-field>
+
+  <!-- Campo: Estado -->
+  <div class="flex items-center justify-between mt-3">
+    <span class="font-medium text-gray-700">Estado</span>
+    <mat-slide-toggle formControlName="estado" color="primary">
+      {{ formPuesto.get('estado')?.value ? 'Activo' : 'Inactivo' }}
+    </mat-slide-toggle>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mt-6">
+  <button mat-stroked-button color="warn" (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="guardarPuesto()"
+    [disabled]="formPuesto.invalid"
+  >
+    <mat-icon class="mr-1">
+      {{ modoEdicion ? 'save' : 'add' }}
+    </mat-icon>
+    {{ modoEdicion ? 'Actualizar Puesto' : 'Crear Puesto' }}
+  </button>
+</mat-dialog-actions>

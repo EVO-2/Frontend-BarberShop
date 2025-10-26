@@ -1,19 +1,25 @@
 <mat-card class="servicio-dialog-card mat-elevation-z8">
-
-  <!-- Header separado -->
+  <!-- HEADER -->
   <div class="header">
     <div class="avatar">
-      <mat-icon>content_cut</mat-icon>
+      <mat-icon color="primary">content_cut</mat-icon>
     </div>
     <div class="info">
-      <h3>{{ servicio?.nombre }}</h3>
-      <p>⏱ {{ servicio?.duracion || 0 }} min · 💲 {{ servicio?.precio | currency:'COP':'symbol' }}</p>
+      <h2>{{ servicio.nombre }}</h2>
+      <p class="detalle">
+        ⏱ {{ servicio.duracion || 0 }} min · 💲 {{ servicio.precio | currency:'COP':'symbol':'1.0-0' }}
+      </p>
     </div>
   </div>
 
-  <!-- Carrusel -->
+  <!-- CARRUSEL -->
   <div class="carousel">
-    <button mat-icon-button class="nav left" (click)="prev()" aria-label="Anterior">
+    <button
+      mat-icon-button
+      class="nav left"
+      (click)="prev()"
+      aria-label="Anterior"
+      *ngIf="images.length > 1">
       <mat-icon>chevron_left</mat-icon>
     </button>
 
@@ -22,37 +28,46 @@
         class="carousel-track"
         [style.transform]="'translateX(-' + currentIndex * 100 + '%)'">
         <div class="image-wrap" *ngFor="let img of images">
-          <img [src]="getImageUrl(img)" alt="{{ servicio?.nombre }}" />
+          <img [src]="getImageUrl(img)" [alt]="servicio.nombre" loading="lazy" />
         </div>
       </div>
     </div>
 
     <ng-template #noImage>
-      <div class="no-image">Sin imágenes</div>
+      <div class="no-image">
+        <mat-icon>image_not_supported</mat-icon>
+        <p>Sin imágenes</p>
+      </div>
     </ng-template>
 
-    <button mat-icon-button class="nav right" (click)="next()" aria-label="Siguiente">
+    <button
+      mat-icon-button
+      class="nav right"
+      (click)="next()"
+      aria-label="Siguiente"
+      *ngIf="images.length > 1">
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
 
-  <!-- Dots -->
+  <!-- DOTS -->
   <div class="dots" *ngIf="images.length > 1">
     <button
-      mat-mini-fab
-      [color]="i === currentIndex ? 'primary' : 'accent'"
       *ngFor="let _ of images; index as i"
+      mat-mini-fab
+      [color]="i === currentIndex ? 'primary' : undefined"
       (click)="selectIndex(i)">
     </button>
   </div>
 
-  <!-- Descripción -->
+  <!-- DESCRIPCIÓN -->
   <mat-card-content>
     <p class="descripcion">
-      {{ servicio?.descripcion || 'Sin descripción disponible.' }}
+      {{ servicio.descripcion || 'Sin descripción disponible.' }}
     </p>
   </mat-card-content>
 
+  <!-- BOTÓN CERRAR -->
   <mat-card-actions align="end">
     <button mat-stroked-button color="warn" (click)="close()">
       <mat-icon>close</mat-icon>

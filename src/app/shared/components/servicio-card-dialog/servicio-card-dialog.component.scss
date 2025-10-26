@@ -1,131 +1,107 @@
-.servicio-dialog-card { 
-  max-width: 950px;
+.servicio-dialog-card {
+  max-width: 700px;
   margin: auto;
   border-radius: 16px;
   overflow: hidden;
-  background: #fff;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  margin-left: 2%;
-  margin-right: 2%;
+  background: #ffffff;
 
   .header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    background: linear-gradient(135deg, #673ab7, #512da8);
-    color: #fff;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
 
     .avatar {
-      background: rgba(255, 255, 255, 0.25);
+      background-color: rgba(63, 81, 181, 0.1);
       border-radius: 50%;
+      padding: 0.8rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 55px;
-      height: 55px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-
-      mat-icon {
-        font-size: 28px;
-        color: #fff;
-      }
+      margin-right: 1rem;
     }
 
     .info {
-      display: flex;
-      flex-direction: column;
-
-      h3 {
+      h2 {
         margin: 0;
-        font-size: 20px;
         font-weight: 600;
-        line-height: 1.2;
+        color: #2e2e2e;
       }
-
-      p {
-        margin: 2px 0 0 0;
-        font-size: 14px;
-        opacity: 0.9;
+      .detalle {
+        font-size: 0.9rem;
+        color: #777;
       }
     }
   }
 
   .carousel {
     position: relative;
-    background: #f5f5f5;
-    padding: 10px;
     overflow: hidden;
+    height: 360px;
+    background-color: #fafafa;
 
     .carousel-window {
       width: 100%;
-      height: 340px;
+      height: 100%;
       overflow: hidden;
-      border-radius: 12px;
+      border-radius: 8px;
     }
 
     .carousel-track {
       display: flex;
-      width: 100%;
+      transition: transform 0.6s ease;
       height: 100%;
-      transition: transform 0.6s ease-in-out;
     }
 
     .image-wrap {
       flex: 0 0 100%;
-      height: 100%;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      background: #f9f9f9;
 
       img {
         width: 100%;
         height: 100%;
-        object-fit: cover; // asegura que todas tengan el mismo tamaño
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-      }
-
-      img:hover {
-        transform: scale(1.05);
-        transition: transform 0.4s ease, box-shadow 0.3s ease;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        object-fit: cover;
+        border-radius: 8px;
       }
     }
 
     .no-image {
-      width: 100%;
-      height: 340px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #e0e0e0;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 500;
-      color: #555;
+      height: 360px;
+      color: #999;
+      font-size: 1.1rem;
+
+      mat-icon {
+        font-size: 48px;
+        margin-bottom: 0.5rem;
+      }
     }
 
     .nav {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      border-radius: 50%;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(4px);
+      transition: background 0.3s;
+      z-index: 2;
 
       &:hover {
-        background: rgba(0,0,0,0.7);
+        background: rgba(255, 255, 255, 0.95);
       }
 
       &.left {
-        left: 12px;
+        left: 10px;
       }
 
       &.right {
-        right: 12px;
+        right: 10px;
       }
     }
   }
@@ -133,41 +109,18 @@
   .dots {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin: 16px 0;
-
-    button {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      min-width: unset !important;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      transition: transform 0.2s ease;
-
-      &.mat-primary {
-        transform: scale(1.2);
-      }
-    }
+    gap: 0.6rem;
+    margin: 0.8rem 0;
   }
 
   .descripcion {
-    font-size: 15px;
-    color: #333;
-    line-height: 1.6;
-    margin: 16px 20px;
+    font-size: 1rem;
+    color: #444;
     text-align: justify;
+    padding: 0.5rem 1.2rem;
   }
 
   mat-card-actions {
-    padding: 12px 20px 20px;
-    display: flex;
-    justify-content: flex-end;
-
-    button {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-    }
+    padding: 1rem 1.5rem;
   }
 }

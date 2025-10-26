@@ -7,9 +7,11 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor'; 
 
+// ======= Módulos compartidos =======
 import { MaterialModule } from './shared/material.module';
+import { LayoutModule } from './layout/layout.module';
 
-// ======= Componentes =======
+// ======= Componentes principales =======
 import { LoginComponent } from './auth/login/login.component';
 import { RegistroComponent } from './auth/registro/registro.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
@@ -21,12 +23,12 @@ import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.compo
 import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { ServicioCardDialogComponent } from './shared/components/servicio-card-dialog/servicio-card-dialog.component';
-import { LayoutModule } from './layout/layout.module';
-
 import { SedesComponent } from './pages/sedes/sedes.component';
 import { SedeDialogComponent } from './shared/components/sede-dialog/sede-dialog.component'; 
 import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-puestos.component';
 import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-dialog.component';  
+import { ServiciosComponent } from './pages/servicios/servicios.component'; 
+import { ServicioDialogComponent } from './shared/components/servicio-dialog/servicio-dialog.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-
     SedesComponent,
     SedeDialogComponent,
     GestionarPuestosComponent,
-    PuestoDialogComponent   
+    PuestoDialogComponent,
+    ServiciosComponent,
+    ServicioDialogComponent 
   ],
   imports: [
     BrowserModule,

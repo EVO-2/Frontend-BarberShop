@@ -21,3 +21,13 @@ $jevo-theme: mat.define-light-theme((
 
 // 🔥 Aplica los estilos de Material con tu tema
 @include mat.all-component-themes($jevo-theme);
+
+.snackbar-success {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+}
+
+.snackbar-error {
+  background-color: #f44336 !important;
+  color: #fff !important;
+}

@@ -1,0 +1,210 @@
+<!-- ==================== CABECERA DEL DIÁLOGO ==================== -->
+<h2
+  mat-dialog-title
+  class="titulo-dialog flex items-center gap-2 text-2xl font-semibold text-gray-800"
+>
+  <mat-icon color="primary" class="text-3xl">
+    {{ modoEdicion ? 'edit' : 'add_circle' }}
+  </mat-icon>
+  {{ tituloDialogo }}
+</h2>
+
+<!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+<mat-dialog-content [formGroup]="form" class="contenido-dialog pt-4 space-y-8">
+
+  <!-- ===== FORMULARIO ===== -->
+  <div class="form-grid grid grid-cols-1 md:grid-cols-2 gap-6">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre del servicio</mat-label>
+      <input
+        matInput
+        formControlName="nombre"
+        placeholder="Ej: Corte clásico para caballeros"
+      />
+      <mat-error *ngIf="form.get('nombre')?.hasError('required')">
+        Campo obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Duración (minutos)</mat-label>
+      <input matInput type="number" formControlName="duracion" min="5" />
+      <mat-error *ngIf="form.get('duracion')?.hasError('required')">
+        Campo obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Precio (COP)</mat-label>
+      <input matInput type="number" formControlName="precio" min="0" />
+      <mat-error *ngIf="form.get('precio')?.hasError('required')">
+        Campo obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="descripcion w-full md:col-span-2">
+      <mat-label>Descripción del servicio</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        formControlName="descripcion"
+        placeholder="Agrega una breve descripción del servicio"
+      ></textarea>
+      <mat-error *ngIf="form.get('descripcion')?.hasError('required')">
+        Campo obligatorio
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <!-- ===== SECCIÓN DE IMÁGENES ===== -->
+  <div class="imagen-section border-t border-gray-200 pt-4">
+    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+      <mat-icon color="primary">photo_library</mat-icon>
+      Imágenes del servicio (máx. 3)
+    </h3>
+
+    <!-- BOTÓN DE CARGA -->
+    <label
+      for="imagenUpload"
+      class="upload-label cursor-pointer flex items-center justify-center gap-3 p-5 rounded-xl border border-dashed border-gray-300 bg-gray-50 hover:border-primary hover:bg-primary/5 transition-all duration-200"
+      [class.opacity-50]="(imagenesPreview.length + imagenesExistentes.length) >= 3"
+    >
+      <mat-icon color="primary">cloud_upload</mat-icon>
+      <span class="text-gray-700 font-medium">
+        {{
+          (imagenesPreview.length + imagenesExistentes.length) >= 3
+            ? 'Límite alcanzado (3 imágenes)'
+            : 'Seleccionar imágenes'
+        }}
+      </span>
+      <input
+        type="file"
+        id="imagenUpload"
+        hidden
+        (change)="onSeleccionarImagenes($event)"
+        accept="image/*"
+        multiple
+        [disabled]="(imagenesPreview.length + imagenesExistentes.length) >= 3"
+      />
+    </label>
+
+    <!-- ===== PREVISUALIZACIÓN DE IMÁGENES ===== -->
+    <div
+      *ngIf="imagenesExistentes.length || imagenesPreview.length"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-5"
+    >
+      <!-- IMÁGENES EXISTENTES -->
+      <div
+        *ngFor="let img of imagenesExistentes; let i = index"
+        class="relative rounded-xl overflow-hidden shadow-md group bg-gray-50"
+      >
+        <img
+          [src]="img"
+          alt="Imagen existente {{ i + 1 }}"
+          class="w-full h-52 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+          (click)="abrirDetalles({
+            _id: data._id,
+            nombre: form.get('nombre')?.value,
+            descripcion: form.get('descripcion')?.value,
+            duracion: form.get('duracion')?.value,
+            precio: form.get('precio')?.value,
+            imagenes: imagenesExistentes,
+            estado: data.estado
+          })"
+        />
+
+        <div
+          class="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md"
+        >
+          Existente
+        </div>
+
+        <label
+          class="absolute top-3 right-3 bg-white/90 hover:bg-white text-gray-700 rounded-full p-2 cursor-pointer shadow-md transition"
+          [attr.for]="'replaceExistente-' + i"
+          title="Reemplazar imagen existente"
+        >
+          <mat-icon>edit</mat-icon>
+        </label>
+        <input
+          type="file"
+          [id]="'replaceExistente-' + i"
+          hidden
+          accept="image/*"
+          (change)="onReemplazarImagenExistente($event, i)"
+        />
+      </div>
+
+      <!-- IMÁGENES NUEVAS -->
+      <div
+        *ngFor="let img of imagenesPreview; let i = index"
+        class="relative rounded-xl overflow-hidden shadow-md group bg-gray-50"
+      >
+        <img
+          [src]="img"
+          alt="Imagen nueva {{ i + 1 }}"
+          class="w-full h-52 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+          (click)="abrirDetalles({
+            _id: data._id,
+            nombre: form.get('nombre')?.value,
+            descripcion: form.get('descripcion')?.value,
+            duracion: form.get('duracion')?.value,
+            precio: form.get('precio')?.value,
+            imagenes: imagenesPreview,
+            estado: data.estado
+          })"
+        />
+
+        <div
+          class="absolute bottom-2 left-2 bg-green-600/70 text-white text-xs px-2 py-1 rounded-md"
+        >
+          Nueva
+        </div>
+
+        <label
+          class="absolute top-3 right-3 bg-white/90 hover:bg-white text-gray-700 rounded-full p-2 cursor-pointer shadow-md transition"
+          [attr.for]="'replacePreview-' + i"
+          title="Reemplazar imagen nueva"
+        >
+          <mat-icon>edit</mat-icon>
+        </label>
+        <input
+          type="file"
+          [id]="'replacePreview-' + i"
+          hidden
+          accept="image/*"
+          (change)="onReemplazarImagenPreview($event, i)"
+        />
+      </div>
+    </div>
+
+    <!-- MENSAJE CUANDO NO HAY IMÁGENES -->
+    <div
+      *ngIf="!imagenesPreview.length && !imagenesExistentes.length"
+      class="text-center text-gray-500 mt-4 text-sm"
+    >
+      No se han seleccionado imágenes aún.
+    </div>
+  </div>
+</mat-dialog-content>
+
+<!-- ==================== BOTONES DE ACCIÓN ==================== -->
+<mat-dialog-actions align="end" class="pt-6 border-t border-gray-200 mt-4">
+  <button
+    mat-stroked-button
+    color="warn"
+    (click)="cancelar()"
+    class="rounded-xl px-5"
+  >
+    Cancelar
+  </button>
+
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="guardar()"
+    class="rounded-xl px-6 shadow-md hover:shadow-lg transition-all"
+  >
+    {{ modoEdicion ? 'Guardar Cambios' : 'Crear Servicio' }}
+  </button>
+</mat-dialog-actions>

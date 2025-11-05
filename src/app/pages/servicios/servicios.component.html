@@ -68,7 +68,7 @@
           <mat-icon>build</mat-icon> Acciones
         </th>
         <td mat-cell *matCellDef="let servicio" class="cell-center">
-          <button mat-icon-button color="primary" (click)="abrirDetalles(servicio)" matTooltip="Ver detalles">
+          <button mat-icon-button color="primary" (click)="abrirDetalles(servicio, $event)" matTooltip="Ver detalles">
             <mat-icon>visibility</mat-icon>
           </button>
           <button mat-icon-button color="accent" (click)="editarServicio(servicio)" matTooltip="Editar">

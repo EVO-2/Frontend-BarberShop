@@ -1,0 +1,14 @@
+services:
+  frontend-barbershop:
+    build: .
+    container_name: frontend-barbershop
+    ports:
+      - "4200:80"
+    networks:
+      - barber-network
+    environment:
+      - API_URL=http://backend-barbershop:3000
+
+networks:
+  barber-network:
+    external: true

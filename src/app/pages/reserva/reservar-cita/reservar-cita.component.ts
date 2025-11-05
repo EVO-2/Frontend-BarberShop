@@ -77,23 +77,20 @@ export class ReservarCitaComponent implements OnInit {
       puestoTrabajo: ['', Validators.required],
       fecha: ['', Validators.required],
       hora: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
-      servicios: [[], Validators.required], // ✅ array de ids
+      servicios: [[], Validators.required],
       observaciones: ['']
     });
   }
 
-  // ✅ Getter para acceder al control de servicios
   get serviciosArray() {
-    return this.reservarForm.get('servicios') as any; // FormControl que contiene array de ids
+    return this.reservarForm.get('servicios') as any;
   }
 
-  // ✅ Comprueba si un servicio está seleccionado
   isServicioSelected(id: string): boolean {
     const current = this.serviciosArray?.value || [];
     return Array.isArray(current) && current.includes(id);
   }
 
-  // ✅ Toggle manual (checkbox o card)
   toggleServicio(id: string, event: any) {
     const checked = (event && typeof event.checked !== 'undefined')
       ? !!event.checked
@@ -114,7 +111,6 @@ export class ReservarCitaComponent implements OnInit {
     this.serviciosArray.markAsTouched();
   }
 
-  // ✅ Toggle al hacer click sobre la card
   toggleServicioOnCard(id: string, event: Event) {
     event?.stopPropagation();
     const selected = this.isServicioSelected(id);
@@ -128,19 +124,16 @@ export class ReservarCitaComponent implements OnInit {
   private cargarDatos(): void {
     if (this.esAdmin) {
       this.reservaService.getClientes().subscribe({
-        next: res => this.clientes = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []),
-        error: err => console.error('[ReservarCita] getClientes error:', err)
+        next: res => this.clientes = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
       });
     }
 
     this.reservaService.getSedes().subscribe({
-      next: res => this.sedes = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []),
-      error: err => console.error('[ReservarCita] getSedes error:', err)
+      next: res => this.sedes = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
     });
 
     this.reservaService.getServicios().subscribe({
-      next: res => this.servicios = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []),
-      error: err => console.error('[ReservarCita] getServicios error:', err)
+      next: res => this.servicios = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : [])
     });
 
     const obs$ = this.rolUsuario === 'cliente'
@@ -151,8 +144,7 @@ export class ReservarCitaComponent implements OnInit {
       next: res => {
         const pelArray = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
         this.peluquerosAll = pelArray.map((p: any) => ({ ...p, __nombreCalc: this.getNombrePeluquero(p) }));
-      },
-      error: err => console.error('[ReservarCita] cargarDatos peluqueros error:', err)
+      }
     });
   }
 
@@ -193,8 +185,7 @@ export class ReservarCitaComponent implements OnInit {
         });
 
         this.validarFechaHoraYActualizarOcupacion();
-      },
-      error: err => console.error('[ReservarCita] getPuestosPorSede error:', err)
+      }
     });
   }
 
@@ -262,12 +253,10 @@ export class ReservarCitaComponent implements OnInit {
 
         const pelSel = this.ctrl('peluquero')?.value;
         this.fechaHoraInvalida = pelSel && idsOcupados.has(pelSel);
-      },
-      error: err => console.error('[ReservarCita] getCitasPorFechaYHora error:', err)
+      }
     });
   }
 
-  // ✅ Nuevo método para abrir el diálogo de detalles del servicio
   verDetalleServicio(servicio: any): void {
     this.dialog.open(ServicioCardDialogComponent, {
       width: '600px',
@@ -289,7 +278,6 @@ export class ReservarCitaComponent implements OnInit {
       return;
     }
 
-    // 🕓 VALIDACIÓN: no permitir fechas pasadas
     const ahora = new Date();
     if (fechaBase.getTime() < ahora.getTime()) {
       this.snackBar.open('⚠️ No puedes agendar una cita en una fecha u hora pasada', 'Cerrar', { duration: 3500 });
@@ -313,14 +301,12 @@ export class ReservarCitaComponent implements OnInit {
     };
 
     this.reservaService.crearCita(citaData).subscribe({
-      next: (res) => {
-        console.log('[ReservarCita] Cita creada:', res);
+      next: () => {
         this.snackBar.open('✅ Cita creada exitosamente', 'Cerrar', { duration: 3000 });
         this.validarFechaHoraYActualizarOcupacion();
         this.cancelarCita();
       },
       error: (err) => {
-        console.error('[ReservarCita] Error al crear cita:', err);
         const mensaje = err.error?.mensaje?.includes('duplicate key')
           ? '❌ El peluquero ya tiene una cita en esa fecha y hora.'
           : err.error?.mensaje || '❌ Error al crear cita';
@@ -328,7 +314,6 @@ export class ReservarCitaComponent implements OnInit {
       }
     });
   }
-
 
   cancelarCita(): void {
     this.reservarForm.reset();
@@ -369,7 +354,6 @@ export class ReservarCitaComponent implements OnInit {
     catch { return ''; }
   }
 
-  // 🔹 Mantengo este método para compatibilidad con mat-selection-list
   onServiciosChange(selectedIds: string[]) {
     this.serviciosArray.setValue(selectedIds);
     this.serviciosArray.markAsTouched();

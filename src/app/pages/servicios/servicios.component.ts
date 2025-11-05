@@ -89,7 +89,11 @@ export class ServiciosComponent implements OnInit {
   }
 
   /** ================== ABRIR DETALLES ================== */
-  abrirDetalles(servicio: Servicio): void {
+  abrirDetalles(servicio: Servicio, event?: Event): void {
+    if (event) {
+      (event.currentTarget as HTMLElement)?.blur();
+    }
+
     const data = {
       _id: servicio._id,
       nombre: servicio.nombre,
@@ -105,6 +109,7 @@ export class ServiciosComponent implements OnInit {
       data
     });
   }
+
 
   /** ================== EDITAR SERVICIO ================== */
   editarServicio(servicio: Servicio): void {

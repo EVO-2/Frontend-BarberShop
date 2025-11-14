@@ -1,5 +1,9 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
-  baseUrl: 'http://localhost:3000'
+  apiUrl: window.location.hostname === 'localhost' 
+          ? 'http://localhost:3000/api' 
+          : 'http://backend:3000/api',
+  baseUrl: window.location.hostname === 'localhost' 
+          ? 'http://localhost:3000' 
+          : 'http://backend:3000'
 };

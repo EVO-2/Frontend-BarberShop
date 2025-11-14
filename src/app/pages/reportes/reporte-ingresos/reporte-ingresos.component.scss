@@ -1,0 +1,186 @@
+/* === Arreglo definitivo de headers con iconos === */
+
+th.mat-header-cell {
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 10px 0 !important;
+}
+
+.mat-header-cell .mat-sort-header-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px;
+}
+
+.header-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  mat-icon {
+    font-size: 20px !important;
+    height: 20px !important;
+    width: 20px !important;
+    margin-right: 4px;
+  }
+}
+
+td.mat-cell {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+th.mat-header-cell, 
+td.mat-cell {
+  height: 48px !important;
+}
+
+/* === ESTILOS PRINCIPALES DEL CONTENEDOR === */
+
+.reporte-ingresos-container,
+.container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin: 20px;
+
+  h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* === FILTROS === */
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+
+    mat-form-field {
+      width: 240px;
+
+      mat-label {
+        font-weight: 600;
+      }
+    }
+
+    button {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 15px;
+    }
+  }
+
+  /* === TABLAS === */
+  table {
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0 6px !important;
+    margin-top: 1rem;
+
+    th.mat-header-cell {
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 14px 16px;
+      color: #374151;
+      background: transparent !important;
+      text-align: center !important;
+
+      .header-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+
+        mat-icon {
+          font-size: 20px;
+          margin: 0;
+        }
+      }
+    }
+
+    td.mat-cell {
+      background: #ffffff;
+      padding: 14px 16px;
+      text-align: center !important;
+      font-size: 14px;
+      border: none;
+    }
+
+    tr.mat-row {
+      background: #ffffff;
+      border-radius: 10px;
+      transition: 0.25s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+
+      &:hover {
+        background: #f3f3f3;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .no-results {
+    margin-top: 20px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 15px;
+  }
+}
+
+/* CENTRADO PERFECTO EN HEADERS + ICONOS */
+.mat-header-cell,
+.mat-cell {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === NUEVO BLOQUE: TARJETA PROFESIONAL DE TOTALES === */
+
+.resumen-info {
+  margin-top: 1.5rem;
+  padding: 1.2rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: 0.3s ease;
+
+  &:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: #1f2937;
+
+    mat-icon {
+      font-size: 22px;
+      color: #2563eb;
+      transition: 0.3s ease;
+    }
+
+    &:hover mat-icon {
+      transform: scale(1.2);
+      color: #1d4ed8;
+    }
+  }
+}

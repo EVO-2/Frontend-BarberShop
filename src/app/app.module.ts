@@ -30,6 +30,9 @@ import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-
 import { ServiciosComponent } from './pages/servicios/servicios.component'; 
 import { ServicioDialogComponent } from './shared/components/servicio-dialog/servicio-dialog.component';
 
+// ✅ Componente de reportes
+import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,8 +42,8 @@ import { ServicioDialogComponent } from './shared/components/servicio-dialog/ser
     UsuarioDialogComponent,
     ReservarCitaComponent,
     MisCitasComponent,
-    CitaUpdateDialogComponent, 
-    PagoDialogComponent, 
+    CitaUpdateDialogComponent,
+    PagoDialogComponent,
     GestionarCitasComponent,
     ConfirmDialogComponent,
     ServicioCardDialogComponent,
@@ -49,9 +52,10 @@ import { ServicioDialogComponent } from './shared/components/servicio-dialog/ser
     GestionarPuestosComponent,
     PuestoDialogComponent,
     ServiciosComponent,
-    ServicioDialogComponent 
+    ServicioDialogComponent,
+    ReporteIngresosComponent 
   ],
-  imports: [
+ imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

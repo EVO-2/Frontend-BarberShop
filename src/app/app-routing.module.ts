@@ -13,7 +13,8 @@ import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas
 import { RoleGuard } from './guards/role.guard';
 import { SedesComponent } from './pages/sedes/sedes.component';
 import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-puestos.component';
-import { ServiciosComponent } from './pages/servicios/servicios.component'; // ✅ Import nuevo
+import { ServiciosComponent } from './pages/servicios/servicios.component';
+import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component'; // ✅ nuevo import
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -72,10 +73,17 @@ const routes: Routes = [
         component: GestionarCitasComponent, 
         canActivate: [RoleGuard], 
         data: { roles: ['barbero', 'admin'] } 
+      },
+      { 
+        path: 'reportes/ingresos', 
+        component: ReporteIngresosComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] } 
       }
     ]
   },
 
+  // Ruta comodín
   { path: '**', redirectTo: 'login' }
 ];
 

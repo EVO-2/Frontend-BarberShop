@@ -14,7 +14,10 @@ import { RoleGuard } from './guards/role.guard';
 import { SedesComponent } from './pages/sedes/sedes.component';
 import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-puestos.component';
 import { ServiciosComponent } from './pages/servicios/servicios.component';
-import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component'; // ✅ nuevo import
+import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
+
+// ✅ IMPORTAMOS EL COMPONENTE LISTADO DE EQUIPOS
+import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -56,6 +59,14 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: { roles: ['admin'] } 
       },
+
+      { 
+        path: 'equipos',                        
+        component: ListadoEquiposComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] } 
+      },
+
       { 
         path: 'reservar', 
         component: ReservarCitaComponent, 

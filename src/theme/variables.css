@@ -1,0 +1,55 @@
+/**
+ * Ionic Dark Theme
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* =========================
+   VARIABLES BASE (LIGHT)
+   ========================= */
+:root {
+    /* Backgrounds */
+    --app-bg: #f0f8fd;
+    --card-bg: #ffffff;
+
+    /* Text */
+    --text-primary: #1c1c1e;
+    --text-secondary: #555;
+
+    /* Primary */
+    --primary: #1976d2;
+
+    /* Error */
+    --error: #d32f2f;
+
+    /* Ripple */
+    --ripple-light: rgba(255, 255, 255, 0.35);
+}
+
+/* =========================
+   DARK MODE AUTOMÁTICO
+   ========================= */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --app-bg: #0f172a;
+        --card-bg: #020617;
+
+        --text-primary: #e5e7eb;
+        --text-secondary: #9ca3af;
+
+        --primary: #60a5fa;
+
+        --error: #f87171;
+
+        --ripple-light: rgba(255, 255, 255, 0.45);
+    }
+}
+
+/* =========================
+   IONIC SYSTEM DARK MODE
+   (NO TOCAR)
+   ========================= */
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";

@@ -1,27 +1,34 @@
 @use '@angular/material' as mat;
 
-// Core de Material
+/* ============================
+   🔹 CORE ANGULAR MATERIAL
+   ============================ */
 @include mat.core();
 
-// 🎨 Paletas de colores personalizadas
+/* ============================
+   🎨 PALETAS PERSONALIZADAS
+   ============================ */
 $jevo-primary: mat.define-palette(mat.$blue-palette, 900, 800, 700);
 $jevo-accent: mat.define-palette(mat.$grey-palette, 400, 300, 500);
 $jevo-warn: mat.define-palette(mat.$red-palette);
 
-// 🌞 Tema claro personalizado
-$jevo-theme: mat.define-light-theme((
-  color: (
-    primary: $jevo-primary,
-    accent: $jevo-accent,
-    warn: $jevo-warn
-  ),
-  typography: mat.define-typography-config(),
-  density: 0
-));
+/* ============================
+   🌞 TEMA CLARO PERSONALIZADO
+   ============================ */
+$jevo-theme: mat.define-light-theme((color: (primary: $jevo-primary,
+        accent: $jevo-accent,
+        warn: $jevo-warn ),
+      typography: mat.define-typography-config(),
+      density: 0));
 
-// 🔥 Aplica los estilos de Material con tu tema
+/* ============================
+   🔥 APLICAR TEMA MATERIAL
+   ============================ */
 @include mat.all-component-themes($jevo-theme);
 
+/* ============================
+   🔔 SNACKBARS
+   ============================ */
 .snackbar-success {
   background-color: #4caf50 !important;
   color: #fff !important;
@@ -30,4 +37,53 @@ $jevo-theme: mat.define-light-theme((
 .snackbar-error {
   background-color: #f44336 !important;
   color: #fff !important;
+}
+
+/* ============================
+   📐 RESET Y BASE RESPONSIVE
+   ============================ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; // evita scroll horizontal en móviles
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================
+   🧱 CONTENEDOR PRINCIPAL
+   ============================ */
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ============================
+   📱 BREAKPOINTS RESPONSIVE
+   ============================ */
+
+/* 📱 MÓVILES */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* 💻 ESCRITORIO */
+@media (min-width: 769px) {
+  body {
+    font-size: 16px;
+  }
 }

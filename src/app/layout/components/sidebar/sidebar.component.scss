@@ -1,5 +1,5 @@
 .sidebar-container {
-  width: 240px; 
+  width: 240px;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -10,21 +10,24 @@
 
   .sidebar-logo {
     width: 100%;
-    padding: 16px 12px;
+    padding: 10px;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
     background-color: #fafafa;
+    overflow: hidden;
+    border-radius: 15px;
 
     img {
-      max-width: 100%;
-      max-height: 80px;
+      width: 60%;
       height: auto;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
       transition: transform 0.3s ease;
+      border-radius: 15px;
+      background-color: transparent;
     }
 
     img:hover {
@@ -127,13 +130,16 @@
     font-size: 18px !important;
   }
 
-    /* ✅ Asegurar que el texto se ajuste y no se oculte por flex */
+  /* ✅ Asegurar que el texto se ajuste y no se oculte por flex */
   .sidebar-link,
   .submenu-link {
     display: flex;
-    align-items: flex-start; /* Permite que varias líneas se acomoden */
-    flex-wrap: wrap; /* Permite que el texto baje a otra línea */
-    width: 100%; /* Evita que el contenedor recorte el texto */
+    align-items: flex-start;
+    /* Permite que varias líneas se acomoden */
+    flex-wrap: wrap;
+    /* Permite que el texto baje a otra línea */
+    width: 100%;
+    /* Evita que el contenedor recorte el texto */
   }
 
   /* ✅ Asegurar que los textos ocupen todo el espacio disponible */

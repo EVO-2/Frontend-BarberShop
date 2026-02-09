@@ -2,9 +2,13 @@ import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData, CommonModule } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
+// ✅ Ionic
+import { IonicModule } from '@ionic/angular';
+
+// ✅ Forms
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-// ✅ Módulos de Angular Material
+// ✅ Angular Material
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,18 +28,26 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatRippleModule } from '@angular/material/core';
+import {
+  MatNativeDateModule,
+  MAT_DATE_LOCALE,
+  DateAdapter,
+  MAT_DATE_FORMATS
+} from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTabsModule } from '@angular/material/tabs'; 
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-// ✅ Registrar el locale español (Colombia)
+// ✅ Registrar locale español (Colombia)
 registerLocaleData(localeEs);
 
-// ✅ Adaptador personalizado de fechas en formato DD/MM/YYYY
+// ✅ Adaptador personalizado de fechas DD/MM/YYYY
 import { NativeDateAdapter } from '@angular/material/core';
 
 export class EsDateAdapter extends NativeDateAdapter {
-  override format(date: Date, displayFormat: Object): string {
+  override format(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
@@ -53,9 +65,11 @@ export const MY_DATE_FORMATS = {
   }
 };
 
-// ✅ Agrupamos todos los módulos en un array
+// ✅ Módulos agrupados
 const materialModules = [
+  // Core
   CommonModule,
+  IonicModule,
   ReactiveFormsModule,
   FormsModule,
 
@@ -81,10 +95,14 @@ const materialModules = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatTooltipModule,
-  MatTabsModule 
+  MatTabsModule,
+  MatProgressBarModule,
+  BrowserAnimationsModule,
+  MatRippleModule
 ];
 
 @NgModule({
+  imports: [...materialModules],
   exports: [...materialModules],
   providers: [
     { provide: LOCALE_ID, useValue: 'es-CO' },
@@ -93,4 +111,4 @@ const materialModules = [
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

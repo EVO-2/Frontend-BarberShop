@@ -1,9 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Usuario } from 'src/app/interfaces/usuario.interface';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-layout',
@@ -11,10 +13,13 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./layout.component.scss']
 })
 export class LayoutComponent implements OnInit, OnDestroy {
+  @ViewChild('drawer') drawer!: MatSidenav;
   usuario: Usuario | null = null;
   avatarUrl: string = 'assets/img/default-avatar.png';
   horaActual: string = '';
   fechaActual: string = '';
+
+  isMobile = false; // State to track mobile view
 
   private usuarioSub!: Subscription;
   private fotoPerfilSub!: Subscription;
@@ -23,10 +28,16 @@ export class LayoutComponent implements OnInit, OnDestroy {
   constructor(
     public authService: AuthService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private observer: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
+    // Monitor screen size
+    this.observer.observe(['(max-width: 800px)']).subscribe((res) => {
+      this.isMobile = res.matches;
+    });
+
     // Suscripción al usuario
     this.usuarioSub = this.authService.usuario$.subscribe((user) => {
       this.usuario = user;
@@ -51,6 +62,13 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   cerrarSesion(): void {
     this.authService.logout();
+  }
+
+  // Called when a link is clicked in the sidebar
+  onSidenavEntryClick() {
+    if (this.isMobile) {
+      this.drawer.close();
+    }
   }
 
   actualizarFechaHora(): void {

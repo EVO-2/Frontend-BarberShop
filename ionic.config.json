@@ -1,0 +1,8 @@
+{
+  "name": "Frontend-BarberShop",
+  "type": "angular",
+  "integrations": {
+    "capacitor": {}
+  },
+  "defaultProject": "Frontend-BarberShop"
+}

@@ -30,8 +30,16 @@ import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-
 import { ServiciosComponent } from './pages/servicios/servicios.component'; 
 import { ServicioDialogComponent } from './shared/components/servicio-dialog/servicio-dialog.component';
 
-// ✅ Componente de reportes
+// ======= Reportes =======
 import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
+
+// ======= Equipos =======
+import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
+
+// ======= NUEVO: Dialog Movimientos de Equipo =======
+import { MovimientosEquipoDialogComponent } from './pages/equipos/movimientos-equipo-dialog/movimientos-equipo-dialog.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [
@@ -53,9 +61,11 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
     PuestoDialogComponent,
     ServiciosComponent,
     ServicioDialogComponent,
-    ReporteIngresosComponent 
+    ReporteIngresosComponent,
+    ListadoEquiposComponent,
+    MovimientosEquipoDialogComponent,   
   ],
- imports: [
+  imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -63,15 +73,16 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
     FormsModule,
     HttpClientModule,
     MaterialModule,  
-    LayoutModule,
+    LayoutModule, IonicModule.forRoot({}),
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    provideAnimationsAsync()
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

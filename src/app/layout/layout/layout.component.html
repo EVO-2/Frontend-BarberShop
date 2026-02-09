@@ -1,6 +1,7 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" mode="side" opened>
-    <app-sidebar></app-sidebar>
+  <mat-sidenav #drawer class="sidenav" [attr.role]="isMobile ? 'dialog' : 'navigation'"
+    [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+    <app-sidebar (linkClicked)="onSidenavEntryClick()"></app-sidebar>
   </mat-sidenav>
 
   <mat-sidenav-content>
@@ -18,27 +19,28 @@
       </div>
 
       <!-- Usuario + Avatar + Menú -->
-        <div class="user-info" *ngIf="authService.usuario$ | async as usuario" style="margin-left: auto; display: flex; align-items: center;">
-          <!-- Nombre del usuario -->
-          <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
+      <div class="user-info" *ngIf="authService.usuario$ | async as usuario"
+        style="margin-left: auto; display: flex; align-items: center;">
+        <!-- Nombre del usuario -->
+        <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
 
-          <!-- Botón con avatar y menú -->
-          <button mat-button [matMenuTriggerFor]="menu" class="avatar-button">
-            <img [src]="avatarUrl" alt="Avatar" class="avatar-header" />
-            <mat-icon>arrow_drop_down</mat-icon>
+        <!-- Botón con avatar y menú -->
+        <button mat-button [matMenuTriggerFor]="menu" class="avatar-button">
+          <img [src]="avatarUrl" alt="Avatar" class="avatar-header" />
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="irAEditarPerfil()">
+            <mat-icon>edit</mat-icon>
+            <span>Editar perfil</span>
           </button>
-
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="irAEditarPerfil()">
-              <mat-icon>edit</mat-icon>
-              <span>Editar perfil</span>
-            </button>
-            <button mat-menu-item (click)="cerrarSesion()">
-              <mat-icon>logout</mat-icon>
-              <span>Cerrar sesión</span>
-            </button>
-          </mat-menu>
-        </div>
+          <button mat-menu-item (click)="cerrarSesion()">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar sesión</span>
+          </button>
+        </mat-menu>
+      </div>
 
     </mat-toolbar>
 

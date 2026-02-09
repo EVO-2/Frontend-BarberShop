@@ -1,52 +1,38 @@
-<mat-nav-list class="sidebar-container">
+<div class="sidebar-container">
+
+  <!-- LOGO FUERA del mat-nav-list -->
   <div class="sidebar-logo">
     <img src="assets/logo.png" alt="Logo" />
   </div>
 
-  <!-- Iterar sobre los elementos principales del menú -->
-  <ng-container *ngFor="let item of menuItems">
-    <!-- Si el item no tiene hijos -->
-    <a
-      *ngIf="!item.children"
-      mat-list-item
-      [routerLink]="item.ruta"
-      routerLinkActive="active-link"
-      class="sidebar-link"
-    >
-      <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
-      <span class="sidebar-label">{{ item.label }}</span>
-    </a>
+  <mat-nav-list>
+    <ng-container *ngFor="let item of menuItems">
 
-    <!-- Si el item tiene hijos (por ejemplo, Configuración) -->
-    <div *ngIf="item.children" class="sidebar-parent">
-      <button
-        mat-list-item
-        class="sidebar-link"
-        (click)="toggleSubmenu(item.label)"
-      >
+      <a *ngIf="!item.children" mat-list-item [routerLink]="item.ruta" routerLinkActive="active-link"
+        class="sidebar-link" (click)="linkClicked.emit()">
         <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
         <span class="sidebar-label">{{ item.label }}</span>
-        <mat-icon class="expand-icon">
-          {{ expandedItem === item.label ? 'expand_less' : 'expand_more' }}
-        </mat-icon>
-      </button>
+      </a>
 
-      <!-- Submenú con animación deslizante -->
-      <div
-        class="submenu"
-        [@submenuToggle]="expandedItem === item.label ? 'open' : 'closed'"
-      >
-        <a
-          mat-list-item
-          *ngFor="let child of item.children"
-          [routerLink]="child.ruta"
-          routerLinkActive="active-link"
-          class="submenu-link"
-        >
-          <mat-icon class="sidebar-icon small">{{ child.icono }}</mat-icon>
-          <span class="sidebar-label small">{{ child.label }}</span>
-        </a>
+      <div *ngIf="item.children" class="sidebar-parent">
+        <button mat-list-item class="sidebar-link" (click)="toggleSubmenu(item.label)">
+          <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
+          <span class="sidebar-label">{{ item.label }}</span>
+          <mat-icon class="expand-icon">
+            {{ expandedItem === item.label ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
+        </button>
+
+        <div class="submenu" [@submenuToggle]="expandedItem === item.label ? 'open' : 'closed'">
+          <a mat-list-item *ngFor="let child of item.children" [routerLink]="child.ruta" routerLinkActive="active-link"
+            class="submenu-link" (click)="linkClicked.emit()">
+            <mat-icon class="sidebar-icon small">{{ child.icono }}</mat-icon>
+            <span class="sidebar-label small">{{ child.label }}</span>
+          </a>
+        </div>
       </div>
-    </div>
-  </ng-container>
-</mat-nav-list>
+
+    </ng-container>
+  </mat-nav-list>
+
+</div>

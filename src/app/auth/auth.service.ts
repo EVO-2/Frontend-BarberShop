@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -7,28 +8,35 @@ import { Usuario } from '../shared/models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:3000/api/auth';
-  private readonly perfilUrl = 'http://localhost:3000/api/usuarios/perfil';
+  public readonly apiUrl = `${environment.apiUrl}/auth`;
+  private readonly perfilUrl = `${environment.apiUrl}/usuarios/perfil`;
   private rolUsuario: string = '';
 
   private usuarioSubject = new BehaviorSubject<any>(this.getUsuario());
   usuario$ = this.usuarioSubject.asObservable();
 
-  private avatarUrlSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()?.foto));
+  private avatarUrlSubject = new BehaviorSubject<string>(
+    this.getFotoUrl(this.getUsuario()?.foto)
+  );
   avatarUrl$ = this.avatarUrlSubject.asObservable();
 
-  private fotoPerfilSubject = new BehaviorSubject<string>(this.getFotoUrl(this.getUsuario()?.foto));
+  private fotoPerfilSubject = new BehaviorSubject<string>(
+    this.getFotoUrl(this.getUsuario()?.foto)
+  );
   fotoPerfil$ = this.fotoPerfilSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   // =================== Autenticación ===================
   login(datos: { correo: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, datos).pipe(
       tap((resp: any) => {
-        if (resp && resp.usuario) {
-          const usuarioPlano = this.mapUsuario(resp.usuario);
+        if (resp?.token) {
           localStorage.setItem('token', resp.token);
+        }
+
+        if (resp?.usuario) {
+          const usuarioPlano = this.mapUsuario(resp.usuario);
           localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
           this.usuarioSubject.next(usuarioPlano);
 
@@ -42,7 +50,7 @@ export class AuthService {
     );
   }
 
-  // Normaliza usuario, id/_id y rol
+  // =================== Normalización ===================
   private mapUsuario(usuario: any): Usuario {
     const idUsuario = usuario._id || usuario.id;
     return {
@@ -69,10 +77,13 @@ export class AuthService {
   }
 
   cerrarSesion(): void {
-    localStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+
     this.usuarioSubject.next(null);
     this.avatarUrlSubject.next('assets/img/default-avatar.png');
     this.fotoPerfilSubject.next('assets/img/default-avatar.png');
+
     this.router.navigate(['/login']);
   }
 
@@ -80,45 +91,77 @@ export class AuthService {
     this.cerrarSesion();
   }
 
+  // =================== TOKEN ===================
   getToken(): string | null {
-    return localStorage.getItem('token');
+    try {
+      return localStorage.getItem('token');
+    } catch {
+      return null;
+    }
   }
 
-  guardarDatos(token: string, usuario: any): void {
-    const usuarioPlano = this.mapUsuario(usuario);
-    localStorage.setItem('token', token);
-    localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
-    this.rolUsuario = String(usuarioPlano.rol);
+  guardarDatos(token: string, usuario?: any): void {
+    if (token) {
+      localStorage.setItem('token', token);
+    }
 
-    const fotoUrl = this.getFotoUrl(usuarioPlano.foto);
-    this.usuarioSubject.next(usuarioPlano);
-    this.avatarUrlSubject.next(fotoUrl);
-    this.fotoPerfilSubject.next(fotoUrl);
+    if (usuario) {
+      const usuarioPlano = this.mapUsuario(usuario);
+      localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+
+      this.usuarioSubject.next(usuarioPlano);
+
+      const fotoUrl = this.getFotoUrl(usuarioPlano.foto);
+      this.avatarUrlSubject.next(fotoUrl);
+      this.fotoPerfilSubject.next(fotoUrl);
+
+      this.rolUsuario = String(usuarioPlano.rol);
+    }
   }
 
+  // =================== USUARIO ===================
   getUsuario(): any {
-    const data = localStorage.getItem('usuario');
-    if (!data) return null;
+    try {
+      const data = localStorage.getItem('usuario');
+      if (!data) return null;
 
-    const usuario = JSON.parse(data);
+      const usuario = JSON.parse(data);
 
-    usuario.id = usuario.id || usuario._id || usuario.cliente?._id || usuario.peluquero?._id;
-    usuario._id = usuario._id || usuario.id || usuario.cliente?._id || usuario.peluquero?._id;
-    usuario.rol = typeof usuario.rol === 'string' ? usuario.rol : usuario.rol?.nombre || '';
+      usuario.id =
+        usuario.id ||
+        usuario._id ||
+        usuario.cliente?._id ||
+        usuario.peluquero?._id;
 
-    return usuario;
+      usuario._id =
+        usuario._id ||
+        usuario.id ||
+        usuario.cliente?._id ||
+        usuario.peluquero?._id;
+
+      usuario.rol =
+        typeof usuario.rol === 'string'
+          ? usuario.rol
+          : usuario.rol?.nombre || '';
+
+      return usuario;
+    } catch {
+      return null;
+    }
   }
 
   obtenerRol(): string {
     if (this.rolUsuario) return this.rolUsuario;
-    const usuario = this.getUsuario();
-    return usuario?.rol || '';
+    return this.getUsuario()?.rol || '';
   }
 
   refrescarUsuario(): void {
     this.http.get<any>(this.perfilUrl).subscribe({
       next: (resp) => {
-        const usuarioPlano = resp.usuario ? this.mapUsuario(resp.usuario) : resp;
+        const usuarioPlano = resp.usuario
+          ? this.mapUsuario(resp.usuario)
+          : resp;
+
         localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
         this.usuarioSubject.next(usuarioPlano);
 
@@ -128,7 +171,8 @@ export class AuthService {
 
         this.rolUsuario = usuarioPlano.rol;
       },
-      error: (error) => console.error('❌ Error al refrescar usuario:', error),
+      error: (error) =>
+        console.error('❌ Error al refrescar usuario:', error),
     });
   }
 
@@ -137,11 +181,12 @@ export class AuthService {
     localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
     this.usuarioSubject.next(usuarioPlano);
 
-    if (usuarioPlano.foto) {
-      const urlFoto = this.getFotoUrl(usuarioPlano.foto);
-      this.avatarUrlSubject.next(urlFoto);
-      this.fotoPerfilSubject.next(urlFoto);
-    }
+    const urlFoto = usuarioPlano.foto
+      ? this.getFotoUrl(usuarioPlano.foto)
+      : 'assets/img/default-avatar.png';
+
+    this.avatarUrlSubject.next(urlFoto);
+    this.fotoPerfilSubject.next(urlFoto);
 
     this.rolUsuario = String(usuarioPlano.rol);
   }
@@ -150,8 +195,9 @@ export class AuthService {
     if (!foto) return 'assets/img/default-avatar.png';
 
     const esUrlCompleta = /^https?:\/\//i.test(foto);
-    const serverBase = 'http://localhost:3000';
+    const serverBase = environment.baseUrl;
     const base = esUrlCompleta ? foto : `${serverBase}/uploads/${foto}`;
+
     return `${base}${base.includes('?') ? '&' : '?'}t=${Date.now()}`;
   }
 
@@ -162,25 +208,25 @@ export class AuthService {
 
   actualizarFoto(nombreArchivo: string | null): void {
     const usuario = this.getUsuarioActual();
-    if (usuario) {
-      usuario.foto = nombreArchivo;
-      localStorage.setItem('usuario', JSON.stringify(usuario));
-      this.usuarioSubject.next(usuario);
+    if (!usuario) return;
 
-      const url = nombreArchivo
-        ? this.getFotoUrl(nombreArchivo)
-        : 'assets/img/default-avatar.png';
+    usuario.foto = nombreArchivo;
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+    this.usuarioSubject.next(usuario);
 
-      this.avatarUrlSubject.next(url);
-      this.fotoPerfilSubject.next(url);
-    }
+    const url = nombreArchivo
+      ? this.getFotoUrl(nombreArchivo)
+      : 'assets/img/default-avatar.png';
+
+    this.avatarUrlSubject.next(url);
+    this.fotoPerfilSubject.next(url);
   }
 
   subirFotoPerfil(id: string, formData: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/usuarios/${id}/foto`, formData);
   }
 
-  // =================== NUEVO: obtener ID del usuario actual ===================
+  // =================== ID ===================
   getCurrentUserId(): string | null {
     const usuario = this.getUsuario();
     return usuario?._id || usuario?.id || null;

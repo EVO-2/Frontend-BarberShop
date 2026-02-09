@@ -1,57 +1,64 @@
-<div class="login-container">
+<div class="login-container" [@cardEnter]>
+
   <mat-card class="login-card">
+
+    <!-- Logo -->
     <img src="assets/logo.png" class="login-logo" alt="Logo" />
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- <h2 class="login-title">Iniciar sesión</h2> -->
+    <form [formGroup]="form" class="login-form" autocomplete="off">
 
-      <!-- Campo Correo -->
-      <mat-form-field class="full-width" appearance="outline">
+      <!-- Correo -->
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Correo electrónico</mat-label>
-        <input matInput formControlName="correo" type="email" />
-        <mat-error *ngIf="form.get('correo')?.hasError('required')">
-          El correo es obligatorio
-        </mat-error>
-        <mat-error *ngIf="form.get('correo')?.hasError('email')">
-          Debe ingresar un correo válido
-        </mat-error>
+        <input matInput type="email" formControlName="correo" />
+        <mat-error *ngIf="form.get('correo')?.hasError('required')">El correo es obligatorio</mat-error>
+        <mat-error *ngIf="form.get('correo')?.hasError('email')">Debe ingresar un correo válido</mat-error>
       </mat-form-field>
 
-      <!-- Campo Contraseña -->
-      <mat-form-field class="full-width" appearance="outline">
+      <!-- Contraseña -->
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Contraseña</mat-label>
         <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
         <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        <mat-error *ngIf="form.get('password')?.hasError('required')">
-          La contraseña es obligatoria
-        </mat-error>
-        <mat-error *ngIf="form.get('password')?.hasError('minlength')">
-          Mínimo 8 caracteres
-        </mat-error>
+        <mat-error *ngIf="form.get('password')?.hasError('required')">La contraseña es obligatoria</mat-error>
+        <mat-error *ngIf="form.get('password')?.hasError('minlength')">Mínimo 8 caracteres</mat-error>
       </mat-form-field>
 
       <!-- Error general -->
       <div class="error-message" *ngIf="errorLogin">
         <mat-icon color="warn">error</mat-icon>
-        {{ errorLogin }}
+        <span>{{ errorLogin }}</span>
       </div>
 
-      <!-- Botones -->
-      <div class="button-group">
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-          Ingresar
-        </button>
-        <button mat-stroked-button color="accent" type="button" (click)="router.navigate(['/registro'])">
-          Registrarse
-        </button>
-      </div>
+      <!-- Botón Login funcional para WebView -->
+      <button mat-raised-button color="primary" class="full-width ripple-ionic" type="button" (click)="onSubmit()"
+        [disabled]="form.invalid" matRipple [matRippleCentered]="true">
+        Ingresar
+      </button>
+
+      <!-- Botón biométrico premium -->
+      <button *ngIf="biometricAvailable" mat-stroked-button color="primary" class="full-width ripple-ionic pulse-button"
+        type="button" (click)="loginWithBiometrics()" matRipple [matRippleColor]="'rgba(25, 118, 210, 0.4)'"
+        [matRippleCentered]="true">
+        <mat-icon class="pulse-icon">fingerprint</mat-icon>
+        Acceder con biometría
+      </button>
+
+      <!-- Registro -->
+      <button mat-stroked-button color="accent" class="full-width ripple-ionic" type="button"
+        (click)="router.navigate(['/registro'])" matRipple>
+        Registrarse
+      </button>
 
       <!-- Olvidaste contraseña -->
       <div class="forgot-password">
         <a href="#">¿Olvidaste tu contraseña?</a>
       </div>
+
     </form>
+
   </mat-card>
+
 </div>

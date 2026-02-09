@@ -21,6 +21,7 @@ export class MenuService {
         { label: 'Sedes', ruta: 'sedes', icono: 'store' },
         { label: 'Puestos de Trabajo', ruta: 'puestos', icono: 'chair' },
         { label: 'Servicios', ruta: 'servicios', icono: 'build' },
+        { label: 'Equipos', ruta: 'equipos', icono: 'inventory_2' },
       ]
     }
   ];

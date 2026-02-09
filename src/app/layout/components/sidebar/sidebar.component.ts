@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MenuService } from 'src/app/shared/services/menu.service';
 import { Router } from '@angular/router';
@@ -28,6 +28,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   ]
 })
 export class SidebarComponent implements OnInit {
+  @Output() linkClicked = new EventEmitter<void>();
   menuItems: any[] = [];
   usuario: Usuario | null = null;
   expandedItem: string | null = null; // controla qué menú está expandido
@@ -36,7 +37,7 @@ export class SidebarComponent implements OnInit {
     public authService: AuthService,
     private menuService: MenuService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.usuario$.subscribe((usuario: Usuario | null) => {

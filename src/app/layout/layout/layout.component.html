@@ -1,57 +1,69 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" [attr.role]="isMobile ? 'dialog' : 'navigation'"
-    [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+
+  <!-- SIDEBAR -->
+  <mat-sidenav #drawer class="sidenav" [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile"
+    [attr.role]="isMobile ? 'dialog' : 'navigation'">
+
     <app-sidebar (linkClicked)="onSidenavEntryClick()"></app-sidebar>
   </mat-sidenav>
 
-  <mat-sidenav-content>
-    <!-- Header -->
+  <!-- CONTENIDO -->
+  <mat-sidenav-content class="content-area">
+
+    <!-- HEADER -->
     <mat-toolbar color="primary" class="header">
-      <!-- Botón para abrir sidenav (solo en móviles) -->
-      <button mat-icon-button (click)="drawer.toggle()" class="hide-desktop">
+
+      <!-- Toggle móvil -->
+      <button mat-icon-button class="hide-desktop" (click)="drawer.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
 
-      <!-- Fecha y hora -->
+      <!-- Fecha / Hora -->
       <div class="fecha-hora-inline">
-        <mat-icon class="icono-reloj">schedule</mat-icon>
-        <span class="fecha-texto">{{ fechaActual }} | {{ horaActual }}</span>
+        <mat-icon>schedule</mat-icon>
+        <span>{{ fechaActual }} | {{ horaActual }}</span>
       </div>
 
-      <!-- Usuario + Avatar + Menú -->
-      <div class="user-info" *ngIf="authService.usuario$ | async as usuario"
-        style="margin-left: auto; display: flex; align-items: center;">
-        <!-- Nombre del usuario -->
-        <span class="user-name" style="margin-right: 8px;">{{ usuario.nombre }}</span>
+      <span class="spacer"></span>
 
-        <!-- Botón con avatar y menú -->
-        <button mat-button [matMenuTriggerFor]="menu" class="avatar-button">
-          <img [src]="avatarUrl" alt="Avatar" class="avatar-header" />
-          <mat-icon>arrow_drop_down</mat-icon>
-        </button>
+      <!-- Usuario -->
+      <ng-container *ngIf="authService.usuario$ | async as usuario">
+        <div class="user-info">
+
+          <span class="user-name">{{ usuario.nombre }}</span>
+
+          <button mat-button class="avatar-button" [matMenuTriggerFor]="menu">
+
+            <img [src]="avatarUrl" alt="Avatar" class="avatar-header" />
+
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+
+        </div>
 
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="irAEditarPerfil()">
             <mat-icon>edit</mat-icon>
             <span>Editar perfil</span>
           </button>
+
           <button mat-menu-item (click)="cerrarSesion()">
             <mat-icon>logout</mat-icon>
             <span>Cerrar sesión</span>
           </button>
         </mat-menu>
-      </div>
+      </ng-container>
 
     </mat-toolbar>
 
-    <!-- Contenido principal -->
-    <div class="main-wrapper">
-      <div class="main-content">
+    <!-- MAIN -->
+    <main class="main-wrapper">
+      <section class="main-content">
         <router-outlet></router-outlet>
-      </div>
+      </section>
 
-      <!-- Footer -->
       <app-footer></app-footer>
-    </div>
+    </main>
+
   </mat-sidenav-content>
 </mat-sidenav-container>

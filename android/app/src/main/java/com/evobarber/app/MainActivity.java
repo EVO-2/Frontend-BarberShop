@@ -1,4 +1,4 @@
-package com.barbershop.app;
+package com.evobarber.app;
 
 import com.getcapacitor.BridgeActivity;
 

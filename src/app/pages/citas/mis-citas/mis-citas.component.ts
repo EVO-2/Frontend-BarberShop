@@ -15,6 +15,8 @@ import { AuthService } from 'src/app/auth/auth.service';
 })
 export class MisCitasComponent implements OnInit {
 
+  cargando: boolean = true;
+
   citas: any[] = [];
   citasFiltradas: any[] = [];
   sinCitas: boolean = false;
@@ -34,7 +36,7 @@ export class MisCitasComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.userRole = this.authService.obtenerRol();
@@ -173,7 +175,7 @@ export class MisCitasComponent implements OnInit {
     const fechaCita = new Date(fechaStr);
     const hoy = new Date();
     return fechaCita.getFullYear() === hoy.getFullYear() &&
-           fechaCita.getMonth() === hoy.getMonth() &&
-           fechaCita.getDate() === hoy.getDate();
+      fechaCita.getMonth() === hoy.getMonth() &&
+      fechaCita.getDate() === hoy.getDate();
   }
 }

@@ -8,153 +8,191 @@
 
   <!-- 🔹 Filtros -->
   <div class="filtros-container">
-    <!-- Buscar cliente -->
+
     <mat-form-field class="buscar-cliente" appearance="outline">
       <mat-label>Buscar cliente</mat-label>
       <mat-icon matPrefix>search</mat-icon>
-      <input 
-        matInput 
-        [(ngModel)]="filtroCliente" 
-        (keyup)="aplicarFiltros()" 
-        placeholder="Nombre del cliente">
+      <input matInput [(ngModel)]="filtroCliente" (keyup)="aplicarFiltros()" placeholder="Nombre del cliente">
     </mat-form-field>
 
-    <!-- Filtro por fecha -->
     <mat-form-field class="filtro-fecha" appearance="outline">
       <mat-label>Filtrar por fecha</mat-label>
-      <input 
-        matInput 
-        [matDatepicker]="picker" 
-        [(ngModel)]="filtroFecha" 
-        (dateChange)="aplicarFiltros()">
+      <input matInput [matDatepicker]="picker" [(ngModel)]="filtroFecha" (dateChange)="aplicarFiltros()">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <!-- Botón limpiar -->
     <button mat-raised-button class="btn-limpiar" (click)="limpiarFiltros()">
       <mat-icon>clear</mat-icon>
       Limpiar filtros
     </button>
+
   </div>
 
-  <!-- 🔹 Tabla de citas -->
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 tabla-citas" matSort>
+  <!-- ================= DESKTOP TABLA ================= -->
 
-    <!-- Cliente -->
-    <ng-container matColumnDef="cliente">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mat-icon class="icon-header">person</mat-icon> Cliente
-      </th>
-      <td mat-cell *matCellDef="let element" class="celda-centrada"
-          [matTooltip]="formatearTooltipCliente(element.cliente)"
+  <div class="tabla-wrapper">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 tabla-citas" matSort>
+
+      <!-- Cliente -->
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon class="icon-header">person</mat-icon> Cliente
+        </th>
+        <td mat-cell *matCellDef="let element" [matTooltip]="formatearTooltipCliente(element.cliente)"
           matTooltipClass="tooltip-preline">
-        {{ element.clienteNombre }}
-      </td>
-    </ng-container>
+          {{ element.clienteNombre }}
+        </td>
+      </ng-container>
 
-    <!-- Fecha -->
-    <ng-container matColumnDef="fecha">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mat-icon class="icon-header">event</mat-icon> Fecha
-      </th>
-      <td mat-cell *matCellDef="let element" class="celda-centrada"
-          matTooltip="{{ formatearFechaDetallada(element.fecha) }}">
-        {{ element.fecha | date:'shortDate' }}
-      </td>
-    </ng-container>
+      <!-- Fecha -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon class="icon-header">event</mat-icon> Fecha
+        </th>
+        <td mat-cell *matCellDef="let element" matTooltip="{{ formatearFechaDetallada(element.fecha) }}">
+          {{ element.fecha | date:'shortDate' }}
+        </td>
+      </ng-container>
 
-    <!-- Hora -->
-    <ng-container matColumnDef="hora">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mat-icon class="icon-header">schedule</mat-icon> Hora
-      </th>
-      <td mat-cell *matCellDef="let element" class="celda-centrada">
-        {{ element.hora }}
-      </td>
-    </ng-container>
+      <!-- Hora -->
+      <ng-container matColumnDef="hora">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon class="icon-header">schedule</mat-icon> Hora
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.hora }}
+        </td>
+      </ng-container>
 
-    <!-- Turno -->
-    <ng-container matColumnDef="turno">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mat-icon class="icon-header">format_list_numbered</mat-icon> Turno
-      </th>
-      <td mat-cell *matCellDef="let element" class="celda-centrada">
-        <span class="turno-badge">{{ element.turno }}</span>
-      </td>
-    </ng-container>
+      <!-- Turno -->
+      <ng-container matColumnDef="turno">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon class="icon-header">format_list_numbered</mat-icon> Turno
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="turno-badge">{{ element.turno }}</span>
+        </td>
+      </ng-container>
 
-    <!-- Estado -->
-    <ng-container matColumnDef="estado">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mat-icon class="icon-header">info</mat-icon> Estado
-      </th>
-      <td mat-cell *matCellDef="let element" class="celda-centrada"
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon class="icon-header">info</mat-icon> Estado
+        </th>
+        <td mat-cell *matCellDef="let element"
           [matTooltip]="element.estado === 'finalizada' ? getServiciosTooltip(element) : ''"
           matTooltipClass="tooltip-preline">
-          
-        <span [ngClass]="{
-          'estado-pendiente': element.estado === 'pendiente',
-          'estado-en-proceso': element.estado === 'en_proceso',
-          'estado-finalizado': element.estado === 'finalizada',
-          'estado-cancelado': element.estado === 'cancelado'
-        }">
-          {{ element.estado | titlecase }}
+
+          <span [ngClass]="{
+            'estado-pendiente': element.estado === 'pendiente',
+            'estado-en-proceso': element.estado === 'en_proceso',
+            'estado-finalizado': element.estado === 'finalizada',
+            'estado-cancelado': element.estado === 'cancelado'
+          }">
+            {{ element.estado | titlecase }}
+          </span>
+
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon class="icon-header">build</mat-icon> Acciones
+        </th>
+        <td mat-cell *matCellDef="let element" class="acciones">
+
+          <button mat-mini-fab color="primary" (click)="iniciarCita(element)"
+            [disabled]="!(element.estado === 'pendiente' || element.estado === 'confirmada')">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+
+          <button mat-mini-fab class="finalizar-btn" (click)="finalizarCita(element)"
+            [disabled]="element.estado !== 'en_proceso'">
+            <mat-icon>check</mat-icon>
+          </button>
+
+          <button mat-mini-fab color="warn" (click)="cancelarCita(element)"
+            [disabled]="element.estado === 'finalizada' || element.estado === 'cancelado'">
+            <mat-icon>close</mat-icon>
+          </button>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+  </div>
+
+  <!-- ================= MOBILE CARDS ================= -->
+
+  <div class="mobile-view" *ngIf="dataSource.data.length > 0">
+
+    <div class="card-cita" *ngFor="let element of dataSource.data">
+
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            {{ element.clienteNombre }}
+          </div>
+          <div class="card-subtitle">
+            {{ element.fecha | date:'shortDate' }} - {{ element.hora }}
+          </div>
+        </div>
+
+        <span class="turno-badge">
+          #{{ element.turno }}
         </span>
-      </td>
-    </ng-container>
+      </div>
 
-    <!-- Acciones -->
-    <ng-container matColumnDef="acciones">
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-icon class="icon-header">build</mat-icon> Acciones
-      </th>
-      <td mat-cell *matCellDef="let element" class="acciones">
+      <div class="card-body">
 
-        <!-- Iniciar -->
-        <button mat-mini-fab color="primary"
-                (click)="iniciarCita(element)"
-                [disabled]="!(element.estado === 'pendiente' || element.estado === 'confirmada')"
-                matTooltip="Solo se puede iniciar un servicio pendiente o confirmado">
-          <mat-icon>play_arrow</mat-icon>
+        <div class="info-row">
+          <span>Estado</span>
+          <strong [ngClass]="{
+            'estado-pendiente': element.estado === 'pendiente',
+            'estado-en-proceso': element.estado === 'en_proceso',
+            'estado-finalizado': element.estado === 'finalizada',
+            'estado-cancelado': element.estado === 'cancelado'
+          }">
+            {{ element.estado | titlecase }}
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="card-actions">
+
+        <button mat-stroked-button color="primary" (click)="iniciarCita(element)"
+          [disabled]="!(element.estado === 'pendiente' || element.estado === 'confirmada')">
+          Iniciar
         </button>
 
-        <!-- Finalizar -->
-        <button mat-mini-fab class="finalizar-btn"
-                (click)="finalizarCita(element)"
-                [disabled]="element.estado !== 'en_proceso'"
-                matTooltip="Solo se puede finalizar un servicio que está en progreso">
-          <mat-icon>check</mat-icon>
+        <button mat-stroked-button color="accent" (click)="finalizarCita(element)"
+          [disabled]="element.estado !== 'en_proceso'">
+          Finalizar
         </button>
 
-        <!-- Cancelar -->
-        <button mat-mini-fab color="warn"
-                (click)="cancelarCita(element)"
-                [disabled]="element.estado === 'finalizada' || element.estado === 'cancelado'"
-                matTooltip="No se puede cancelar un servicio finalizado o ya cancelado">
-          <mat-icon>close</mat-icon>
+        <button mat-stroked-button color="warn" (click)="cancelarCita(element)"
+          [disabled]="element.estado === 'finalizada' || element.estado === 'cancelado'">
+          Cancelar
         </button>
 
-      </td>
-    </ng-container>
+      </div>
 
-    <!-- Header y filas -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </div>
 
-  </table>
+  </div>
 
   <!-- 🔹 Paginador -->
-  <mat-paginator 
-    [length]="totalCitas"          
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex"
-    [pageSizeOptions]="pageSizeOptions"
-    showFirstLastButtons
-    (page)="onPageChange($event)">
+  <mat-paginator [length]="totalCitas" [pageSize]="pageSize" [pageIndex]="pageIndex" [pageSizeOptions]="pageSizeOptions"
+    showFirstLastButtons (page)="onPageChange($event)">
   </mat-paginator>
 
-  <!-- 🔹 Mensaje si no hay citas -->
+  <!-- 🔹 Sin citas -->
   <div *ngIf="dataSource.data.length === 0" class="no-citas">
     <p>No hay citas disponibles para gestionar.</p>
   </div>

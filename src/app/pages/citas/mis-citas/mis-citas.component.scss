@@ -1,4 +1,8 @@
-/* 🎨 Título Mis Citas */
+.mis-citas-container {
+  padding: 1rem;
+}
+
+/* Header */
 .titulo-citas {
   display: flex;
   align-items: center;
@@ -7,121 +11,172 @@
 
   mat-icon {
     font-size: 28px;
-    color: #1976d2; /* Azul Material */
+    color: #1976d2;
   }
 
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 600;
-    color: #333;
     margin: 0;
   }
 }
 
-/* 🎯 Contenedor de filtros */
+/* Filtros */
 .filtros-container {
   display: flex;
-  align-items: center; 
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+
+  .filtro-fecha {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .full-width {
+    flex: 2;
+    min-width: 260px;
+  }
+
+  .btn-limpiar {
+    height: 56px;
+  }
 }
 
-.filtros-container .filtro-fecha {
-  flex: 1;
-  min-width: 220px;
+/* TABLA DESKTOP */
+.tabla-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
 }
 
-.filtros-container .full-width {
-  flex: 2;
-  min-width: 400px;
-}
-
-.filtros-container .btn-limpiar {
-  height: 56px; /* mismo alto que los mat-form-field */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: -21px; /* 🔹 ajuste fino */
-}
-
-/* 🎨 Tabla de citas */
 .tabla-citas {
   width: 100%;
+  min-width: 750px;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
 
-  /* Sobrescribimos Angular Material MDC */
-  .mat-mdc-table,
-  .mdc-data-table__table {
+.mat-mdc-header-cell {
+  font-weight: 600;
+  background: #f5f5f5;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.mat-mdc-row:hover {
+  background: #f0f7ff;
+  transition: 0.2s;
+}
+
+/* BADGES */
+.turno-badge {
+  background: linear-gradient(135deg, #64b5f6, #1976d2);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.estado-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.estado-confirmada {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.estado-cancelada {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.estado-pendiente {
+  background: #fff8e1;
+  color: #ef6c00;
+}
+
+/* ================= MOBILE CARDS ================= */
+.mobile-view {
+  display: none;
+}
+
+.card-cita {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+.card-cita:active {
+  transform: scale(0.98);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.fecha {
+  font-weight: 600;
+}
+
+.hora {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.card-body {
+  margin-bottom: 0.75rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* SIN CITAS */
+.sin-citas {
+  text-align: center;
+  padding: 2rem;
+  color: #757575;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+  .tabla-wrapper {
+    display: none;
+  }
+
+  mat-paginator {
+    display: none;
+  }
+
+  .mobile-view {
+    display: block;
+  }
+
+  .filtros-container {
+    flex-direction: column;
+  }
+
+  .btn-limpiar {
     width: 100%;
-    border-collapse: collapse;
-    table-layout: auto !important; 
-  }
-
-  .mat-mdc-header-cell,
-  .mat-mdc-cell {
-    text-align: center !important;  
-    vertical-align: middle;
-    padding: 12px 16px;
-  }
-
-  /* 🔹 Encabezados */
-  .mat-mdc-header-cell {
-    font-weight: 600;
-    font-size: 0.95rem;
-    background-color: #f5f5f5;
-    color: #424242;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap; 
-  }
-
-  /* 🔹 Alinear icono + texto en encabezado */
-  .mat-mdc-header-cell .mat-icon {
-    display: inline-block;     
-    vertical-align: middle;    
-    margin-right: 6px;         
-    line-height: 1;
-  }
-
-  .mat-mdc-header-cell .th-inline {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .mat-mdc-cell {
-    font-size: 0.9rem;
-    color: #555;
-  }
-
-  .mat-mdc-row:nth-child(even) {
-    background-color: #fafafa;
-  }
-
-  .mat-mdc-row:hover {
-    background-color: #f0f7ff;
-    transition: background-color 0.2s ease-in-out;
-  }
-
-  .cita-hoy {
-    font-weight: 600;
-  }
-
-  /* Turno con estilo de badge profesional */
-  .turno-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #64b5f6, #1976d2);
-    color: #fff;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 16px;
-    min-width: 32px;
-    text-align: center;
-    font-size: 0.85rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
 }

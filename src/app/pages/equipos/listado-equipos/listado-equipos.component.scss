@@ -1,0 +1,27 @@
+.badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #fff;
+    text-transform: capitalize;
+    font-size: 0.8rem;
+}
+
+.badge.activo {
+    background-color: #4caf50;
+}
+
+.badge.en_mantenimiento {
+    background-color: #ff9800;
+}
+
+.badge.dañado {
+    background-color: #f44336;
+}
+
+.badge.fuera_de_servicio {
+    background-color: #9e9e9e;
+}
+
+.badge.retirado {
+    background-color: #607d8b;
+}

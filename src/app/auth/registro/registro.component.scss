@@ -1,45 +1,101 @@
-.titulo {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
+.registro-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 2rem 1rem;
+  min-height: 100%;
+
+  background: linear-gradient(to right, #f0f8fd, #b7dfff);
 }
 
-.registro-form {
+
+.registro-card {
+  width: 100%;
   max-width: 500px;
-  margin: auto;
+  max-height: 85vh;
+  /* Limit height to viewport */
+  overflow-y: auto;
+  /* Enable internal scrolling */
+
+  padding: 2rem;
+  border-radius: 14px;
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+
+.registro-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 2rem; /* mantenido del original */
+  gap: 0.75rem;
 }
 
 .full-width {
   width: 100%;
 }
 
+/* ---
+   🎨 HEADER (TITULO & LOGO)
+   --- */
+
+.titulo {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  /* Menos margen abajo para acercar el logo (si va debajo) o viceversa */
+
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a202c;
+  /* Gris oscuro elegante */
+  letter-spacing: -0.025em;
+  /* Toque moderno */
+}
+
+.login-logo {
+  display: block;
+  width: 120px;
+  /* Tamaño controlado */
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 2rem;
+  /* Centrado y separado del formulario */
+
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
 .acciones {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn-volver {
+  color: #2e7d32 !important;
+  /* Verde oscuro (Material Green 800) */
+  border-color: #2e7d32 !important;
+  font-weight: 500;
+
+  &:hover {
+    background-color: rgba(46, 125, 50, 0.08) !important;
+  }
+}
+
+.error-message {
+  text-align: center;
+  color: red;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  margin-top: 20px;
-}
-
-button[mat-flat-button] {
-  transition: background-color 0.3s ease;
-}
-
-button[mat-flat-button]:disabled {
-  background-color: #cfd8dc !important; /* gris claro */
-  color: #888 !important;
-  cursor: not-allowed;
-}
-.snackbar-success {
-  background-color: #4caf50;
-  color: #fff;
-}
-
-.snackbar-error {
-  background-color: #f44336;
-  color: #fff;
+  gap: 6px;
 }

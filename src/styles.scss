@@ -48,9 +48,8 @@ $jevo-theme: mat.define-light-theme((color: (primary: $jevo-primary,
 
 html,
 body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden; // evita scroll horizontal en móviles
+  height: auto !important;
+  min-height: 100%;
 }
 
 body {
@@ -64,11 +63,10 @@ body {
    🧱 CONTENEDOR PRINCIPAL
    ============================ */
 app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  display: block;
   width: 100%;
 }
+
 
 /* ============================
    📱 BREAKPOINTS RESPONSIVE

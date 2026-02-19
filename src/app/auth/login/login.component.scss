@@ -105,6 +105,16 @@ button.mat-stroked-button.ripple-ionic {
   --ripple-color: rgba(25, 118, 210, 0.25);
 }
 
+.btn-verde {
+  color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+  font-weight: 500;
+
+  &:hover {
+    background-color: rgba(46, 125, 50, 0.08) !important;
+  }
+}
+
 /* Mobile: ripple más táctil */
 @media (max-width: 767px) {
   .ripple-ionic {

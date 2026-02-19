@@ -2,9 +2,6 @@ import { NgModule, LOCALE_ID } from '@angular/core';
 import { registerLocaleData, CommonModule } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
-// ✅ Ionic
-import { IonicModule } from '@ionic/angular';
-
 // ✅ Forms
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
@@ -28,13 +25,13 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatRippleModule } from '@angular/material/core';
 import {
   MatNativeDateModule,
   MAT_DATE_LOCALE,
   DateAdapter,
-  MAT_DATE_FORMATS
+  MAT_DATE_FORMATS,
+  NativeDateAdapter
 } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -44,8 +41,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 registerLocaleData(localeEs);
 
 // ✅ Adaptador personalizado de fechas DD/MM/YYYY
-import { NativeDateAdapter } from '@angular/material/core';
-
 export class EsDateAdapter extends NativeDateAdapter {
   override format(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
@@ -65,11 +60,10 @@ export const MY_DATE_FORMATS = {
   }
 };
 
-// ✅ Módulos agrupados
+// ✅ Módulos agrupados (SIN IONIC Y SIN BrowserAnimationsModule)
 const materialModules = [
   // Core
   CommonModule,
-  IonicModule,
   ReactiveFormsModule,
   FormsModule,
 
@@ -97,7 +91,6 @@ const materialModules = [
   MatTooltipModule,
   MatTabsModule,
   MatProgressBarModule,
-  BrowserAnimationsModule,
   MatRippleModule
 ];
 

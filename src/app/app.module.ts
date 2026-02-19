@@ -1,11 +1,13 @@
-import { NgModule } from '@angular/core';  
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor'; 
+import { IonicModule } from '@ionic/angular';
+
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 // ======= Módulos compartidos =======
 import { MaterialModule } from './shared/material.module';
@@ -16,18 +18,18 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegistroComponent } from './auth/registro/registro.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
 import { UsuarioDialogComponent } from './pages/usuarios/usuario-dialog/usuario-dialog.component';
-import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component'; 
-import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component'; 
-import { CitaUpdateDialogComponent } from './pages/citas/cita-update-dialog/cita-update-dialog.component'; 
-import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.component'; 
+import { ReservarCitaComponent } from './pages/reserva/reservar-cita/reservar-cita.component';
+import { MisCitasComponent } from './pages/citas/mis-citas/mis-citas.component';
+import { CitaUpdateDialogComponent } from './pages/citas/cita-update-dialog/cita-update-dialog.component';
+import { PagoDialogComponent } from './pages/citas/pago-dialog/pago-dialog.component';
 import { GestionarCitasComponent } from './pages/gestionar-citas/gestionar-citas.component';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { ServicioCardDialogComponent } from './shared/components/servicio-card-dialog/servicio-card-dialog.component';
 import { SedesComponent } from './pages/sedes/sedes.component';
-import { SedeDialogComponent } from './shared/components/sede-dialog/sede-dialog.component'; 
+import { SedeDialogComponent } from './shared/components/sede-dialog/sede-dialog.component';
 import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-puestos.component';
-import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-dialog.component';  
-import { ServiciosComponent } from './pages/servicios/servicios.component'; 
+import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-dialog.component';
+import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { ServicioDialogComponent } from './shared/components/servicio-dialog/servicio-dialog.component';
 
 // ======= Reportes =======
@@ -35,11 +37,8 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
 
 // ======= Equipos =======
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
-
-// ======= NUEVO: Dialog Movimientos de Equipo =======
 import { MovimientosEquipoDialogComponent } from './pages/equipos/movimientos-equipo-dialog/movimientos-equipo-dialog.component';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { IonicModule } from '@ionic/angular';
+import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dialog.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +62,8 @@ import { IonicModule } from '@ionic/angular';
     ServicioDialogComponent,
     ReporteIngresosComponent,
     ListadoEquiposComponent,
-    MovimientosEquipoDialogComponent,   
+    MovimientosEquipoDialogComponent,
+    EquipoDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -72,17 +72,18 @@ import { IonicModule } from '@ionic/angular';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    MaterialModule,  
-    LayoutModule, IonicModule.forRoot({}),
+    IonicModule.forRoot({}),
+    MaterialModule,
+    LayoutModule
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    },
-    provideAnimationsAsync()
+    }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AppModule {}
+export class AppModule { }

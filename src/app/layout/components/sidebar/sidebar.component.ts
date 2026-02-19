@@ -52,12 +52,25 @@ export class SidebarComponent implements OnInit {
     });
   }
 
+  // -------------------------
+  // Expandir / Colapsar submenus
+  // -------------------------
   toggleSubmenu(label: string): void {
     this.expandedItem = this.expandedItem === label ? null : label;
   }
 
+  // -------------------------
+  // Cerrar sesión
+  // -------------------------
   cerrarSesion(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  // -------------------------
+  // Ir a editar perfil
+  // -------------------------
+  irAEditarPerfil(): void {
+    this.router.navigate(['/editar-perfil']); // asegúrate de que la ruta exista
   }
 }

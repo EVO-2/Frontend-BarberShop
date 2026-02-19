@@ -8,12 +8,14 @@
   <mat-nav-list>
     <ng-container *ngFor="let item of menuItems">
 
+      <!-- Item simple -->
       <a *ngIf="!item.children" mat-list-item [routerLink]="item.ruta" routerLinkActive="active-link"
         class="sidebar-link" (click)="linkClicked.emit()">
         <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
         <span class="sidebar-label">{{ item.label }}</span>
       </a>
 
+      <!-- Item con submenú -->
       <div *ngIf="item.children" class="sidebar-parent">
         <button mat-list-item class="sidebar-link" (click)="toggleSubmenu(item.label)">
           <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
@@ -31,8 +33,27 @@
           </a>
         </div>
       </div>
-
     </ng-container>
   </mat-nav-list>
+  <!-- BOTÓN PERFIL -->
+  <div class="sidebar-profile mb-4">
+    <button mat-button [matMenuTriggerFor]="menu" class="profile-button w-full justify-start">
+      <mat-icon>account_circle</mat-icon>
+      <span class="ml-2">{{ usuario?.nombre || 'Usuario' }}</span>
+      <mat-icon class="ml-auto">keyboard_arrow_down</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="irAEditarPerfil()">
+        <mat-icon>edit</mat-icon>
+        <span>Editar perfil</span>
+      </button>
+
+      <button mat-menu-item (click)="cerrarSesion()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar sesión</span>
+      </button>
+    </mat-menu>
+  </div>
 
 </div>

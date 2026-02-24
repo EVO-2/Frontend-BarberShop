@@ -1,101 +1,232 @@
-<div class="card p-4">
+<div class="equipos-container">
 
-  <h2 class="mb-4">Listado de Equipos</h2>
+  <!-- ================= HEADER ================= -->
+  <div class="header">
+    <div>
+      <h1>Equipos</h1>
+      <p class="subtitle">Gestión y control de equipos registrados</p>
+    </div>
 
-  <!-- Botón Crear Equipo -->
-  <button mat-raised-button color="primary" class="mb-4" (click)="crearEquipo()">
-    Crear Equipo
-  </button>
+    <button mat-raised-button color="primary" (click)="crearEquipo()">
+      <mat-icon>add</mat-icon>
+      Nuevo Equipo
+    </button>
+  </div>
 
-  <!-- FILTROS -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+  <!-- ================= FILTROS ================= -->
+  <div class="filters-card">
+    <div class="filters-grid">
 
-    <mat-form-field appearance="outline">
-      <mat-label>Tipo</mat-label>
-      <mat-select [(ngModel)]="filtros.tipo" (selectionChange)="aplicarFiltros()">
-        <mat-option value="">Todos</mat-option>
-        <mat-option *ngFor="let t of tipos" [value]="t">{{ t | titlecase }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select [(ngModel)]="filtros.tipo" (selectionChange)="aplicarFiltros()">
+          <mat-option value="">Todos</mat-option>
+          <mat-option *ngFor="let t of tipos" [value]="t">
+            {{ t | titlecase }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Estado</mat-label>
-      <mat-select [(ngModel)]="filtros.estado" (selectionChange)="aplicarFiltros()">
-        <mat-option value="">Todos</mat-option>
-        <mat-option *ngFor="let e of estados" [value]="e">{{ e | titlecase }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select [(ngModel)]="filtros.estado" (selectionChange)="aplicarFiltros()">
+          <mat-option value="">Todos</mat-option>
+          <mat-option *ngFor="let e of estados" [value]="e">
+            {{ e | titlecase }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Sede</mat-label>
-      <mat-select [(ngModel)]="filtros.sede" (selectionChange)="aplicarFiltros()">
-        <mat-option value="">Todas</mat-option>
-        <mat-option *ngFor="let s of sedes" [value]="s._id">{{ s.nombre }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Sede</mat-label>
+        <mat-select [(ngModel)]="filtros.sede" (selectionChange)="aplicarFiltros()">
+          <mat-option value="">Todas</mat-option>
+          <mat-option *ngFor="let s of sedes" [value]="s._id">
+            {{ s.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Visibilidad</mat-label>
+        <mat-select [(ngModel)]="filtroActivo" (selectionChange)="cargarEquipos(true)">
+          <mat-option value="activos">Activos</mat-option>
+          <mat-option value="inactivos">Inactivos</mat-option>
+          <mat-option value="todos">Todos</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    </div>
+
+    <div class="filters-actions">
+      <button mat-stroked-button color="primary" (click)="limpiarFiltros()">
+        <mat-icon>refresh</mat-icon>
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= LOADING ================= -->
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <!-- ================= DESKTOP TABLE ================= -->
+  <div class="table-card desktop-view">
+
+    <table mat-table [dataSource]="dataSource" class="modern-table">
+
+      <!-- Nombre -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered">
+          <mat-icon class="icon-header">inventory_2</mat-icon>
+          Nombre
+        </th>
+        <td mat-cell *matCellDef="let row" class="strong">
+          {{ row.nombre }}
+        </td>
+      </ng-container>
+
+      <!-- Tipo -->
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered">
+          <mat-icon class="icon-header">category</mat-icon>
+          Tipo
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.tipo | titlecase }}
+        </td>
+      </ng-container>
+
+      <!-- Sede -->
+      <ng-container matColumnDef="sede">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered">
+          <mat-icon class="icon-header">location_on</mat-icon>
+          Sede
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ obtenerNombreSede(row) }}
+        </td>
+      </ng-container>
+
+      <!-- Puesto -->
+      <ng-container matColumnDef="puesto">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered">
+          <mat-icon class="icon-header">work</mat-icon>
+          Puesto
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ obtenerNombrePuesto(row) }}
+        </td>
+      </ng-container>
+
+      <!-- Responsable -->
+      <ng-container matColumnDef="asignadoA">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered">
+          <mat-icon class="icon-header">person</mat-icon>
+          Responsable
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ obtenerResponsable(row) }}
+        </td>
+      </ng-container>
+
+      <!-- Estado (SIN ICONO) -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered">
+          <mat-icon class="icon-header">info</mat-icon>
+          Estado
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status-badge" [ngClass]="getEstadoClass(row)" matTooltip="{{ getEstadoTooltip(row) }}">
+            {{ getEstadoTexto(row) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="header-cell centered acciones-header">
+          <mat-icon class="icon-header">settings</mat-icon>
+          Acciones
+        </th>
+        <td mat-cell *matCellDef="let row" class="actions">
+
+          <button mat-icon-button class="action-btn view" matTooltip="Ver historial" (click)="verMovimientos(row._id!)">
+            <mat-icon>history</mat-icon>
+          </button>
+
+          <button mat-icon-button class="action-btn edit" matTooltip="Editar" (click)="editarEquipo(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button class="action-btn toggle-btn" [class.animating]="animatingId === row._id"
+            [color]="row.activo ? 'primary' : 'warn'"
+            matTooltip="{{ row.activo ? 'Desactivar equipo' : 'Reactivar equipo' }}" (click)="toggleEstado(row)">
+            <mat-icon>
+              {{ row.activo ? 'toggle_on' : 'toggle_off' }}
+            </mat-icon>
+          </button>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5,10,20]" showFirstLastButtons>
+    </mat-paginator>
 
   </div>
 
-  <button mat-stroked-button color="primary" class="mb-3" (click)="limpiarFiltros()">Limpiar filtros</button>
+  <!-- ================= MOBILE ================= -->
+  <div class="mobile-view" *ngIf="dataSource.data.length > 0">
 
-  <!-- TABLA -->
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 w-full">
+    <div class="card-equipo" *ngFor="let row of dataSource.data">
 
-    <!-- Nombre -->
-    <ng-container matColumnDef="nombre">
-      <th mat-header-cell *matHeaderCellDef> Nombre </th>
-      <td mat-cell *matCellDef="let row"> {{ row.nombre }} </td>
-    </ng-container>
+      <div class="card-header">
+        <div>
+          <div class="card-title">
+            {{ row.nombre }}
+          </div>
+          <div class="card-subtitle">
+            {{ obtenerNombreSede(row) }} -
+            {{ obtenerNombrePuesto(row) }} -
+            {{ obtenerResponsable(row) }}
+          </div>
+        </div>
 
-    <!-- Tipo -->
-    <ng-container matColumnDef="tipo">
-      <th mat-header-cell *matHeaderCellDef> Tipo </th>
-      <td mat-cell *matCellDef="let row"> {{ row.tipo }} </td>
-    </ng-container>
+        <!-- Estado sin icono -->
+        <span class="status-badge" [ngClass]="getEstadoClass(row)" matTooltip="{{ getEstadoTooltip(row) }}">
+          {{ getEstadoTexto(row) }}
+        </span>
+      </div>
 
-    <!-- Sede -->
-    <ng-container matColumnDef="sede">
-      <th mat-header-cell *matHeaderCellDef> Sede </th>
-      <td mat-cell *matCellDef="let row"> {{ getNombreSede(row.sede) }} </td>
-    </ng-container>
-
-    <!-- Estado -->
-    <ng-container matColumnDef="estado">
-      <th mat-header-cell *matHeaderCellDef> Estado </th>
-      <td mat-cell *matCellDef="let row">
-        <span class="badge" [ngClass]="row.estado">{{ row.estado }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Acciones -->
-    <ng-container matColumnDef="acciones">
-      <th mat-header-cell *matHeaderCellDef> Acciones </th>
-      <td mat-cell *matCellDef="let row">
-        <button mat-icon-button color="primary" (click)="verMovimientos(row._id)">
-          <mat-icon>history</mat-icon>
+      <div class="card-actions">
+        <button mat-stroked-button color="primary" (click)="verMovimientos(row._id!)">
+          Movimientos
         </button>
-        <button mat-icon-button color="accent" (click)="editarEquipo(row)">
-          <mat-icon>edit</mat-icon>
+
+        <button mat-stroked-button color="accent" (click)="editarEquipo(row)">
+          Editar
         </button>
-        <button mat-icon-button color="warn" (click)="eliminarEquipo(row._id)">
-          <mat-icon>delete</mat-icon>
+
+        <button mat-icon-button [class.animating]="animatingId === row._id" [color]="row.activo ? 'primary' : 'warn'"
+          (click)="toggleEstado(row)">
+          <mat-icon>
+            {{ row.activo ? 'toggle_on' : 'toggle_off' }}
+          </mat-icon>
         </button>
-      </td>
-    </ng-container>
+      </div>
 
-    <!-- Header y Row -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </div>
 
-    <!-- Mensaje cuando no hay equipos -->
-    <tr *ngIf="dataSource.data.length === 0">
-      <td [attr.colspan]="displayedColumns.length" class="text-center py-4">
-        No hay equipos creados.
-      </td>
-    </tr>
+  </div>
 
-  </table>
-
-  <mat-paginator [pageSize]="10" [pageSizeOptions]="[5,10,20]" showFirstLastButtons></mat-paginator>
+  <!-- ================= EMPTY ================= -->
+  <div *ngIf="dataSource.data.length === 0 && !loading" class="empty-state-global">
+    <mat-icon>inventory_2</mat-icon>
+    <p>No hay equipos registrados</p>
+  </div>
 
 </div>

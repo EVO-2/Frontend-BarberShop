@@ -1,44 +1,85 @@
-<h2 mat-dialog-title>{{ isEditing ? 'Editar Equipo' : 'Crear Equipo' }}</h2>
+<div class="dialog-header">
+  <div class="header-content">
+    <mat-icon class="header-icon">
+      {{ isEditing ? 'edit' : 'add_circle' }}
+    </mat-icon>
 
-<form [formGroup]="form" (ngSubmit)="guardar()">
-  <mat-dialog-content class="grid gap-4">
+    <div>
+      <h2>{{ isEditing ? 'Editar Equipo' : 'Nuevo Equipo' }}</h2>
+      <p class="subtitle">
+        {{ isEditing ? 'Actualiza la información del equipo' : 'Completa los datos para registrar un equipo' }}
+      </p>
+    </div>
+  </div>
+</div>
 
-    <!-- Nombre -->
-    <mat-form-field appearance="outline">
-      <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre">
-    </mat-form-field>
+<form [formGroup]="form" (ngSubmit)="guardar()" class="dialog-form">
 
-    <!-- Tipo -->
-    <mat-form-field appearance="outline">
-      <mat-label>Tipo</mat-label>
-      <mat-select formControlName="tipo">
-        <mat-option *ngFor="let t of tipos" [value]="t">{{ t | titlecase }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <mat-dialog-content>
 
-    <!-- Estado -->
-    <mat-form-field appearance="outline">
-      <mat-label>Estado</mat-label>
-      <mat-select formControlName="estado">
-        <mat-option *ngFor="let e of estados" [value]="e">{{ e | titlecase }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="form-grid">
 
-    <!-- Sede -->
-    <mat-form-field appearance="outline">
-      <mat-label>Sede</mat-label>
-      <mat-select formControlName="sede">
-        <mat-option *ngFor="let s of sedes" [value]="s._id">{{ s.nombre }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <!-- Nombre -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del equipo</mat-label>
+        <input matInput formControlName="nombre" placeholder="Ej: Silla Profesional">
+        <mat-error *ngIf="form.get('nombre')?.hasError('required')">
+          El nombre es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Tipo -->
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option *ngFor="let t of tipos" [value]="t">
+            {{ t | titlecase }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('tipo')?.hasError('required')">
+          Selecciona un tipo
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Estado -->
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select formControlName="estado">
+          <mat-option *ngFor="let e of estados" [value]="e">
+            {{ e | titlecase }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('estado')?.hasError('required')">
+          Selecciona un estado
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Sede -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Sede</mat-label>
+        <mat-select formControlName="sede">
+          <mat-option *ngFor="let s of sedes" [value]="s._id">
+            {{ s.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('sede')?.hasError('required')">
+          Selecciona una sede
+        </mat-error>
+      </mat-form-field>
+
+    </div>
 
   </mat-dialog-content>
 
-  <mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="cancelar()">
+      Cancelar
+    </button>
+
     <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-      {{ isEditing ? 'Actualizar' : 'Crear' }}
+      <mat-icon>{{ isEditing ? 'save' : 'check_circle' }}</mat-icon>
+      {{ isEditing ? 'Actualizar' : 'Crear equipo' }}
     </button>
   </mat-dialog-actions>
+
 </form>

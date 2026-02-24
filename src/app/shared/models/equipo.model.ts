@@ -16,9 +16,17 @@ export interface Equipo {
 
   sede?: string | Sede | null;
   puesto?: string | PuestoTrabajo | null;
-  asignadoA?: string | Usuario | null;
 
-  estado?: 'activo' | 'en_mantenimiento' | 'dañado' | 'fuera_de_servicio' | 'retirado';
+  // 🔥 ELIMINADO asignadoA
+  // El responsable ahora se obtiene desde:
+  // puesto?.peluquero
+
+  estado?:
+  | 'activo'
+  | 'en_mantenimiento'
+  | 'dañado'
+  | 'fuera_de_servicio'
+  | 'retirado';
 
   fechaCompra?: Date | string | null;
 

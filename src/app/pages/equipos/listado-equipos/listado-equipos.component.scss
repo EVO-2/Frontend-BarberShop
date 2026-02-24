@@ -1,27 +1,255 @@
-.badge {
-    padding: 2px 8px;
-    border-radius: 4px;
-    color: #fff;
+.equipos-container {
+    padding: 24px;
+}
+
+/* ================= HEADER ================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.subtitle {
+    color: #777;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+/* ================= FILTROS ================= */
+.filters-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.filters-actions {
+    margin-top: 16px;
+}
+
+/* ================= TABLE CARD ================= */
+.table-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* ================= MODERN TABLE ================= */
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* ================= HEADER CELLS ================= */
+.header-cell {
+    font-weight: 700 !important;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #444;
+}
+
+.modern-table th {
+    padding: 16px 12px;
+    background: #f9fafc;
+    border-bottom: 2px solid #e5e7eb;
+    text-align: left;
+    vertical-align: middle;
+}
+
+/* ================= BODY CELLS ================= */
+.modern-table td {
+    padding: 14px 12px;
+    font-size: 14px;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.modern-table th:last-child,
+.modern-table td:last-child {
+    text-align: center;
+}
+
+.centered {
+    text-align: center !important;
+}
+
+.strong {
+    font-weight: 600;
+}
+
+/* ================= ICONOS ================= */
+.icon-header {
+    font-size: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
+    color: #1976d2;
+}
+
+/* ================= ROW HOVER ================= */
+.table-row {
+    transition: all 0.2s ease;
+}
+
+.table-row:hover {
+    background-color: #f4f8ff;
+}
+
+/* ================= ACTIONS ================= */
+.acciones-header {
+    text-align: center;
+    width: 160px;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.action-btn mat-icon {
+    font-size: 18px;
+}
+
+.action-btn.view {
+    color: #1976d2;
+}
+
+.action-btn.edit {
+    color: #7b1fa2;
+}
+
+.action-btn.delete {
+    color: #d32f2f;
+}
+
+.action-btn:hover {
+    background: rgba(25, 118, 210, 0.08);
+    transform: translateY(-1px);
+}
+
+/* ================= STATUS BADGE (MEJORADO PRO) ================= */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
     text-transform: capitalize;
-    font-size: 0.8rem;
+    display: inline-block;
+    border: 1px solid transparent;
 }
 
-.badge.activo {
-    background-color: #4caf50;
+/* ACTIVO */
+.status-badge.activo {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-color: #c8e6c9;
 }
 
-.badge.en_mantenimiento {
-    background-color: #ff9800;
+/* EN MANTENIMIENTO */
+.status-badge.en_mantenimiento {
+    background: #fff3e0;
+    color: #ef6c00;
+    border-color: #ffe0b2;
 }
 
-.badge.dañado {
-    background-color: #f44336;
+/* DAÑADO */
+.status-badge.dañado {
+    background: #ffebee;
+    color: #c62828;
+    border-color: #ffcdd2;
 }
 
-.badge.fuera_de_servicio {
-    background-color: #9e9e9e;
+/* FUERA DE SERVICIO */
+.status-badge.fuera_de_servicio {
+    background: #f3f4f6;
+    color: #616161;
+    border-color: #e0e0e0;
 }
 
-.badge.retirado {
-    background-color: #607d8b;
+/* RETIRADO */
+.status-badge.retirado {
+    background: #eceff1;
+    color: #455a64;
+    border-color: #cfd8dc;
+}
+
+/* ================= MOBILE CARDS ================= */
+.mobile-view {
+    display: none;
+}
+
+.card-equipo {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f3f6;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ================= EMPTY STATE ================= */
+.empty-state-global {
+    text-align: center;
+    margin-top: 40px;
+    color: #777;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .desktop-view {
+        display: none;
+    }
+
+    .mobile-view {
+        display: block;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
 }

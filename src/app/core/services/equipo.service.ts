@@ -17,7 +17,9 @@ interface PagedResponse<T> {
   totalPages?: number;
 }
 
+// =========================================
 // Interfaz para movimientos de equipo
+// =========================================
 export interface EquipoMovimiento {
   _id?: string;
   equipo: string;
@@ -43,8 +45,9 @@ export class EquipoService {
   constructor(private http: HttpClient) { }
 
   // =========================================
-  // CRUD Equipos
+  // CRUD EQUIPOS
   // =========================================
+
   listar(params?: {
     page?: number;
     limit?: number;
@@ -54,7 +57,9 @@ export class EquipoService {
     q?: string;
     activo?: boolean;
   }): Observable<PagedResponse<Equipo>> {
+
     let httpParams = new HttpParams();
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== null && value !== undefined && value !== '') {
@@ -62,6 +67,7 @@ export class EquipoService {
         }
       });
     }
+
     return this.http
       .get<PagedResponse<Equipo>>(this.baseUrl, { params: httpParams })
       .pipe(catchError(this.handleError));
@@ -94,51 +100,95 @@ export class EquipoService {
       );
   }
 
-  desactivar(id: string): Observable<Equipo> {
+  // =========================================
+  // CAMBIAR ESTADO (ACTIVAR / DESACTIVAR)
+  // =========================================
+
+  cambiarEstado(id: string, activo: boolean): Observable<Equipo> {
     return this.http
-      .patch<{ data: Equipo }>(`${this.baseUrl}/${id}/desactivar`, {})
+      .patch<{ data: Equipo }>(
+        `${this.baseUrl}/${id}/estado`,
+        { activo }
+      )
       .pipe(
         map(res => res.data),
         catchError(this.handleError)
       );
   }
 
-  eliminar(id: string): Observable<{ mensaje?: string }> {
+  // =========================================
+  // IMÁGENES
+  // =========================================
+
+  uploadImages(
+    equipoId: string,
+    files: FileList | File[]
+  ): Observable<HttpEvent<any>> {
+
+    const form = new FormData();
+
+    if (files) {
+      const fileArray: File[] =
+        files instanceof FileList ? Array.from(files) : files;
+
+      fileArray.forEach(file =>
+        form.append('imagenes', file)
+      );
+    }
+
+    const req = new HttpRequest(
+      'POST',
+      `${this.baseUrl}/${equipoId}/upload`,
+      form,
+      { reportProgress: true }
+    );
+
     return this.http
-      .delete<{ mensaje?: string }>(`${this.baseUrl}/${id}`)
+      .request(req)
       .pipe(catchError(this.handleError));
   }
 
-  uploadImages(equipoId: string, files: FileList | File[]): Observable<HttpEvent<any>> {
-    const form = new FormData();
-    if (files) {
-      const fileArray: File[] = files instanceof FileList ? Array.from(files) : files;
-      fileArray.forEach(file => form.append('imagenes', file));
-    }
-    const req = new HttpRequest('POST', `${this.baseUrl}/${equipoId}/upload`, form, { reportProgress: true });
-    return this.http.request(req).pipe(catchError(this.handleError));
-  }
+  // =========================================
+  // MOVIMIENTOS DE EQUIPO
+  // =========================================
 
-  // =========================================
-  // Movimientos de equipo
-  // =========================================
   listarMovimientos(equipoId: string): Observable<EquipoMovimiento[]> {
     return this.http
-      .get<{ data: EquipoMovimiento[] }>(`${this.baseUrl}/${equipoId}/movimientos`)
-      .pipe(map(res => res.data), catchError(this.handleError));
+      .get<{ data: EquipoMovimiento[] }>(
+        `${this.baseUrl}/${equipoId}/movimientos`
+      )
+      .pipe(
+        map(res => res.data),
+        catchError(this.handleError)
+      );
   }
 
-  crearMovimiento(equipoId: string, movimiento: Partial<EquipoMovimiento>): Observable<EquipoMovimiento> {
+  crearMovimiento(
+    equipoId: string,
+    movimiento: Partial<EquipoMovimiento>
+  ): Observable<EquipoMovimiento> {
+
     return this.http
-      .post<{ data: EquipoMovimiento }>(`${this.baseUrl}/${equipoId}/movimientos`, movimiento)
-      .pipe(map(res => res.data), catchError(this.handleError));
+      .post<{ data: EquipoMovimiento }>(
+        `${this.baseUrl}/${equipoId}/movimientos`,
+        movimiento
+      )
+      .pipe(
+        map(res => res.data),
+        catchError(this.handleError)
+      );
   }
+
+  // =========================================
+  // ERROR HANDLER CENTRALIZADO
+  // =========================================
 
   private handleError(error: any) {
     const message =
       error?.error?.mensaje ||
       error?.message ||
       'Error en la petición';
+
     return throwError(() => ({ message }));
   }
 }

@@ -57,7 +57,7 @@ export class ReporteIngresosComponent implements OnInit {
     private fb: FormBuilder,
     private reportesService: ReportesService,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.filtroForm = this.fb.group({
@@ -146,10 +146,10 @@ export class ReporteIngresosComponent implements OnInit {
 
     this.reportesService.obtenerCitasPorBarbero(fechaInicio, fechaFin).subscribe({
       next: (res) => {
-       this.reportesBarberos = (res || []).map((r: any) => ({
-        barbero: r.peluquero || 'N/D',
-        cantidad: r.cantidadCitas || 0
-      }));
+        this.reportesBarberos = (res || []).map((r: any) => ({
+          barbero: r.peluquero || 'N/D',
+          cantidad: r.cantidadCitas || 0
+        }));
         this.cargando = false;
       },
       error: (err) => {
@@ -195,10 +195,29 @@ export class ReporteIngresosComponent implements OnInit {
 
     this.reportesService.obtenerReporteInventario().subscribe({
       next: (res) => {
-        this.reportesInventario = (res || []).map((r: any) => ({
-          producto: r.producto || 'N/D',
-          usos: r.usos || 0
-        }));
+        if (!res || res.length === 0) {
+          this.reportesInventario = [];
+          this.cargando = false;
+          return;
+        }
+
+        // 🔹 Convertimos estructura por sede → a filas planas para tabla
+        const filas = res.flatMap((sedeObj: any) => {
+          const equipos = sedeObj.equipos || [];
+
+          const totalSede = equipos
+            .reduce((acc: number, eq: any) => acc + (eq.cantidad || 0), 0);
+
+          return equipos.map((eq: any) => ({
+            sede: sedeObj.sede || 'N/D',
+            equipo: eq.nombre || 'N/D',
+            tipo: eq.tipo || 'No especificado',   // 🔥 NUEVO CAMPO
+            cantidad: eq.cantidad || 0,
+            totalSede: totalSede
+          }));
+        });
+
+        this.reportesInventario = filas;
         this.cargando = false;
       },
       error: (err) => {

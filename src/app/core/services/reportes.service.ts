@@ -10,7 +10,7 @@ export class ReportesService {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * ===================================================
@@ -31,6 +31,7 @@ export class ReportesService {
     if (Array.isArray(res.data)) return res.data;
     if (Array.isArray(res.resultado)) return res.resultado;
     if (Array.isArray(res.detalle)) return res.detalle;
+    if (Array.isArray(res.reporte)) return res.reporte;
 
     return [];
   }

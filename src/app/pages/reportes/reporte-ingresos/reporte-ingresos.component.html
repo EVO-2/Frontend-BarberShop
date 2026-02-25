@@ -19,11 +19,7 @@
   </form>
 
   <!-- 🔹 TABS DE REPORTES -->
-  <mat-tab-group
-    [(selectedIndex)]="tabSeleccionada"
-    (selectedIndexChange)="onTabChange($event)"
-    class="mt-4"
-  >
+  <mat-tab-group [(selectedIndex)]="tabSeleccionada" (selectedIndexChange)="onTabChange($event)" class="mt-4">
 
     <!-- 🟢 TAB 1: Ingresos -->
     <mat-tab label="Ingresos">
@@ -197,30 +193,58 @@
       <div *ngIf="!cargando && reportesInventario.length > 0; else sinInventario">
         <table mat-table [dataSource]="reportesInventario">
 
-          <ng-container matColumnDef="producto">
+          <!-- 🏢 Sede -->
+          <ng-container matColumnDef="sede">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
-                <mat-icon>inventory_2</mat-icon> Producto
+                <mat-icon>business</mat-icon> Sede
               </div>
             </th>
             <td mat-cell *matCellDef="let p">
-              {{ p.producto }}
+              {{ p.sede }}
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="usos">
+          <!-- 🏷 Tipo -->
+          <ng-container matColumnDef="tipo">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
-                <mat-icon>repeat</mat-icon> Usos/Ventas
+                <mat-icon>category</mat-icon> Tipo
               </div>
             </th>
             <td mat-cell *matCellDef="let p">
-              {{ p.usos }}
+              {{ p.tipo }}
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['producto','usos']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['producto','usos'];"></tr>
+          <!-- 🔢 Cantidad -->
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="header-cell">
+                <mat-icon>inventory_2</mat-icon> Cantidad
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let p">
+              {{ p.cantidad }}
+            </td>
+          </ng-container>
+
+          <!-- 📊 Total por sede -->
+          <ng-container matColumnDef="totalSede">
+            <th mat-header-cell *matHeaderCellDef>
+              <div class="header-cell">
+                <mat-icon>summarize</mat-icon> Total por Sede
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let p">
+              {{ p.totalSede }}
+            </td>
+          </ng-container>
+
+          <!-- 🔹 Columnas actualizadas -->
+          <tr mat-header-row *matHeaderRowDef="['sede','tipo','cantidad','totalSede']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede'];"></tr>
+
         </table>
       </div>
 

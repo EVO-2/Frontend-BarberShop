@@ -1,2 +1,187 @@
-<h1>Bienvenido al Dashboard</h1>
-<p>Aquí puedes ver el resumen general de tu barbería.</p>
+<div class="dashboard-container">
+
+    <!-- ================= HEADER ================= -->
+    <div class="header">
+        <div>
+            <h1>Dashboard</h1>
+            <p class="subtitle">Resumen general de la barbería</p>
+        </div>
+    </div>
+
+    <!-- ================= LOADING ================= -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+    <!-- ================= ERROR ================= -->
+    <div *ngIf="error" class="error-state">
+        <mat-icon>error</mat-icon>
+        <p>Error cargando el resumen</p>
+        <button mat-raised-button color="primary" (click)="cargarResumen()">
+            Reintentar
+        </button>
+    </div>
+
+    <!-- ================= CONTENIDO PRINCIPAL ================= -->
+    <div *ngIf="resumen as data">
+
+        <!-- ================= KPI CARDS ================= -->
+        <div class="kpi-grid" *ngIf="!loading">
+
+            <mat-card class="kpi-card primary">
+                <div class="kpi-value">{{ data.totalClientes }}</div>
+                <div class="kpi-label">Clientes Activos</div>
+            </mat-card>
+
+            <mat-card class="kpi-card success">
+                <div class="kpi-value">{{ data.citasHoy }}</div>
+                <div class="kpi-label">Citas Hoy</div>
+            </mat-card>
+
+            <mat-card class="kpi-card warning">
+                <div class="kpi-value">${{ data.ingresosHoy | number }}</div>
+                <div class="kpi-label">Ingresos Hoy</div>
+            </mat-card>
+
+            <mat-card class="kpi-card dark">
+                <div class="kpi-value">{{ data.peluquerosActivos }}</div>
+                <div class="kpi-label">Peluqueros Activos</div>
+            </mat-card>
+
+        </div>
+
+        <!-- ================= GRÁFICOS ================= -->
+        <div class="charts-grid" *ngIf="!loading">
+
+            <mat-card class="chart-card">
+                <h3>Ingresos últimos 7 días</h3>
+                <div class="chart-container">
+                    <canvas id="graficoIngresos"></canvas>
+                </div>
+            </mat-card>
+
+            <mat-card class="chart-card">
+                <h3>Estado de citas</h3>
+                <div class="chart-container">
+                    <canvas id="graficoEstados"></canvas>
+                </div>
+            </mat-card>
+
+        </div>
+
+        <!-- ================= SERVICIOS TOP ================= -->
+        <mat-card class="services-card" *ngIf="!loading && resumen?.serviciosTop?.length">
+
+            <div class="services-header">
+                <mat-icon>bar_chart</mat-icon>
+                <h3>Servicios más prestados</h3>
+            </div>
+
+            <div class="service-progress" *ngFor="let servicio of resumen.serviciosTop">
+
+                <div class="service-info">
+                    <!-- Nombre del servicio -->
+                    <span class="service-name">{{ servicio.nombre }}</span>
+
+                    <!-- Porcentaje relativo al más prestado -->
+                    <span class="service-percent">
+                        {{ calcularPorcentajeServicio(servicio.total) | number:'1.0-0' }}%
+                    </span>
+                </div>
+
+                <!-- Progress bar dinámico -->
+                <mat-progress-bar mode="determinate" color="primary"
+                    [value]="calcularPorcentajeServicio(servicio.total)">
+                </mat-progress-bar>
+
+            </div>
+
+        </mat-card>
+
+        <!-- ================= TABLA DESKTOP ================= -->
+        <div class="table-card desktop-view">
+
+            <table mat-table [dataSource]="data.ultimasCitas" class="modern-table">
+
+                <!-- Cliente -->
+                <ng-container matColumnDef="cliente">
+                    <th mat-header-cell *matHeaderCellDef> Cliente </th>
+                    <td mat-cell *matCellDef="let cita">
+                        {{ obtenerNombreCliente(cita) }}
+                    </td>
+                </ng-container>
+
+                <!-- Servicio -->
+                <ng-container matColumnDef="servicio">
+                    <th mat-header-cell *matHeaderCellDef> Servicio </th>
+                    <td mat-cell *matCellDef="let cita">
+                        {{ obtenerServiciosTexto(cita.servicios) }}
+                    </td>
+                </ng-container>
+
+                <!-- Sede -->
+                <ng-container matColumnDef="sede">
+                    <th mat-header-cell *matHeaderCellDef> Sede </th>
+                    <td mat-cell *matCellDef="let cita">
+                        {{ obtenerNombreSede(cita) }}
+                    </td>
+                </ng-container>
+
+                <!-- Fecha -->
+                <ng-container matColumnDef="fecha">
+                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                    <td mat-cell *matCellDef="let cita">
+                        {{ cita.fecha | date:'short' }}
+                    </td>
+                </ng-container>
+
+                <!-- Estado -->
+                <ng-container matColumnDef="estado">
+                    <th mat-header-cell *matHeaderCellDef> Estado </th>
+                    <td mat-cell *matCellDef="let cita">
+                        {{ cita.estado }}
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            </table>
+
+        </div>
+
+        <!-- ================= MOBILE CARDS ================= -->
+        <div class="mobile-view" *ngIf="data.ultimasCitas.length > 0">
+
+            <mat-card class="cita-card" *ngFor="let cita of data.ultimasCitas">
+
+                <div class="cita-header">
+                    <div>
+                        <div class="cita-title">
+                            {{ cita?.cliente?.usuario?.nombre }}
+                        </div>
+                        <div class="cita-subtitle">
+                            {{ cita?.peluquero?.usuario?.nombre }}
+                        </div>
+                    </div>
+
+                    <span class="status-badge" [ngClass]="cita.estado">
+                        {{ cita.estado }}
+                    </span>
+                </div>
+
+                <div class="cita-date">
+                    {{ cita.fecha | date:'fullDate' }}
+                </div>
+
+            </mat-card>
+
+        </div>
+
+        <!-- ================= EMPTY ================= -->
+        <div *ngIf="!loading && data.ultimasCitas.length === 0" class="empty-state-global">
+            <mat-icon>event_busy</mat-icon>
+            <p>No hay citas recientes</p>
+        </div>
+
+    </div>
+
+</div>

@@ -16,8 +16,9 @@ import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-p
 import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
 
-// ✅ IMPORTAMOS EL COMPONENTE LISTADO DE EQUIPOS
+// ✅ IMPORTAMOS COMPONENTES
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
+import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -35,61 +36,71 @@ const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'perfil', component: PerfilComponent },
 
-      { 
-        path: 'usuarios', 
-        component: UsuariosComponent, 
-        canActivate: [RoleGuard], 
-        data: { roles: ['admin'] } 
+      {
+        path: 'usuarios',
+        component: UsuariosComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
-      { 
-        path: 'sedes',                        
+      {
+        path: 'sedes',
         component: SedesComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
       },
-      { 
-        path: 'puestos',                        
+      {
+        path: 'puestos',
         component: GestionarPuestosComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['admin'] } 
+        data: { roles: ['admin'] }
       },
-      { 
-        path: 'servicios',                       
+
+
+      {
+        path: 'servicios-admin',
         component: ServiciosComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['admin'] } 
+        data: { roles: ['admin'] }
       },
 
-      { 
-        path: 'equipos',                        
+
+      {
+        path: 'servicios',
+        component: ServiciosClienteComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['cliente', 'admin'] }
+      },
+
+      {
+        path: 'equipos',
         component: ListadoEquiposComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['admin'] } 
+        data: { roles: ['admin'] }
       },
 
-      { 
-        path: 'reservar', 
-        component: ReservarCitaComponent, 
-        canActivate: [RoleGuard], 
-        data: { roles: ['cliente', 'admin'] } 
+      {
+        path: 'reservar',
+        component: ReservarCitaComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['cliente', 'admin'] }
       },
-      { 
-        path: 'mis-citas', 
-        component: MisCitasComponent, 
-        canActivate: [RoleGuard], 
-        data: { roles: ['cliente', 'barbero', 'admin'] } 
+      {
+        path: 'mis-citas',
+        component: MisCitasComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['cliente', 'barbero', 'admin'] }
       },
-      { 
-        path: 'gestionar-citas', 
-        component: GestionarCitasComponent, 
-        canActivate: [RoleGuard], 
-        data: { roles: ['barbero', 'admin'] } 
+      {
+        path: 'gestionar-citas',
+        component: GestionarCitasComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['barbero', 'admin'] }
       },
-      { 
-        path: 'reportes/ingresos', 
+      {
+        path: 'reportes/ingresos',
         component: ReporteIngresosComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['admin'] } 
+        data: { roles: ['admin'] }
       }
     ]
   },
@@ -102,4 +113,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

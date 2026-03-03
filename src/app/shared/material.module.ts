@@ -1,4 +1,4 @@
-import { NgModule, LOCALE_ID } from '@angular/core';
+import { NgModule, LOCALE_ID, Injectable } from '@angular/core';
 import { registerLocaleData, CommonModule } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 
@@ -41,6 +41,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 registerLocaleData(localeEs);
 
 // ✅ Adaptador personalizado de fechas DD/MM/YYYY
+@Injectable()
 export class EsDateAdapter extends NativeDateAdapter {
   override format(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');

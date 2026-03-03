@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReservaService } from 'src/app/shared/services/reserva.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -46,19 +47,28 @@ export class ReservarCitaComponent implements OnInit {
   private ultimaHora: string | null = null;
   private ultimaSedeId: string | null = null;
 
+  // 🔥 NUEVO
+  private servicioIdFromQuery: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private reservaService: ReservaService,
     private snackBar: MatSnackBar,
     private authService: AuthService,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
 
     this.usuarioLogueado = this.authService.getUsuario();
     this.rolUsuario = this.usuarioLogueado?.rol || '';
     this.esAdmin = this.rolUsuario === 'admin';
+
+    // 🔥 Leer query param
+    this.route.queryParams.subscribe((params: any) => {
+      this.servicioIdFromQuery = params['servicioId'] || null;
+    });
 
     this.initForm();
     this.cargarDatos();
@@ -130,6 +140,7 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   private cargarDatos(): void {
+
     if (this.esAdmin) {
       this.reservaService.getClientes().subscribe({
         next: res => {
@@ -144,9 +155,14 @@ export class ReservarCitaComponent implements OnInit {
       }
     });
 
+    // 🔥 AQUÍ SE HACE LA SELECCIÓN AUTOMÁTICA LIMPIA
     this.reservaService.getServicios().subscribe({
       next: res => {
         this.servicios = Array.isArray(res.data) ? res.data : res;
+
+        if (this.servicioIdFromQuery) {
+          this.seleccionarServicioAutomaticamente(this.servicioIdFromQuery);
+        }
       }
     });
 
@@ -164,6 +180,20 @@ export class ReservarCitaComponent implements OnInit {
         }));
       }
     });
+  }
+
+  // 🔥 NUEVO MÉTODO LIMPIO
+  private seleccionarServicioAutomaticamente(servicioId: string): void {
+
+    const current: string[] = Array.isArray(this.serviciosArray.value)
+      ? [...this.serviciosArray.value]
+      : [];
+
+    if (!current.includes(servicioId)) {
+      current.push(servicioId);
+      this.serviciosArray.setValue(current);
+      this.serviciosArray.markAsTouched();
+    }
   }
 
   onSedeChange(sedeId: string): void {
@@ -246,7 +276,7 @@ export class ReservarCitaComponent implements OnInit {
           }, 0);
           const fin = new Date(inicioCita.getTime() + duracion * 60000);
 
-          if (fechaSeleccionada < fin && new Date(fechaSeleccionada.getTime() + 60*60000) > inicioCita) {
+          if (fechaSeleccionada < fin && new Date(fechaSeleccionada.getTime() + 60 * 60000) > inicioCita) {
             idsOcupados.add(this.extractId(c.peluquero) || '');
           }
         });
@@ -257,7 +287,7 @@ export class ReservarCitaComponent implements OnInit {
         }));
 
         const pelSel = this.ctrl('peluquero')?.value;
-        this.fechaHoraInvalida = pelSel && idsOcupados.has(pelSel);
+        this.fechaHoraInvalida = !!(pelSel && idsOcupados.has(pelSel));
       }
     });
   }
@@ -276,7 +306,6 @@ export class ReservarCitaComponent implements OnInit {
     }
 
     const datos = this.reservarForm.value;
-
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
 
     const clienteId = this.rolUsuario === 'cliente'

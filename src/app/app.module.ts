@@ -32,6 +32,9 @@ import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-
 import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { ServicioDialogComponent } from './shared/components/servicio-dialog/servicio-dialog.component';
 
+
+import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
+
 // ======= Reportes =======
 import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
 
@@ -60,6 +63,8 @@ import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dial
     PuestoDialogComponent,
     ServiciosComponent,
     ServicioDialogComponent,
+    ServiciosClienteComponent,
+
     ReporteIngresosComponent,
     ListadoEquiposComponent,
     MovimientosEquipoDialogComponent,

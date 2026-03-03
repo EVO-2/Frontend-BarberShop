@@ -47,6 +47,7 @@ export class LoginComponent {
   }
 
   async ngOnInit() {
+
     // 🔌 Ping backend
     const urlPing = this.authService.apiUrl.replace('/api/auth', '');
 
@@ -58,32 +59,24 @@ export class LoginComponent {
     // 🔐 Detectar biometría
     try {
       this.biometricAvailable = await this.biometric.isAvailable();
-    } catch (e) {
-      // Error silencioso al detectar biometría
-    }
+    } catch (e) { }
 
     // 🔐 Intentar auto-login biométrico
-    let token: string | null = null;
     try {
-      token = await this.biometric.getToken?.();
-    } catch (e) {
-      // Error silencioso al obtener token
-    }
+      const token = await this.biometric.getToken?.();
 
-    if (token && this.biometricAvailable) {
-      try {
+      if (token && this.biometricAvailable) {
         const auth = await this.biometric.authenticate();
 
         if (auth) {
-          // 👉 SOLO guardar token
-          localStorage.setItem('token', token);
-          this.router.navigate(['/dashboard']);
-          return; // ⛔ detener flujo
+          this.authService.guardarDatos(token, null);
+
+          const rol = this.authService.obtenerRol();
+          this.redirigirSegunRol(rol);
+          return;
         }
-      } catch (e) {
-        // Autenticación cancelada o falló
       }
-    }
+    } catch (e) { }
   }
 
   togglePasswordVisibility(): void {
@@ -91,6 +84,7 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
+
     if (this.form.invalid) {
       return;
     }
@@ -98,16 +92,23 @@ export class LoginComponent {
     const { correo, password } = this.form.value;
 
     this.authService.login({ correo, password }).subscribe({
+
       next: async (res) => {
+
+        // 🔐 Guardar datos
         this.authService.guardarDatos(res.token, res.usuario);
 
+        // 🔐 Guardar token biométrico si aplica
         if (this.biometricAvailable && this.biometric.saveToken) {
           await this.biometric.saveToken(res.token);
         }
 
-        this.router.navigate(['/dashboard']);
+        const rol = this.authService.obtenerRol();
+        this.redirigirSegunRol(rol);
       },
+
       error: (err) => {
+
         if (err.status === 0) {
           this.errorLogin =
             'No hay conexión con el servidor. Verifica red y backend.';
@@ -119,26 +120,52 @@ export class LoginComponent {
   }
 
   async loginWithBiometrics() {
+
     const available = await this.biometric.isAvailable();
 
-    if (!available) {
-      return;
-    }
+    if (!available) return;
 
     try {
+
       const auth = await this.biometric.authenticate();
 
       if (auth) {
+
         const token = await this.biometric.getToken?.();
 
         if (token) {
           this.authService.guardarDatos(token, null);
         }
 
-        this.router.navigate(['/dashboard']);
+        const rol = this.authService.obtenerRol();
+        this.redirigirSegunRol(rol);
       }
-    } catch (e) {
-      // Autenticación cancelada
+
+    } catch (e) { }
+  }
+
+  // 🔥 Redirección robusta según rol
+  private redirigirSegunRol(rol: string | null | undefined): void {
+
+    const rolNormalizado = rol?.toLowerCase() || '';
+
+    switch (rolNormalizado) {
+
+      case 'admin':
+        this.router.navigate(['/dashboard']);
+        break;
+
+      case 'barbero':
+        this.router.navigate(['/gestionar-citas']);
+        break;
+
+      case 'cliente':
+        this.router.navigate(['/servicios']);
+        break;
+
+      default:
+        this.router.navigate(['/login']);
+        break;
     }
   }
 }

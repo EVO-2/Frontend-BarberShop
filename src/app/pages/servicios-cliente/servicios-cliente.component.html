@@ -1,0 +1,63 @@
+<div class="contenedor">
+
+  <h2 class="titulo">Nuestros Servicios</h2>
+
+  <!-- 🔄 Loader -->
+  <div *ngIf="cargando" class="estado">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- ❌ Error -->
+  <div *ngIf="error" class="estado error">
+    {{ error }}
+  </div>
+
+  <!-- 📦 Lista de servicios -->
+  <div class="grid" *ngIf="!cargando && servicios.length > 0">
+
+    <div class="card-servicio" *ngFor="let servicio of servicios">
+
+      <!-- 🖼 Imagen principal -->
+      <div class="imagen-container">
+        <img [src]="obtenerImagenPrincipal(servicio)" [alt]="servicio.nombre" loading="lazy">
+      </div>
+
+      <!-- 📄 Contenido -->
+      <div class="contenido">
+
+        <h3 class="nombre">
+          {{ servicio.nombre }}
+        </h3>
+
+        <p class="descripcion">
+          {{ servicio.descripcion }}
+        </p>
+
+        <div class="info">
+
+          <span class="precio">
+            {{ servicio.precio | currency:'COP':'symbol':'1.0-0' }}
+          </span>
+
+          <span class="duracion">
+            ⏱ {{ servicio.duracion }}
+          </span>
+
+        </div>
+
+        <button mat-raised-button color="primary" class="btn-reservar" (click)="reservarServicio(servicio)">
+          Reservar
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 📭 Sin servicios -->
+  <div *ngIf="!cargando && servicios.length === 0" class="estado">
+    No hay servicios disponibles en este momento.
+  </div>
+
+</div>

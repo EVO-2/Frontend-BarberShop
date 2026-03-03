@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReportesService } from 'src/app/core/services/reportes.service';
+import * as xlsx from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // === Interfaces de Tipado ===
 interface CitaReporte {
@@ -246,5 +249,207 @@ export class ReporteIngresosComponent implements OnInit {
         this.obtenerReporteInventario();
         break;
     }
+  }
+
+  // =============================
+  // 📥 Exportar Excel
+  // =============================
+  exportarExcel(): void {
+    let data: any[] = [];
+    let titulo = 'Reporte';
+    let sheetName = 'Datos';
+    let colWidths: any[] = []; // Configuración de anchos de columna
+
+    switch (this.tabSeleccionada) {
+      case 0:
+        data = this.citas;
+        titulo = 'Reporte_Ingresos';
+        colWidths = [{ wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 40 }, { wch: 15 }];
+        break;
+      case 1:
+        data = this.reportesBarberos;
+        titulo = 'Reporte_Barberos';
+        colWidths = [{ wch: 30 }, { wch: 20 }];
+        break;
+      case 2:
+        data = this.reportesClientes;
+        titulo = 'Reporte_Clientes_Frecuentes';
+        colWidths = [{ wch: 30 }, { wch: 15 }];
+        break;
+      case 3:
+        data = this.reportesInventario;
+        titulo = 'Reporte_Inventario';
+        colWidths = [{ wch: 20 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 20 }];
+        break;
+    }
+
+    if (!data || data.length === 0) {
+      this.snackBar.open('No hay datos para exportar.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // 🔹 Si es la pestaña de ingresos, clonamos data y agregamos la fila del TOTAL
+    let exportData = [...data];
+    if (this.tabSeleccionada === 0) {
+      exportData.push({
+        fecha: '',
+        cliente: '',
+        peluquero: '',
+        serviciosStr: 'TOTAL INGRESOS',
+        subtotal: this.total
+      });
+    }
+
+    // Convertimos a hoja Excel
+    const worksheet: xlsx.WorkSheet = xlsx.utils.json_to_sheet(exportData);
+
+    // Damos ancho a las columnas para que no se vean apretadas (estética)
+    worksheet['!cols'] = colWidths;
+
+    // Generamos el libro
+    const workbook: xlsx.WorkBook = { Sheets: { [sheetName]: worksheet }, SheetNames: [sheetName] };
+
+    // Descargar
+    xlsx.writeFile(workbook, `${titulo}_${new Date().getTime()}.xlsx`);
+  }
+
+  // =============================
+  // 📄 Exportar PDF
+  // =============================
+  exportarPDF(): void {
+    let data: any[] = [];
+    let title = 'Reporte';
+    let headers: string[] = [];
+    let keys: string[] = [];
+
+    switch (this.tabSeleccionada) {
+      case 0:
+        data = this.citas;
+        title = 'Reporte de Ingresos';
+        headers = ['Fecha', 'Cliente', 'Barbero', 'Servicios', 'Subtotal'];
+        keys = ['fecha', 'cliente', 'peluquero', 'serviciosStr', 'subtotal'];
+        break;
+      case 1:
+        data = this.reportesBarberos;
+        title = 'Citas por Barbero';
+        headers = ['Barbero', 'Citas Atendidas'];
+        keys = ['barbero', 'cantidad'];
+        break;
+      case 2:
+        data = this.reportesClientes;
+        title = 'Clientes Frecuentes';
+        headers = ['Cliente', 'Citas'];
+        keys = ['cliente', 'cantidad'];
+        break;
+      case 3:
+        data = this.reportesInventario;
+        title = 'Reporte de Inventario';
+        headers = ['Sede', 'Equipo', 'Tipo', 'Cantidad', 'Total Sede'];
+        keys = ['sede', 'equipo', 'tipo', 'cantidad', 'totalSede'];
+        break;
+    }
+
+    if (!data || data.length === 0) {
+      this.snackBar.open('No hay datos para exportar.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // 1️⃣ Añadimos Logo
+    const logoImg = new Image();
+    logoImg.src = 'assets/logo.png'; // Asegúrate de que este asset exista
+
+    logoImg.onload = () => {
+      // (imagen, formato, X, Y, Ancho, Alto)
+      doc.addImage(logoImg, 'PNG', 14, 10, 40, 20);
+      this.generarContenidoPDF(doc, title, headers, keys, data);
+    };
+
+    logoImg.onerror = () => {
+      // Si el logo no carga (ej. no está en /assets), imprimimos el PDF sin logo pero no fallamos
+      this.generarContenidoPDF(doc, title, headers, keys, data);
+    };
+  }
+
+  private generarContenidoPDF(doc: jsPDF, title: string, headers: string[], keys: string[], data: any[]): void {
+    // 2️⃣ Título Central
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40);
+    // Calcular el centro (ancho de hoja carta/A4 es ~210mm)
+    doc.text(title.toUpperCase(), 105, 20, { align: 'center' });
+
+    // 3️⃣ Fecha de Generación
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    const fechaActual = new Date().toLocaleDateString();
+    doc.text(`Fecha de generación: ${fechaActual}`, 105, 27, { align: 'center' });
+
+    // Línea separadora
+    doc.setDrawColor(200, 200, 200);
+    doc.line(14, 32, 196, 32);
+
+    // 4️⃣ Preparar Datos para la Tabla
+    const formatData = data.map(item => keys.map(k => {
+      if (k === 'fecha' && item[k]) return new Date(item[k]).toLocaleDateString();
+      if (k === 'subtotal' && item[k]) return `$ ${item[k].toLocaleString('es-CO')}`;
+      return item[k] ?? '';
+    }));
+
+    // Preparar Footer si es la pestaña de Ingresos
+    let footData: any[] = [];
+    if (this.tabSeleccionada === 0) {
+      footData = [['', '', '', 'TOTAL INGRESOS', `$ ${this.total.toLocaleString('es-CO')}`]];
+    }
+
+    // 5️⃣ Tabla Estilizada
+    autoTable(doc, {
+      head: [headers],
+      body: formatData,
+      foot: footData,
+      startY: 40,
+      theme: 'grid', // Malla profesional
+      styles: {
+        font: 'helvetica',
+        fontSize: 10,
+        cellPadding: 4,
+        textColor: [50, 50, 50], // Gris oscuro para mejor lectura
+      },
+      headStyles: {
+        fillColor: [33, 33, 33], // Encabezado Gris oscuro casi negro
+        textColor: [255, 255, 255], // Letra blanca
+        fontStyle: 'bold',
+        halign: 'center' // Centrar encabezados
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245] // Filas intercaladas gris muy claro
+      },
+      footStyles: {
+        fillColor: [50, 50, 50],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      columnStyles: {
+        // Por si necesitas alinear la última columna al extremo derecho (ej. precios)
+        [keys.length - 1]: { halign: 'right' }
+      }
+    });
+
+    // 6️⃣ Pie de página
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `Página ${i} de ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
+
+    // 7️⃣ Descargar
+    doc.save(`${title.replace(/ /g, '_')}_${new Date().getTime()}.pdf`);
   }
 }

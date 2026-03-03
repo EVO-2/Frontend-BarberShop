@@ -23,11 +23,14 @@
     "@capacitor/core": "~6.0.0",
     "@ionic/angular": "~8.7.17",
     "cordova-plugin-fingerprint-aio": "^6.0.1",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
     "material-design-icons": "^3.0.1",
     "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.1",
     "sweetalert2": "^11.10.0",
     "tslib": "^2.6.2",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.10"
   },
   "devDependencies": {

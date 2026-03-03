@@ -16,6 +16,15 @@
     <button mat-raised-button color="primary" type="button" (click)="aplicarFiltro()">
       🔍 Aplicar Filtro
     </button>
+
+    <div class="flex-spacer" style="flex: 1 1 auto;"></div>
+
+    <button mat-raised-button color="accent" type="button" (click)="exportarExcel()" [disabled]="cargando">
+      <mat-icon>table_view</mat-icon> Exportar Excel
+    </button>
+    <button mat-raised-button color="warn" type="button" (click)="exportarPDF()" [disabled]="cargando">
+      <mat-icon>picture_as_pdf</mat-icon> Exportar PDF
+    </button>
   </form>
 
   <!-- 🔹 TABS DE REPORTES -->

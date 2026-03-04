@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PagoService } from 'src/app/shared/services/pago.service';
+import { CitaService } from 'src/app/shared/services/cita.service';
 
 @Component({
   selector: 'app-pago-dialog',
@@ -9,36 +9,67 @@ import { PagoService } from 'src/app/shared/services/pago.service';
   styleUrls: ['./pago-dialog.component.scss']
 })
 export class PagoDialogComponent {
+
   pagoForm: FormGroup;
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
-    private pagoService: PagoService,
+    private citaService: CitaService,
     public dialogRef: MatDialogRef<PagoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    const totalServicios = data.cita?.servicios?.reduce((acc: number, s: any) => acc + (s.precio || 0), 0) || 0;
-    
+
+    const totalServicios =
+      data.cita?.servicios?.reduce(
+        (acc: number, s: any) => acc + (s.precio || 0),
+        0
+      ) || 0;
+
     this.pagoForm = this.fb.group({
-      monto: [totalServicios, [Validators.required, Validators.min(0)]],
+      monto: [totalServicios, [Validators.required, Validators.min(1)]],
       metodo: ['efectivo', Validators.required],
       observaciones: ['']
     });
   }
 
   pagar(): void {
-    if (this.data.cita.estado === 'cancelada') {
+
+    const cita = this.data.cita;
+
+    // 🚫 No permitir pagar cancelada
+    if (cita.estado === 'cancelada') {
       alert('No se puede pagar una cita cancelada');
       return;
     }
 
-    if (this.pagoForm.invalid) return;
+    // 🚫 No permitir pagar si ya está pagada
+    if (cita.estado === 'pagada') {
+      alert('Esta cita ya está pagada');
+      return;
+    }
 
-    const pagoData = { ...this.pagoForm.value, cita: this.data.cita._id };
-    this.pagoService.crearPago(pagoData).subscribe({
-      next: (resp) => this.dialogRef.close({ pagado: true, pago: resp.pago }),
-      error: (err) => console.error('Error al pagar:', err)
-    });
+    if (this.pagoForm.invalid || this.loading) return;
+
+    this.loading = true;
+
+    const { monto, metodo } = this.pagoForm.value;
+
+    this.citaService.pagarCita(cita._id, monto, metodo)
+      .subscribe({
+        next: (citaActualizada) => {
+          this.loading = false;
+          this.dialogRef.close({
+            pagado: true,
+            cita: citaActualizada
+          });
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Error al pagar:', err);
+          alert(err?.error?.message || 'Error al procesar el pago');
+        }
+      });
   }
 
   cancelar(): void {

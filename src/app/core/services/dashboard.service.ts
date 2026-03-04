@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
    📊 INGRESOS POR DÍA
 ================================ */
 export interface IngresoPorDia {
-    _id: number;      // $dayOfWeek (1-7)
+    _id: number; // $dayOfWeek (1-7)
     total: number;
 }
 
@@ -14,7 +14,7 @@ export interface IngresoPorDia {
    📈 ESTADOS DE CITAS
 ================================ */
 export interface CitasPorEstado {
-    _id: string;      // pendiente | finalizada | cancelada
+    _id: string; // pendiente | finalizada | cancelada
     total: number;
 }
 
@@ -57,10 +57,12 @@ export interface DashboardResumen {
 })
 export class DashboardService {
 
-    private apiUrl = 'http://localhost:3000/api/dashboard';
+    // 🔹 Cambiado a la IP de tu PC, no localhost
+    private apiUrl = 'http://192.168.1.7:3000/api/dashboard';
 
     constructor(private http: HttpClient) { }
 
+    // 🔹 Método para obtener resumen del dashboard
     obtenerResumen(): Observable<DashboardResumen> {
         return this.http.get<DashboardResumen>(`${this.apiUrl}/resumen`);
     }

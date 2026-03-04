@@ -71,7 +71,14 @@
                 "input": "src/theme/variables.css"
               }
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "canvg",
+              "html2canvas",
+              "jspdf",
+              "raf",
+              "rgbcolor"
+            ]
           },
           "configurations": {
             "production": {

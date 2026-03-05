@@ -16,15 +16,9 @@ export class ReportesService {
    * ===================================================
    * 🔧 Función privada para normalizar arrays del backend
    * ===================================================
-   * Acepta:
-   *   - array directo
-   *   - { data: [] }
-   *   - { resultado: [] }
-   *   - { detalle: [] }
-   *   - objeto vacío
-   *   - null / undefined
    */
   private normalizarArray(res: any): any[] {
+
     if (!res) return [];
 
     if (Array.isArray(res)) return res;
@@ -37,48 +31,92 @@ export class ReportesService {
   }
 
   /**
-   * 🧾 Reporte de ingresos entre dos fechas
+   * ===================================================
+   * 🧾 Reporte de ingresos
+   * ===================================================
+   * Devuelve:
+   * {
+   *   ok,
+   *   rango,
+   *   resumen,
+   *   detalle
+   * }
    */
   obtenerIngresos(fechaInicio: string, fechaFin: string): Observable<any> {
+
     const params = new HttpParams()
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
 
-    return this.http.get<any>(`${this.apiUrl}/reportes/ingresos`, { params });
+    return this.http
+      .get<any>(`${this.apiUrl}/reportes/ingresos`, { params })
+      .pipe(
+        map((res: any) => {
+
+          return {
+            ok: res?.ok ?? false,
+            rango: res?.rango ?? {},
+            resumen: res?.resumen ?? {
+              cantidadCitas: 0,
+              totalServicios: 0,
+              ingresosTotales: 0,
+              promedioPorCita: 0
+            },
+            detalle: this.normalizarArray(res?.detalle)
+          };
+
+        })
+      );
   }
 
   /**
+   * ===================================================
    * 💈 Reporte de citas por barbero
+   * ===================================================
    */
   obtenerCitasPorBarbero(fechaInicio: string, fechaFin: string): Observable<any[]> {
+
     const params = new HttpParams()
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
 
     return this.http
       .get<any>(`${this.apiUrl}/reportes/barberos`, { params })
-      .pipe(map(res => this.normalizarArray(res)));
+      .pipe(
+        map(res => this.normalizarArray(res))
+      );
   }
 
   /**
+   * ===================================================
    * 👥 Reporte de clientes frecuentes
+   * ===================================================
    */
   obtenerClientesFrecuentes(fechaInicio: string, fechaFin: string): Observable<any[]> {
+
     const params = new HttpParams()
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
 
     return this.http
       .get<any>(`${this.apiUrl}/reportes/clientes`, { params })
-      .pipe(map(res => this.normalizarArray(res)));
+      .pipe(
+        map(res => this.normalizarArray(res))
+      );
   }
 
   /**
+   * ===================================================
    * 📦 Reporte de inventario
+   * ===================================================
    */
   obtenerReporteInventario(): Observable<any[]> {
+
     return this.http
       .get<any>(`${this.apiUrl}/reportes/inventario`)
-      .pipe(map(res => this.normalizarArray(res)));
+      .pipe(
+        map(res => this.normalizarArray(res))
+      );
   }
+
 }

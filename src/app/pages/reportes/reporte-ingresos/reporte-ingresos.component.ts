@@ -28,6 +28,7 @@ interface ClienteFrecuente {
 interface InventarioReporte {
   producto: string;
   usos: number;
+
 }
 
 @Component({
@@ -43,6 +44,8 @@ export class ReporteIngresosComponent implements OnInit {
   citas: CitaReporte[] = [];
   cantidadCitas = 0;
   total = 0;
+  promedio: number = 0;
+  totalServicios: number = 0;
 
   // === 2️⃣ Barberos ===
   reportesBarberos: BarberoReporte[] = [];
@@ -107,34 +110,61 @@ export class ReporteIngresosComponent implements OnInit {
   // 1️⃣ Reporte de Ingresos
   // =============================
   obtenerReporteIngresos(): void {
+
     if (!this.validarFechas()) return;
 
     const { fechaInicio, fechaFin } = this.filtroForm.value;
+
     this.cargando = true;
     this.citas = [];
     this.total = 0;
     this.cantidadCitas = 0;
+    this.promedio = 0;
+    this.totalServicios = 0;
 
     this.reportesService.obtenerIngresos(fechaInicio, fechaFin).subscribe({
-      next: (res) => {
-        this.citas = (res.detalle || []).map((c: any) => ({
+
+      next: (res: any) => {
+
+        const detalle = res?.detalle ?? [];
+        const resumen = res?.resumen ?? {};
+
+        // 🔹 transformar datos para la tabla
+        this.citas = detalle.map((c: any) => ({
           fecha: c.fecha,
           cliente: c.cliente || 'N/D',
           peluquero: c.peluquero || 'N/D',
-          serviciosStr: (c.servicios || []).map((s: any) => s.nombre).join(', '),
+          serviciosStr: (c.servicios || [])
+            .map((s: any) => `${s.nombre} ($${s.precio})`)
+            .join(', '),
           subtotal: c.subtotal || 0
         }));
 
-        this.cantidadCitas = this.citas.length;
-        this.total = res.resumen?.ingresosTotales || 0;
+        // 🔹 datos del resumen
+        this.cantidadCitas = resumen.cantidadCitas ?? 0;
+        this.total = resumen.ingresosTotales ?? 0;
+        this.promedio = Number(resumen.promedioPorCita ?? 0);
+        this.totalServicios = resumen.totalServicios ?? 0;
+
         this.cargando = false;
       },
+
       error: (err) => {
-        console.error('Error al cargar ingresos:', err);
+
+        console.error('❌ Error al cargar ingresos:', err);
+
         this.cargando = false;
-        this.snackBar.open('Error al cargar el reporte de ingresos.', 'Cerrar', { duration: 3000 });
+
+        this.snackBar.open(
+          'Error al cargar el reporte de ingresos.',
+          'Cerrar',
+          { duration: 3000 }
+        );
+
       }
+
     });
+
   }
 
   // =============================

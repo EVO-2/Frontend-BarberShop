@@ -3,6 +3,7 @@
 
   <!-- 🔹 FILTRO DE FECHAS -->
   <form [formGroup]="filtroForm" class="flex flex-wrap gap-3 items-end mb-4">
+
     <mat-form-field appearance="fill">
       <mat-label>Fecha inicio</mat-label>
       <input matInput type="date" formControlName="fechaInicio" />
@@ -20,11 +21,15 @@
     <div class="flex-spacer" style="flex: 1 1 auto;"></div>
 
     <button mat-raised-button color="accent" type="button" (click)="exportarExcel()" [disabled]="cargando">
-      <mat-icon>table_view</mat-icon> Exportar Excel
+      <mat-icon>table_view</mat-icon>
+      Exportar Excel
     </button>
+
     <button mat-raised-button color="warn" type="button" (click)="exportarPDF()" [disabled]="cargando">
-      <mat-icon>picture_as_pdf</mat-icon> Exportar PDF
+      <mat-icon>picture_as_pdf</mat-icon>
+      Exportar PDF
     </button>
+
   </form>
 
   <!-- 🔹 TABS DE REPORTES -->
@@ -32,11 +37,16 @@
 
     <!-- 🟢 TAB 1: Ingresos -->
     <mat-tab label="Ingresos">
-      <div *ngIf="cargando" class="text-center p-4">Cargando...</div>
 
-      <div *ngIf="!cargando && citas.length > 0; else sinCitas">
-        <table mat-table [dataSource]="citas">
+      <div *ngIf="cargando" class="text-center p-4">
+        Cargando...
+      </div>
 
+      <div *ngIf="!cargando && (citas?.length ?? 0) > 0; else sinCitas">
+
+        <table mat-table [dataSource]="citas || []" class="mat-elevation-z2">
+
+          <!-- Fecha -->
           <ng-container matColumnDef="fecha">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -48,6 +58,7 @@
             </td>
           </ng-container>
 
+          <!-- Cliente -->
           <ng-container matColumnDef="cliente">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -59,6 +70,7 @@
             </td>
           </ng-container>
 
+          <!-- Barbero -->
           <ng-container matColumnDef="peluquero">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -70,6 +82,7 @@
             </td>
           </ng-container>
 
+          <!-- Servicios -->
           <ng-container matColumnDef="servicios">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -81,6 +94,7 @@
             </td>
           </ng-container>
 
+          <!-- Subtotal -->
           <ng-container matColumnDef="subtotal">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -88,41 +102,72 @@
               </div>
             </th>
             <td mat-cell *matCellDef="let c">
-              {{ c.subtotal | currency:'COP' }}
+              {{ c.subtotal | currency:'COP':'symbol':'1.0-0' }}
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="['fecha','cliente','peluquero','servicios','subtotal']"></tr>
           <tr mat-row *matRowDef="let row; columns: ['fecha','cliente','peluquero','servicios','subtotal'];"></tr>
+
         </table>
 
-        <!-- 🔵 NUEVA TARJETA PROFESIONAL -->
+        <!-- 🔵 RESUMEN KPI -->
         <div class="resumen-info mt-4">
-          <div class="item">
+
+          <!-- <div class="item">
             <mat-icon>event</mat-icon>
-            <span><strong>Total citas:</strong> {{ cantidadCitas }}</span>
-          </div>
+            <span>
+              <strong>Total citas:</strong>
+              {{ cantidadCitas }}
+            </span>
+          </div> -->
 
           <div class="item">
             <mat-icon>attach_money</mat-icon>
-            <span><strong>Ingresos totales:</strong> {{ total | currency:'COP' }}</span>
+            <span>
+              <strong>Ingresos totales:</strong>
+              {{ total | currency:'COP':'symbol':'1.0-0' }}
+            </span>
           </div>
+
+          <div class="item">
+            <mat-icon>design_services</mat-icon>
+            <span>
+              <strong>Total servicios:</strong>
+              {{ totalServicios }}
+            </span>
+          </div>
+
+          <div class="item">
+            <mat-icon>analytics</mat-icon>
+            <span>
+              <strong>Promedio por cita:</strong>
+              {{ promedio | currency:'COP':'symbol':'1.0-0' }}
+            </span>
+          </div>
+
         </div>
 
       </div>
 
       <ng-template #sinCitas>
-        <p class="text-center no-results">No hay datos para el rango seleccionado.</p>
+        <p class="text-center no-results">
+          No hay datos para el rango seleccionado.
+        </p>
       </ng-template>
-    </mat-tab>
 
+    </mat-tab>
 
     <!-- 🟡 TAB 2: Citas por Barbero -->
     <mat-tab label="Citas por Barbero">
-      <div *ngIf="cargando" class="text-center p-4">Cargando...</div>
 
-      <div *ngIf="!cargando && reportesBarberos.length > 0; else sinBarberos">
-        <table mat-table [dataSource]="reportesBarberos">
+      <div *ngIf="cargando" class="text-center p-4">
+        Cargando...
+      </div>
+
+      <div *ngIf="!cargando && (reportesBarberos?.length ?? 0) > 0; else sinBarberos">
+
+        <table mat-table [dataSource]="reportesBarberos || []" class="mat-elevation-z2">
 
           <ng-container matColumnDef="barbero">
             <th mat-header-cell *matHeaderCellDef>
@@ -148,20 +193,29 @@
 
           <tr mat-header-row *matHeaderRowDef="['barbero','cantidad']"></tr>
           <tr mat-row *matRowDef="let row; columns: ['barbero','cantidad'];"></tr>
+
         </table>
+
       </div>
 
       <ng-template #sinBarberos>
-        <p class="text-center no-results">No hay datos para el rango seleccionado.</p>
+        <p class="text-center no-results">
+          No hay datos para el rango seleccionado.
+        </p>
       </ng-template>
+
     </mat-tab>
 
     <!-- 🔵 TAB 3: Clientes Frecuentes -->
     <mat-tab label="Clientes Frecuentes">
-      <div *ngIf="cargando" class="text-center p-4">Cargando...</div>
 
-      <div *ngIf="!cargando && reportesClientes.length > 0; else sinClientes">
-        <table mat-table [dataSource]="reportesClientes">
+      <div *ngIf="cargando" class="text-center p-4">
+        Cargando...
+      </div>
+
+      <div *ngIf="!cargando && (reportesClientes?.length ?? 0) > 0; else sinClientes">
+
+        <table mat-table [dataSource]="reportesClientes || []" class="mat-elevation-z2">
 
           <ng-container matColumnDef="cliente">
             <th mat-header-cell *matHeaderCellDef>
@@ -187,22 +241,30 @@
 
           <tr mat-header-row *matHeaderRowDef="['cliente','cantidad']"></tr>
           <tr mat-row *matRowDef="let row; columns: ['cliente','cantidad'];"></tr>
+
         </table>
+
       </div>
 
       <ng-template #sinClientes>
-        <p class="text-center no-results">No hay datos para el rango seleccionado.</p>
+        <p class="text-center no-results">
+          No hay datos para el rango seleccionado.
+        </p>
       </ng-template>
+
     </mat-tab>
 
     <!-- 🟣 TAB 4: Inventario -->
     <mat-tab label="Inventario">
-      <div *ngIf="cargando" class="text-center p-4">Cargando...</div>
 
-      <div *ngIf="!cargando && reportesInventario.length > 0; else sinInventario">
-        <table mat-table [dataSource]="reportesInventario">
+      <div *ngIf="cargando" class="text-center p-4">
+        Cargando...
+      </div>
 
-          <!-- 🏢 Sede -->
+      <div *ngIf="!cargando && (reportesInventario?.length ?? 0) > 0; else sinInventario">
+
+        <table mat-table [dataSource]="reportesInventario || []" class="mat-elevation-z2">
+
           <ng-container matColumnDef="sede">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -214,7 +276,6 @@
             </td>
           </ng-container>
 
-          <!-- 🏷 Tipo -->
           <ng-container matColumnDef="tipo">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -226,7 +287,6 @@
             </td>
           </ng-container>
 
-          <!-- 🔢 Cantidad -->
           <ng-container matColumnDef="cantidad">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -238,7 +298,6 @@
             </td>
           </ng-container>
 
-          <!-- 📊 Total por sede -->
           <ng-container matColumnDef="totalSede">
             <th mat-header-cell *matHeaderCellDef>
               <div class="header-cell">
@@ -250,16 +309,19 @@
             </td>
           </ng-container>
 
-          <!-- 🔹 Columnas actualizadas -->
           <tr mat-header-row *matHeaderRowDef="['sede','tipo','cantidad','totalSede']"></tr>
           <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede'];"></tr>
 
         </table>
+
       </div>
 
       <ng-template #sinInventario>
-        <p class="text-center no-results">No hay datos disponibles.</p>
+        <p class="text-center no-results">
+          No hay datos disponibles.
+        </p>
       </ng-template>
+
     </mat-tab>
 
   </mat-tab-group>

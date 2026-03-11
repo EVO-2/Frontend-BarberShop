@@ -123,7 +123,18 @@
   <div class="botones">
     <button mat-raised-button color="primary" type="submit"
       [disabled]="reservarForm.invalid || fechaHoraInvalida || loading">
-      Reservar Cita
+
+      <mat-progress-spinner *ngIf="loading" diameter="20" mode="indeterminate" class="spinner-btn">
+      </mat-progress-spinner>
+
+      <span *ngIf="!loading">
+        Reservar Cita
+      </span>
+
+      <span *ngIf="loading">
+        Reservando...
+      </span>
+
     </button>
     <button mat-raised-button color="warn" type="button" (click)="cancelarCita()">
       Cancelar

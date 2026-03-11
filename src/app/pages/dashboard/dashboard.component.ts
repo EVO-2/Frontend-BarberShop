@@ -6,6 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+
+import { SedeService } from 'src/app/core/services/sede.service';
 
 import {
   DashboardService,
@@ -27,19 +31,40 @@ Chart.register(...registerables);
     MatIconModule,
     MatProgressBarModule,
     MatTableModule,
-    MatButtonModule
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule
   ]
 })
 export class DashboardComponent implements OnInit {
 
   resumen: DashboardResumen | null = null;
+
   loading = false;
   error = false;
+
+  nombreSede: string = '';
 
   chartIngresos: Chart | null = null;
   chartEstados: Chart | null = null;
 
   displayedColumns: string[] = ['cliente', 'servicio', 'sede', 'fecha', 'estado'];
+
+  /* ================================
+     🏢 SEDE SELECCIONADA
+  ================================ */
+
+  sedeSeleccionada: string | null = null;
+
+  /* ================================
+     LISTA DE SEDES
+  ================================ */
+
+  sedes: any[] = [];
+
+  /* ================================
+     MAPA DÍAS SEMANA
+  ================================ */
 
   diasSemanaMap: { [key: number]: string } = {
     1: 'Dom',
@@ -52,38 +77,93 @@ export class DashboardComponent implements OnInit {
     8: 'Dom'
   };
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(
+    private dashboardService: DashboardService,
+    private sedeService: SedeService
+  ) { }
 
   ngOnInit(): void {
-    this.cargarResumen();
+
+    // Obtener sede guardada
+    this.sedeSeleccionada = localStorage.getItem('sedeSeleccionada');
+
+    // Cargar sedes
+    this.cargarSedes();
+
+    // Si existe sede cargar dashboard
+    if (this.sedeSeleccionada) {
+      this.cargarResumen();
+    }
+
   }
 
+  /* ================================
+     CARGAR DASHBOARD
+  ================================ */
+
   cargarResumen(): void {
+
+    if (!this.sedeSeleccionada) return;
+
     this.loading = true;
     this.error = false;
 
-    this.dashboardService.obtenerResumen().subscribe({
-      next: (data) => {
-        this.resumen = data;
-        this.loading = false;
+    this.dashboardService
+      .obtenerResumen(this.sedeSeleccionada)
+      .subscribe({
 
-        // Renderizar gráficos después de obtener datos
-        setTimeout(() => {
-          this.crearGraficoIngresos();
-          this.crearGraficoEstados();
-        }, 0);
-      },
-      error: (err) => {
-        console.error('Error cargando dashboard:', err);
-        this.error = true;
-        this.loading = false;
-      }
-    });
+        next: (data) => {
+
+          this.resumen = data;
+          this.loading = false;
+
+          setTimeout(() => {
+
+            this.crearGraficoIngresos();
+            this.crearGraficoEstados();
+
+          }, 0);
+
+        },
+
+        error: (err) => {
+
+          console.error('Error cargando dashboard:', err);
+
+          this.error = true;
+          this.loading = false;
+
+        }
+
+      });
+
   }
 
-  // ================================
-  // 📊 GRÁFICO INGRESOS REALES
-  // ================================
+  /* ================================
+     CAMBIAR SEDE
+  ================================ */
+
+  cambiarSede(sede: any): void {
+
+    const sedeId = typeof sede === 'string' ? sede : sede._id;
+
+    this.sedeSeleccionada = sedeId;
+
+    localStorage.setItem('sedeSeleccionada', sedeId);
+
+    const sedeEncontrada = this.sedes.find(s => s._id === sedeId);
+
+    if (sedeEncontrada) {
+      this.nombreSede = sedeEncontrada.nombre;
+    }
+
+    this.cargarResumen();
+
+  }
+  /* ================================
+     📊 GRÁFICO INGRESOS
+  ================================ */
+
   crearGraficoIngresos(): void {
 
     if (!this.resumen?.ingresosSemana) return;
@@ -95,15 +175,25 @@ export class DashboardComponent implements OnInit {
       this.chartIngresos.destroy();
     }
 
-    const ingresosOrdenados = [...this.resumen.ingresosSemana].sort((a, b) => a._id - b._id);
+    const ingresosOrdenados = [...this.resumen.ingresosSemana]
+      .sort((a, b) => a._id - b._id);
 
-    const labels = ingresosOrdenados.map(item => this.diasSemanaMap[item._id]);
-    const dataActual = ingresosOrdenados.map(item => item.total);
+    const labels = ingresosOrdenados.map(
+      item => this.diasSemanaMap[item._id]
+    );
+
+    const dataActual = ingresosOrdenados.map(
+      item => item.total
+    );
 
     this.chartIngresos = new Chart(ctx, {
+
       type: 'line',
+
       data: {
+
         labels,
+
         datasets: [
           {
             label: 'Ingresos semana actual',
@@ -113,27 +203,47 @@ export class DashboardComponent implements OnInit {
             fill: true
           }
         ]
+
       },
+
       options: {
+
         responsive: true,
         maintainAspectRatio: false,
-        animation: { duration: 1200, easing: 'easeOutQuart' },
+
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        },
+
         plugins: {
+
           tooltip: {
             backgroundColor: '#111827',
             padding: 12,
             cornerRadius: 8,
-            callbacks: { label: (context) => `$${Number(context.raw).toLocaleString()}` }
+            callbacks: {
+              label: (context) =>
+                `$${Number(context.raw).toLocaleString()}`
+            }
           },
-          legend: { display: false }
+
+          legend: {
+            display: false
+          }
+
         }
+
       }
+
     });
+
   }
 
-  // ================================
-  // 📈 GRÁFICO ESTADOS REALES
-  // ================================
+  /* ================================
+     📈 GRÁFICO ESTADOS CITAS
+  ================================ */
+
   crearGraficoEstados(): void {
 
     if (!this.resumen?.estadosCitas) return;
@@ -148,41 +258,82 @@ export class DashboardComponent implements OnInit {
     const labels = this.resumen.estadosCitas.map(item =>
       item._id.charAt(0).toUpperCase() + item._id.slice(1)
     );
+
     const data = this.resumen.estadosCitas.map(item => item.total);
 
     this.chartEstados = new Chart(ctx, {
+
       type: 'doughnut',
-      data: { labels, datasets: [{ data, borderWidth: 0 }] },
+
+      data: {
+        labels,
+        datasets: [
+          {
+            data,
+            borderWidth: 0
+          }
+        ]
+      },
+
       options: {
+
         responsive: true,
         maintainAspectRatio: false,
-        animation: { animateScale: true, duration: 1000 },
+
+        animation: {
+          animateScale: true,
+          duration: 1000
+        },
+
         plugins: {
+
           tooltip: {
+
             backgroundColor: '#111827',
             padding: 12,
             cornerRadius: 8,
-            callbacks: { label: (context) => `${context.label}: ${context.raw} citas` }
+
+            callbacks: {
+              label: (context) =>
+                `${context.label}: ${context.raw} citas`
+            }
+
           },
-          legend: { position: 'bottom' }
+
+          legend: {
+            position: 'bottom'
+          }
+
         }
+
       }
+
     });
+
   }
 
-  // ================================
-  // 🏆 SERVICIOS TOP (PORCENTAJE REAL)
-  // ================================
+  /* ================================
+     🏆 SERVICIOS TOP
+  ================================ */
+
   calcularPorcentajeServicio(totalServicio: number): number {
+
     if (!this.resumen?.serviciosTop?.length) return 0;
 
-    const max = Math.max(...this.resumen.serviciosTop.map((s: any) => s.total));
-    return max > 0 ? Math.round((totalServicio / max) * 100) : 0;
+    const max = Math.max(
+      ...this.resumen.serviciosTop.map((s: any) => s.total)
+    );
+
+    return max > 0
+      ? Math.round((totalServicio / max) * 100)
+      : 0;
+
   }
 
-  // ================================
-  // 📉 VARIACIÓN SEMANA
-  // ================================
+  /* ================================
+     📉 VARIACIÓN SEMANA
+  ================================ */
+
   get variacionSemana(): number {
     return this.resumen?.comparacionSemana?.variacion || 0;
   }
@@ -191,12 +342,20 @@ export class DashboardComponent implements OnInit {
     return this.variacionSemana >= 0;
   }
 
-  // ================================
-  // MÉTODOS AUXILIARES
-  // ================================
+
+
+  /* ================================
+     MÉTODOS AUXILIARES
+  ================================ */
+
   obtenerServiciosTexto(servicios: any[]): string {
+
     if (!servicios || servicios.length === 0) return '—';
-    return servicios.map(s => s.nombre).join(', ');
+
+    return servicios
+      .map(s => s.nombre)
+      .join(', ');
+
   }
 
   obtenerNombreCliente(cita: any): string {
@@ -206,4 +365,50 @@ export class DashboardComponent implements OnInit {
   obtenerNombreSede(cita: any): string {
     return cita?.sede?.nombre || '—';
   }
+
+  cargarSedes(): void {
+
+    this.sedeService.obtenerSedes()
+      .subscribe({
+
+        next: (data: any[]) => {
+
+          this.sedes = data;
+
+          // Si hay sede seleccionada buscar su nombre
+          if (this.sedeSeleccionada) {
+
+            const sede = this.sedes.find(s => s._id === this.sedeSeleccionada);
+            this.nombreSede = sede?.nombre || '';
+
+          }
+
+          // Si no hay sede seleccionada usar la primera
+          if (!this.sedeSeleccionada && this.sedes.length > 0) {
+
+            this.sedeSeleccionada = this.sedes[0]._id;
+            this.nombreSede = this.sedes[0].nombre;
+
+            if (this.sedeSeleccionada) {
+              localStorage.setItem(
+                'sedeSeleccionada',
+                this.sedeSeleccionada
+              );
+            }
+
+            this.cargarResumen();
+
+          }
+
+        },
+
+        error: (err: any) => {
+          console.error('Error cargando sedes', err);
+        }
+
+      });
+
+  }
+
 }
+

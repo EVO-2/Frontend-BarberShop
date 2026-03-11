@@ -36,15 +36,15 @@
     cursor: pointer;
   }
 
-  /* hover que querías mantener */
+  /* hover */
   .servicio-card:hover {
     background: #e5f4ff;
     transform: translateY(-1px);
   }
 
-  /* estado seleccionado (controlado por clase 'selected') */
+  /* seleccionado */
   .servicio-card.selected {
-    background: #96d3ff; /* o el color que prefieras */
+    background: #96d3ff;
     color: #fff;
     box-shadow: 0 8px 20px rgba(3, 46, 77, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -75,25 +75,21 @@
     margin-left: 12px;
   }
 
-  /* Button info: siempre visible, con suficiente contraste */
   .servicio-actions button[mat-icon-button] {
     flex-shrink: 0;
   }
 
-  /* Checkbox: pequeño y a la derecha */
   .servicio-checkbox {
     --mat-checkbox-size: 20px;
     padding: 0;
     margin: 0;
   }
 
-  /* Accesibilidad: foco visible en la card */
   .servicio-card:focus {
-    outline: 3px solid rgba(24,159,255,0.18);
+    outline: 3px solid rgba(24, 159, 255, 0.18);
     outline-offset: 2px;
   }
 
-  /* Resto de estilos del formulario */
   mat-form-field {
     .mat-form-field-label {
       font-weight: 500;
@@ -123,14 +119,36 @@
     cursor: not-allowed;
   }
 
+  /* BOTONES */
+
   button {
     width: 100%;
     padding: 12px 0;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
-    & + button {
+    &+button {
       margin-top: 12px;
     }
+  }
+
+  /* Spinner dentro del botón */
+
+  .spinner-btn {
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Animación suave mientras carga */
+
+  button[disabled] {
+    opacity: 0.85;
+    cursor: not-allowed;
   }
 
   @media (max-width: 600px) {

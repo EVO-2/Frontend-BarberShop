@@ -300,10 +300,14 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   reservarCita(): void {
-    if (this.reservarForm.invalid || this.fechaHoraInvalida) {
+
+    if (this.reservarForm.invalid || this.fechaHoraInvalida || this.loading) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
       return;
     }
+
+    // 🔒 ACTIVAR BLOQUEO
+    this.loading = true;
 
     const datos = this.reservarForm.value;
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
@@ -325,20 +329,32 @@ export class ReservarCitaComponent implements OnInit {
     };
 
     this.reservaService.crearCita(citaData).subscribe({
+
       next: () => {
+
+        this.loading = false; // 🔓 liberar botón
+
         this.snackBar.open('Cita creada exitosamente', 'Cerrar', { duration: 3000 });
+
         this.validarFechaHoraYActualizarOcupacion();
+
         this.cancelarCita();
       },
+
       error: (err) => {
+
+        this.loading = false; // 🔓 liberar botón si falla
+
         const mensaje = err.error?.mensaje?.includes('duplicate key')
           ? 'El peluquero ya tiene una cita en esa fecha y hora.'
           : err.error?.mensaje || 'Error al crear cita';
+
         this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
       }
-    });
-  }
 
+    });
+
+  }
   cancelarCita(): void {
     this.reservarForm.reset();
     this.peluquerosDropdown = [];

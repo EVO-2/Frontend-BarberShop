@@ -39,6 +39,14 @@ export class ReservarCitaComponent implements OnInit {
   fechaHoraInvalida = false;
   loading = false;
 
+  fechaMinima: Date = new Date();
+
+  horasDisponibles: string[] = [];
+
+  horaApertura = 9;
+  horaCierre = 19;
+  intervaloMinutos = 30;
+
   esAdmin: boolean = false;
 
   puestoSeleccionado: { _id: string; nombre: string } | null = null;
@@ -47,7 +55,7 @@ export class ReservarCitaComponent implements OnInit {
   private ultimaHora: string | null = null;
   private ultimaSedeId: string | null = null;
 
-  // 🔥 NUEVO
+
   private servicioIdFromQuery: string | null = null;
 
   constructor(
@@ -74,7 +82,11 @@ export class ReservarCitaComponent implements OnInit {
     this.cargarDatos();
 
     this.ctrl('fecha')?.valueChanges.subscribe(() => {
+
+      this.generarHorasDisponibles();
+
       this.validarFechaHoraYActualizarOcupacion();
+
     });
 
     this.ctrl('hora')?.valueChanges.subscribe(() => {
@@ -259,6 +271,11 @@ export class ReservarCitaComponent implements OnInit {
     }
 
     const fechaSeleccionada = this.combinarFechaHora(fecha, hora);
+    // 🔒 Bloquear horas pasadas del mismo día
+    if (this.esHoraPasadaHoy(fecha, hora)) {
+      this.fechaHoraInvalida = true;
+      return;
+    }
 
     this.reservaService.getCitasPorFechaYHora(sedeId, fechaSeleccionada.toISOString()).subscribe({
       next: res => {
@@ -362,6 +379,77 @@ export class ReservarCitaComponent implements OnInit {
     this.puestos = [];
     this.fechaHoraInvalida = false;
     this.puestoSeleccionado = null;
+  }
+
+  private esHoraPasadaHoy(fecha: Date, hora: string): boolean {
+
+    const hoy = new Date();
+
+    const esHoy =
+      fecha.getFullYear() === hoy.getFullYear() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getDate() === hoy.getDate();
+
+    if (!esHoy) return false;
+
+    const [h, m] = hora.split(':').map(Number);
+
+    const horaSeleccionada = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate(),
+      h,
+      m,
+      0
+    );
+
+    return horaSeleccionada <= hoy;
+  }
+
+  private generarHorasDisponibles(): void {
+
+    const fecha = this.ctrl('fecha')?.value;
+
+    if (!fecha) {
+      this.horasDisponibles = [];
+      return;
+    }
+
+    const hoy = new Date();
+
+    const esHoy =
+      fecha.getFullYear() === hoy.getFullYear() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getDate() === hoy.getDate();
+
+    const horas: string[] = [];
+
+    for (let h = this.horaApertura; h < this.horaCierre; h++) {
+
+      for (let m = 0; m < 60; m += this.intervaloMinutos) {
+
+        const horaStr =
+          `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+
+        if (esHoy) {
+
+          const ahora = new Date();
+          const horaCita = this.combinarFechaHora(fecha, horaStr);
+
+          if (horaCita <= ahora) {
+            continue;
+          }
+
+        }
+
+        horas.push(horaStr);
+
+      }
+
+    }
+
+    this.horasDisponibles = horas;
+
   }
 
   private combinarFechaHora(fecha: any, hora: string): Date {

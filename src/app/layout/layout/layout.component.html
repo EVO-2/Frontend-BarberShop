@@ -5,6 +5,7 @@
     [attr.role]="isMobile ? 'dialog' : 'navigation'">
 
     <app-sidebar (linkClicked)="onSidenavEntryClick()"></app-sidebar>
+
   </mat-sidenav>
 
   <!-- CONTENIDO -->
@@ -18,8 +19,8 @@
         <mat-icon>menu</mat-icon>
       </button>
 
-      <!-- Fecha / Hora -->
-      <div class="fecha-hora-inline">
+      <!-- Fecha / Hora (OCULTO EN MÓVIL) -->
+      <div class="fecha-hora-inline" *ngIf="!isMobile">
         <mat-icon>schedule</mat-icon>
         <span>{{ fechaActual }} | {{ horaActual }}</span>
       </div>
@@ -28,20 +29,25 @@
 
       <!-- Usuario -->
       <ng-container *ngIf="authService.usuario$ | async as usuario">
+
         <div class="user-info">
 
-          <span class="user-name">{{ usuario.nombre }}</span>
+          <span class="user-name">
+            {{ usuario.nombre }}
+          </span>
 
           <button mat-button class="avatar-button" [matMenuTriggerFor]="menu">
 
             <img [src]="avatarUrl" alt="Avatar" class="avatar-header" />
 
             <mat-icon>arrow_drop_down</mat-icon>
+
           </button>
 
         </div>
 
         <mat-menu #menu="matMenu">
+
           <button mat-menu-item (click)="irAEditarPerfil()">
             <mat-icon>edit</mat-icon>
             <span>Editar perfil</span>
@@ -51,19 +57,24 @@
             <mat-icon>logout</mat-icon>
             <span>Cerrar sesión</span>
           </button>
+
         </mat-menu>
+
       </ng-container>
 
     </mat-toolbar>
 
     <!-- MAIN -->
     <main class="main-wrapper">
+
       <section class="main-content">
         <router-outlet></router-outlet>
       </section>
 
       <app-footer></app-footer>
+
     </main>
 
   </mat-sidenav-content>
+
 </mat-sidenav-container>

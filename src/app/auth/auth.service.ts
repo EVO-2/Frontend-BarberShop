@@ -8,6 +8,7 @@ import { Usuario } from '../shared/models/usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   public readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly perfilUrl = `${environment.apiUrl}/usuarios/perfil`;
   private rolUsuario: string = '';
@@ -15,57 +16,57 @@ export class AuthService {
   private usuarioSubject = new BehaviorSubject<any>(this.getUsuario());
   usuario$ = this.usuarioSubject.asObservable();
 
-  private avatarUrlSubject = new BehaviorSubject<string>(
-    this.getFotoUrl(this.getUsuario()?.foto)
-  );
-  avatarUrl$ = this.avatarUrlSubject.asObservable();
-
   private fotoPerfilSubject = new BehaviorSubject<string>(
     this.getFotoUrl(this.getUsuario()?.foto)
   );
   fotoPerfil$ = this.fotoPerfilSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    // 🔹 Sincronización entre pestañas del navegador
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'usuario') {
+        const usuario = this.getUsuario();
 
-  // =================== Autenticación ===================
+        this.usuarioSubject.next(usuario);
+
+        const nuevaFoto = this.getFotoUrl(usuario?.foto);
+        this.fotoPerfilSubject.next(nuevaFoto);
+      }
+    });
+  }
+
+  // =================== AUTENTICACIÓN ===================
+
   login(datos: { correo: string; password: string }): Observable<any> {
+
     return this.http.post<any>(`${this.apiUrl}/login`, datos).pipe(
+
       tap((resp: any) => {
+
         if (resp?.token) {
           localStorage.setItem('token', resp.token);
         }
 
         if (resp?.usuario) {
+
           const usuarioPlano = this.mapUsuario(resp.usuario);
+
           localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+
           this.usuarioSubject.next(usuarioPlano);
 
           const nuevaUrl = this.getFotoUrl(usuarioPlano.foto);
-          this.avatarUrlSubject.next(nuevaUrl);
           this.fotoPerfilSubject.next(nuevaUrl);
 
           this.rolUsuario = String(usuarioPlano.rol);
         }
-      })
-    );
-  }
 
-  // =================== Normalización ===================
-  private mapUsuario(usuario: any): Usuario {
-    const idUsuario = usuario._id || usuario.id;
-    return {
-      _id: idUsuario,
-      nombre: usuario.nombre,
-      correo: usuario.correo,
-      rol: typeof usuario.rol === 'string' ? usuario.rol : usuario.rol?.nombre || '',
-      foto: usuario.foto || undefined,
-      cliente: usuario.cliente
-        ? { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario }
-        : undefined,
-      peluquero: usuario.peluquero
-        ? { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario }
-        : undefined
-    };
+      })
+
+    );
   }
 
   registro(nuevoUsuario: any): Observable<any> {
@@ -77,11 +78,12 @@ export class AuthService {
   }
 
   cerrarSesion(): void {
+
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
 
     this.usuarioSubject.next(null);
-    this.avatarUrlSubject.next('assets/img/default-avatar.png');
+
     this.fotoPerfilSubject.next('assets/img/default-avatar.png');
 
     this.router.navigate(['/login']);
@@ -92,6 +94,7 @@ export class AuthService {
   }
 
   // =================== TOKEN ===================
+
   getToken(): string | null {
     try {
       return localStorage.getItem('token');
@@ -101,18 +104,20 @@ export class AuthService {
   }
 
   guardarDatos(token: string, usuario?: any): void {
+
     if (token) {
       localStorage.setItem('token', token);
     }
 
     if (usuario) {
+
       const usuarioPlano = this.mapUsuario(usuario);
+
       localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
 
       this.usuarioSubject.next(usuarioPlano);
 
       const fotoUrl = this.getFotoUrl(usuarioPlano.foto);
-      this.avatarUrlSubject.next(fotoUrl);
       this.fotoPerfilSubject.next(fotoUrl);
 
       this.rolUsuario = String(usuarioPlano.rol);
@@ -120,9 +125,13 @@ export class AuthService {
   }
 
   // =================== USUARIO ===================
+
   getUsuario(): any {
+
     try {
+
       const data = localStorage.getItem('usuario');
+
       if (!data) return null;
 
       const usuario = JSON.parse(data);
@@ -145,80 +154,93 @@ export class AuthService {
           : usuario.rol?.nombre || '';
 
       return usuario;
+
     } catch {
       return null;
     }
   }
 
   obtenerRol(): string {
+
     if (this.rolUsuario) return this.rolUsuario;
+
     return this.getUsuario()?.rol || '';
   }
 
   refrescarUsuario(): void {
+
     this.http.get<any>(this.perfilUrl).subscribe({
+
       next: (resp) => {
+
         const usuarioPlano = resp.usuario
           ? this.mapUsuario(resp.usuario)
           : resp;
 
         localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+
         this.usuarioSubject.next(usuarioPlano);
 
         const nuevaUrl = this.getFotoUrl(usuarioPlano.foto);
-        this.avatarUrlSubject.next(nuevaUrl);
         this.fotoPerfilSubject.next(nuevaUrl);
 
         this.rolUsuario = usuarioPlano.rol;
+
       },
+
       error: (error) =>
-        console.error('❌ Error al refrescar usuario:', error),
+        console.error('❌ Error al refrescar usuario:', error)
+
     });
   }
 
   setUsuarioActual(usuario: any): void {
-    const usuarioPlano = this.mapUsuario(usuario);
+
+    const usuarioActual = this.getUsuario();
+
+    const usuarioPlano = this.mapUsuario({
+      ...usuario,
+      foto: usuario?.foto ?? usuarioActual?.foto
+    });
+
     localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+
     this.usuarioSubject.next(usuarioPlano);
 
     const urlFoto = usuarioPlano.foto
       ? this.getFotoUrl(usuarioPlano.foto)
       : 'assets/img/default-avatar.png';
 
-    this.avatarUrlSubject.next(urlFoto);
     this.fotoPerfilSubject.next(urlFoto);
 
     this.rolUsuario = String(usuarioPlano.rol);
   }
 
-  private getFotoUrl(foto?: string): string {
-    if (!foto) return 'assets/img/default-avatar.png';
-
-    const esUrlCompleta = /^https?:\/\//i.test(foto);
-    const serverBase = environment.baseUrl;
-    const base = esUrlCompleta ? foto : `${serverBase}/uploads/${foto}`;
-
-    return `${base}${base.includes('?') ? '&' : '?'}t=${Date.now()}`;
-  }
-
   getUsuarioActual(): any {
+
     const usuario = localStorage.getItem('usuario');
+
     return usuario ? JSON.parse(usuario) : null;
   }
 
+  // =================== FOTO PERFIL ===================
+
   actualizarFoto(nombreArchivo: string | null): void {
+
     const usuario = this.getUsuarioActual();
+
     if (!usuario) return;
 
     usuario.foto = nombreArchivo;
+
     localStorage.setItem('usuario', JSON.stringify(usuario));
+
     this.usuarioSubject.next(usuario);
 
     const url = nombreArchivo
       ? this.getFotoUrl(nombreArchivo)
       : 'assets/img/default-avatar.png';
 
-    this.avatarUrlSubject.next(url);
     this.fotoPerfilSubject.next(url);
   }
 
@@ -226,9 +248,53 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/usuarios/${id}/foto`, formData);
   }
 
+  private getFotoUrl(foto?: string): string {
+
+    if (!foto) return 'assets/img/default-avatar.png';
+
+    if (foto.startsWith('http')) return foto;
+
+    return `${environment.baseUrl}/uploads/${foto}?t=${Date.now()}`;
+  }
+
   // =================== ID ===================
+
   getCurrentUserId(): string | null {
+
     const usuario = this.getUsuario();
+
     return usuario?._id || usuario?.id || null;
   }
+
+  // =================== NORMALIZACIÓN ===================
+
+  private mapUsuario(usuario: any): Usuario {
+
+    const idUsuario = usuario._id || usuario.id;
+
+    return {
+
+      _id: idUsuario,
+
+      nombre: usuario.nombre,
+
+      correo: usuario.correo,
+
+      rol: typeof usuario.rol === 'string'
+        ? usuario.rol
+        : usuario.rol?.nombre || '',
+
+      foto: usuario.foto || undefined,
+
+      cliente: usuario.cliente
+        ? { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario }
+        : undefined,
+
+      peluquero: usuario.peluquero
+        ? { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario }
+        : undefined
+
+    };
+  }
+
 }

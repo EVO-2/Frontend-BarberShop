@@ -55,28 +55,43 @@
   <!-- Fecha -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Fecha</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="fecha"
+
+    <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="fechaMinima"
       (dateChange)="validarFechaHoraYActualizarOcupacion()">
+
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
+
     <mat-error *ngIf="reservarForm.get('fecha')?.hasError('required')">
       La fecha es obligatoria
     </mat-error>
+
     <mat-error *ngIf="fechaHoraInvalida">
       La fecha u hora seleccionada ya está ocupada
     </mat-error>
+
   </mat-form-field>
 
   <!-- Hora -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Hora</mat-label>
-    <input matInput type="time" formControlName="hora" (change)="validarFechaHoraYActualizarOcupacion()">
+
+    <mat-select formControlName="hora" (selectionChange)="validarFechaHoraYActualizarOcupacion()">
+
+      <mat-option *ngFor="let h of horasDisponibles" [value]="h">
+        {{ h }}
+      </mat-option>
+
+    </mat-select>
+
     <mat-error *ngIf="reservarForm.get('hora')?.hasError('required')">
       La hora es obligatoria
     </mat-error>
+
     <mat-error *ngIf="fechaHoraInvalida">
       La hora seleccionada ya está ocupada en esta sede
     </mat-error>
+
   </mat-form-field>
 
   <!-- Servicios -->

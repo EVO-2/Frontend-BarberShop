@@ -7,8 +7,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 // === Interfaces de Tipado ===
+
 interface CitaReporte {
   fecha: Date;
+  sede?: string;
   cliente: string;
   peluquero: string;
   serviciosStr: string;
@@ -16,19 +18,23 @@ interface CitaReporte {
 }
 
 interface BarberoReporte {
+  sede?: string;
   barbero: string;
   cantidad: number;
 }
 
 interface ClienteFrecuente {
+  sede?: string;
   cliente: string;
   cantidad: number;
 }
 
 interface InventarioReporte {
-  producto: string;
-  usos: number;
-
+  sede: string;
+  equipo: string;
+  tipo: string;
+  cantidad: number;
+  totalSede: number;
 }
 
 @Component({
@@ -73,9 +79,11 @@ export class ReporteIngresosComponent implements OnInit {
   }
 
   // =============================
-  // 🧭 Cambiar de pestaña y cargar datos
+  // 🧭 Cambiar de pestaña
   // =============================
+
   onTabChange(index: number): void {
+
     this.tabSeleccionada = index;
 
     switch (index) {
@@ -92,23 +100,30 @@ export class ReporteIngresosComponent implements OnInit {
         this.obtenerReporteInventario();
         break;
     }
+
   }
 
   // =============================
   // ✅ Validación de fechas
   // =============================
+
   private validarFechas(): boolean {
+
     const { fechaInicio, fechaFin } = this.filtroForm.value;
+
     if (!fechaInicio || !fechaFin) {
       this.snackBar.open('Por favor selecciona ambas fechas.', 'Cerrar', { duration: 3000 });
       return false;
     }
+
     return true;
+
   }
 
   // =============================
   // 1️⃣ Reporte de Ingresos
   // =============================
+
   obtenerReporteIngresos(): void {
 
     if (!this.validarFechas()) return;
@@ -129,9 +144,9 @@ export class ReporteIngresosComponent implements OnInit {
         const detalle = res?.detalle ?? [];
         const resumen = res?.resumen ?? {};
 
-        // 🔹 transformar datos para la tabla
         this.citas = detalle.map((c: any) => ({
           fecha: c.fecha,
+          sede: c.sede || 'N/D',
           cliente: c.cliente || 'N/D',
           peluquero: c.peluquero || 'N/D',
           serviciosStr: (c.servicios || [])
@@ -140,7 +155,6 @@ export class ReporteIngresosComponent implements OnInit {
           subtotal: c.subtotal || 0
         }));
 
-        // 🔹 datos del resumen
         this.cantidadCitas = resumen.cantidadCitas ?? 0;
         this.total = resumen.ingresosTotales ?? 0;
         this.promedio = Number(resumen.promedioPorCita ?? 0);
@@ -168,74 +182,118 @@ export class ReporteIngresosComponent implements OnInit {
   }
 
   // =============================
-  // 2️⃣ Reporte de Citas por Barbero
+  // 2️⃣ Reporte Barberos
   // =============================
+
   obtenerReporteBarberos(): void {
+
     if (!this.validarFechas()) return;
 
     const { fechaInicio, fechaFin } = this.filtroForm.value;
+
     this.cargando = true;
     this.reportesBarberos = [];
 
     this.reportesService.obtenerCitasPorBarbero(fechaInicio, fechaFin).subscribe({
+
       next: (res) => {
+
         this.reportesBarberos = (res || []).map((r: any) => ({
+          sede: r.sede || 'N/D',
           barbero: r.peluquero || 'N/D',
           cantidad: r.cantidadCitas || 0
         }));
+
         this.cargando = false;
+
       },
+
       error: (err) => {
+
         console.error('Error al cargar barberos:', err);
+
         this.cargando = false;
-        this.snackBar.open('Error al cargar el reporte de barberos.', 'Cerrar', { duration: 3000 });
+
+        this.snackBar.open(
+          'Error al cargar el reporte de barberos.',
+          'Cerrar',
+          { duration: 3000 }
+        );
+
       }
+
     });
+
   }
 
   // =============================
-  // 3️⃣ Reporte de Clientes Frecuentes
+  // 3️⃣ Clientes frecuentes
   // =============================
+
   obtenerReporteClientes(): void {
+
     if (!this.validarFechas()) return;
 
     const { fechaInicio, fechaFin } = this.filtroForm.value;
+
     this.cargando = true;
     this.reportesClientes = [];
 
     this.reportesService.obtenerClientesFrecuentes(fechaInicio, fechaFin).subscribe({
+
       next: (res) => {
+
         this.reportesClientes = (res || []).map((r: any) => ({
+          sede: r.sede || 'N/D',
           cliente: r.cliente || 'N/D',
           cantidad: r.cantidadCitas || 0
         }));
+
         this.cargando = false;
+
       },
+
       error: (err) => {
+
         console.error('Error al cargar clientes frecuentes:', err);
+
         this.cargando = false;
-        this.snackBar.open('Error al cargar el reporte de clientes frecuentes.', 'Cerrar', { duration: 3000 });
+
+        this.snackBar.open(
+          'Error al cargar el reporte de clientes frecuentes.',
+          'Cerrar',
+          { duration: 3000 }
+        );
+
       }
+
     });
+
   }
 
   // =============================
-  // 4️⃣ Reporte de Inventario
+  // 4️⃣ Inventario
   // =============================
+
   obtenerReporteInventario(): void {
+
     this.cargando = true;
     this.reportesInventario = [];
 
     this.reportesService.obtenerReporteInventario().subscribe({
+
       next: (res) => {
+
         if (!res || res.length === 0) {
+
           this.reportesInventario = [];
           this.cargando = false;
           return;
+
         }
 
-        // 🔹 Convertimos estructura por sede → a filas planas para tabla
         const filas = res.flatMap((sedeObj: any) => {
+
           const equipos = sedeObj.equipos || [];
 
           const totalSede = equipos
@@ -244,242 +302,650 @@ export class ReporteIngresosComponent implements OnInit {
           return equipos.map((eq: any) => ({
             sede: sedeObj.sede || 'N/D',
             equipo: eq.nombre || 'N/D',
-            tipo: eq.tipo || 'No especificado',   // 🔥 NUEVO CAMPO
+            tipo: eq.tipo || 'No especificado',
             cantidad: eq.cantidad || 0,
             totalSede: totalSede
           }));
+
         });
 
         this.reportesInventario = filas;
+
         this.cargando = false;
+
       },
+
       error: (err) => {
+
         console.error('Error al cargar inventario:', err);
+
         this.cargando = false;
-        this.snackBar.open('Error al cargar el reporte de inventario.', 'Cerrar', { duration: 3000 });
+
+        this.snackBar.open(
+          'Error al cargar el reporte de inventario.',
+          'Cerrar',
+          { duration: 3000 }
+        );
+
       }
+
     });
+
   }
 
   // =============================
-  // 🔄 Aplicar filtro manual
+  // 🔄 Aplicar filtro
   // =============================
+
   aplicarFiltro(): void {
+
     switch (this.tabSeleccionada) {
+
       case 0:
         this.obtenerReporteIngresos();
         break;
+
       case 1:
         this.obtenerReporteBarberos();
         break;
+
       case 2:
         this.obtenerReporteClientes();
         break;
+
       case 3:
         this.obtenerReporteInventario();
         break;
+
     }
+
   }
 
   // =============================
-  // 📥 Exportar Excel
+  // 📥 Exportar Excel Profesional
   // =============================
   exportarExcel(): void {
+
     let data: any[] = [];
     let titulo = 'Reporte';
     let sheetName = 'Datos';
-    let colWidths: any[] = []; // Configuración de anchos de columna
+    let colWidths: any[] = [];
+
+    const barberiaNombre = document.title || 'Sistema de Gestión';
+
+    const fechaColombia = new Intl.DateTimeFormat('es-CO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(new Date());
 
     switch (this.tabSeleccionada) {
+
+      // =============================
+      // INGRESOS
+      // =============================
       case 0:
-        data = this.citas;
+
         titulo = 'Reporte_Ingresos';
-        colWidths = [{ wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 40 }, { wch: 15 }];
+        sheetName = 'Ingresos';
+
+        colWidths = [
+          { wch: 18 },
+          { wch: 20 },
+          { wch: 25 },
+          { wch: 25 },
+          { wch: 40 },
+          { wch: 15 }
+        ];
+
+        data = this.citas.map((c: any) => ({
+
+          Fecha: new Intl.DateTimeFormat('es-CO', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          }).format(new Date(c.fecha)),
+
+          Sede: c.sede ?? 'N/D',
+
+          Cliente: c.cliente ?? 'N/D',
+
+          Barbero: c.peluquero ?? 'N/D',
+
+          Servicios: c.serviciosStr ?? '',
+
+          Subtotal: c.subtotal ?? 0
+
+        }));
+
         break;
+
+      // =============================
+      // BARBEROS
+      // =============================
       case 1:
-        data = this.reportesBarberos;
+
         titulo = 'Reporte_Barberos';
-        colWidths = [{ wch: 30 }, { wch: 20 }];
+        sheetName = 'Barberos';
+
+        colWidths = [
+          { wch: 25 },
+          { wch: 30 },
+          { wch: 15 }
+        ];
+
+        data = this.reportesBarberos.map((r: any) => ({
+
+          Sede: r.sede ?? 'N/D',
+
+          Barbero: r.peluquero ?? 'N/D',
+
+          Citas: r.cantidadCitas ?? r.cantidad ?? 0
+
+        }));
+
         break;
+
+      // =============================
+      // CLIENTES FRECUENTES
+      // =============================
       case 2:
-        data = this.reportesClientes;
+
         titulo = 'Reporte_Clientes_Frecuentes';
-        colWidths = [{ wch: 30 }, { wch: 15 }];
+        sheetName = 'Clientes';
+
+        colWidths = [
+          { wch: 25 },
+          { wch: 30 },
+          { wch: 15 }
+        ];
+
+        data = this.reportesClientes.map((r: any) => ({
+
+          Sede: r.sede ?? 'N/D',
+
+          Cliente: r.cliente ?? 'N/D',
+
+          Citas: r.cantidadCitas ?? r.cantidad ?? 0
+
+        }));
+
         break;
+
+      // =============================
+      // INVENTARIO
+      // =============================
       case 3:
-        data = this.reportesInventario;
+
         titulo = 'Reporte_Inventario';
-        colWidths = [{ wch: 20 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 20 }];
+        sheetName = 'Inventario';
+
+        colWidths = [
+          { wch: 25 },
+          { wch: 30 },
+          { wch: 15 },
+          { wch: 20 }
+        ];
+
+        data = [];
+
+        if (Array.isArray(this.reportesInventario)) {
+
+          this.reportesInventario.forEach((sede: any) => {
+
+            // FORMATO AGRUPADO
+            if (Array.isArray(sede?.equipos)) {
+
+              sede.equipos.forEach((eq: any) => {
+
+                data.push({
+                  Sede: sede?.sede ?? 'N/D',
+                  Tipo: eq?.tipo ?? 'N/D',
+                  Cantidad: eq?.cantidad ?? 0,
+                  'Total Sede': sede?.totalSede ?? 0
+                });
+
+              });
+
+            }
+
+            // FORMATO PLANO (nuevo backend)
+            else {
+
+              data.push({
+                Sede: sede?.sede ?? 'N/D',
+                Tipo: sede?.tipo ?? 'N/D',
+                Cantidad: sede?.cantidad ?? 0,
+                'Total Sede': sede?.totalSede ?? sede?.cantidad ?? 0
+              });
+
+            }
+
+          });
+
+        }
+
         break;
+
     }
 
     if (!data || data.length === 0) {
+
       this.snackBar.open('No hay datos para exportar.', 'Cerrar', { duration: 3000 });
+
       return;
+
     }
 
-    // 🔹 Si es la pestaña de ingresos, clonamos data y agregamos la fila del TOTAL
-    let exportData = [...data];
-    if (this.tabSeleccionada === 0) {
-      exportData.push({
-        fecha: '',
-        cliente: '',
-        peluquero: '',
-        serviciosStr: 'TOTAL INGRESOS',
-        subtotal: this.total
-      });
-    }
+    // =============================
+    // CREAR WORKSHEET
+    // =============================
+    const worksheet: xlsx.WorkSheet = xlsx.utils.json_to_sheet([]);
 
-    // Convertimos a hoja Excel
-    const worksheet: xlsx.WorkSheet = xlsx.utils.json_to_sheet(exportData);
+    const header = [
 
-    // Damos ancho a las columnas para que no se vean apretadas (estética)
+      [`${barberiaNombre}`],
+
+      ['Sistema de Gestión de Barbería'],
+
+      [titulo.replace(/_/g, ' ')],
+
+      [`Generado: ${fechaColombia}`],
+
+      []
+
+    ];
+
+    xlsx.utils.sheet_add_aoa(worksheet, header, { origin: 'A1' });
+
+    xlsx.utils.sheet_add_json(
+      worksheet,
+      data,
+      {
+        origin: 'A6',
+        skipHeader: false
+      }
+    );
+
     worksheet['!cols'] = colWidths;
 
-    // Generamos el libro
-    const workbook: xlsx.WorkBook = { Sheets: { [sheetName]: worksheet }, SheetNames: [sheetName] };
+    const workbook: xlsx.WorkBook = {
 
-    // Descargar
-    xlsx.writeFile(workbook, `${titulo}_${new Date().getTime()}.xlsx`);
+      Sheets: { [sheetName]: worksheet },
+
+      SheetNames: [sheetName]
+
+    };
+
+    xlsx.writeFile(
+
+      workbook,
+
+      `${titulo}_${new Date().toISOString().slice(0, 10)}.xlsx`
+
+    );
+
   }
 
   // =============================
-  // 📄 Exportar PDF
+  // 📄 Exportar PDF Profesional (Nivel ERP)
   // =============================
   exportarPDF(): void {
+
     let data: any[] = [];
     let title = 'Reporte';
     let headers: string[] = [];
     let keys: string[] = [];
 
+    const barberiaNombre = document.title || 'Sistema de Gestión';
+
+    const fechaColombia = new Intl.DateTimeFormat('es-CO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(new Date());
+
+    // =============================
+    // SELECCION DE REPORTE
+    // =============================
     switch (this.tabSeleccionada) {
+
       case 0:
+
         data = this.citas;
+
         title = 'Reporte de Ingresos';
-        headers = ['Fecha', 'Cliente', 'Barbero', 'Servicios', 'Subtotal'];
-        keys = ['fecha', 'cliente', 'peluquero', 'serviciosStr', 'subtotal'];
+
+        headers = ['Fecha', 'Sede', 'Cliente', 'Barbero', 'Servicios', 'Subtotal'];
+
+        keys = ['fecha', 'sede', 'cliente', 'peluquero', 'serviciosStr', 'subtotal'];
+
         break;
+
       case 1:
+
         data = this.reportesBarberos;
+
         title = 'Citas por Barbero';
-        headers = ['Barbero', 'Citas Atendidas'];
-        keys = ['barbero', 'cantidad'];
+
+        headers = ['Sede', 'Barbero', 'Citas'];
+
+        keys = ['sede', 'peluquero', 'cantidadCitas'];
+
         break;
+
       case 2:
+
         data = this.reportesClientes;
+
         title = 'Clientes Frecuentes';
-        headers = ['Cliente', 'Citas'];
-        keys = ['cliente', 'cantidad'];
+
+        headers = ['Sede', 'Cliente', 'Citas'];
+
+        keys = ['sede', 'cliente', 'cantidadCitas'];
+
         break;
+
       case 3:
-        data = this.reportesInventario;
+
         title = 'Reporte de Inventario';
-        headers = ['Sede', 'Equipo', 'Tipo', 'Cantidad', 'Total Sede'];
-        keys = ['sede', 'equipo', 'tipo', 'cantidad', 'totalSede'];
+
+        headers = ['Sede', 'Tipo', 'Cantidad', 'Total Sede'];
+
+        keys = ['sede', 'tipo', 'cantidad', 'totalSede'];
+
+        data = [];
+
+        if (Array.isArray(this.reportesInventario)) {
+
+          this.reportesInventario.forEach((sede: any) => {
+
+            if (Array.isArray(sede?.equipos)) {
+
+              sede.equipos.forEach((eq: any) => {
+
+                data.push({
+                  sede: sede?.sede ?? 'N/D',
+                  tipo: eq?.tipo ?? 'N/D',
+                  cantidad: eq?.cantidad ?? 0,
+                  totalSede: sede?.totalSede ?? 0
+                });
+
+              });
+
+            } else {
+
+              data.push({
+                sede: sede?.sede ?? 'N/D',
+                tipo: sede?.tipo ?? 'N/D',
+                cantidad: sede?.cantidad ?? 0,
+                totalSede: sede?.totalSede ?? sede?.cantidad ?? 0
+              });
+
+            }
+
+          });
+
+        }
+
         break;
+
     }
 
     if (!data || data.length === 0) {
+
       this.snackBar.open('No hay datos para exportar.', 'Cerrar', { duration: 3000 });
+
       return;
+
     }
+
+    // =============================
+    // NORMALIZAR DATOS
+    // =============================
+    const bodyData = data.map(row => {
+
+      return keys.map(k => {
+
+        let value = row[k];
+
+        // formatear fecha
+        if (k === 'fecha' && value) {
+
+          value = new Intl.DateTimeFormat('es-CO', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          }).format(new Date(value));
+
+        }
+
+        // objetos populate
+        if (typeof value === 'object' && value !== null) {
+
+          value =
+            value.nombre ||
+            value.name ||
+            value.descripcion ||
+            value.tipo ||
+            'N/D';
+
+        }
+
+        return value ?? 'N/D';
+
+      });
+
+    });
 
     const doc = new jsPDF();
 
-    // 1️⃣ Añadimos Logo
-    const logoImg = new Image();
-    logoImg.src = 'assets/logo.png'; // Asegúrate de que este asset exista
+    const logo = new Image();
 
-    logoImg.onload = () => {
-      // (imagen, formato, X, Y, Ancho, Alto)
-      doc.addImage(logoImg, 'PNG', 14, 10, 40, 20);
-      this.generarContenidoPDF(doc, title, headers, keys, data);
-    };
+    logo.src = 'assets/logo.png';
 
-    logoImg.onerror = () => {
-      // Si el logo no carga (ej. no está en /assets), imprimimos el PDF sin logo pero no fallamos
-      this.generarContenidoPDF(doc, title, headers, keys, data);
-    };
-  }
+    logo.onload = () => {
 
-  private generarContenidoPDF(doc: jsPDF, title: string, headers: string[], keys: string[], data: any[]): void {
-    // 2️⃣ Título Central
-    doc.setFontSize(18);
-    doc.setTextColor(40, 40, 40);
-    // Calcular el centro (ancho de hoja carta/A4 es ~210mm)
-    doc.text(title.toUpperCase(), 105, 20, { align: 'center' });
+      // =============================
+      // HEADER
+      // =============================
+      doc.addImage(logo, 'PNG', 14, 10, 30, 15);
 
-    // 3️⃣ Fecha de Generación
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    const fechaActual = new Date().toLocaleDateString();
-    doc.text(`Fecha de generación: ${fechaActual}`, 105, 27, { align: 'center' });
+      doc.setFontSize(14);
 
-    // Línea separadora
-    doc.setDrawColor(200, 200, 200);
-    doc.line(14, 32, 196, 32);
+      doc.text(barberiaNombre, 105, 15, { align: 'center' });
 
-    // 4️⃣ Preparar Datos para la Tabla
-    const formatData = data.map(item => keys.map(k => {
-      if (k === 'fecha' && item[k]) return new Date(item[k]).toLocaleDateString();
-      if (k === 'subtotal' && item[k]) return `$ ${item[k].toLocaleString('es-CO')}`;
-      return item[k] ?? '';
-    }));
+      doc.setFontSize(18);
 
-    // Preparar Footer si es la pestaña de Ingresos
-    let footData: any[] = [];
-    if (this.tabSeleccionada === 0) {
-      footData = [['', '', '', 'TOTAL INGRESOS', `$ ${this.total.toLocaleString('es-CO')}`]];
-    }
+      doc.text(title, 105, 25, { align: 'center' });
 
-    // 5️⃣ Tabla Estilizada
-    autoTable(doc, {
-      head: [headers],
-      body: formatData,
-      foot: footData,
-      startY: 40,
-      theme: 'grid', // Malla profesional
-      styles: {
-        font: 'helvetica',
-        fontSize: 10,
-        cellPadding: 4,
-        textColor: [50, 50, 50], // Gris oscuro para mejor lectura
-      },
-      headStyles: {
-        fillColor: [33, 33, 33], // Encabezado Gris oscuro casi negro
-        textColor: [255, 255, 255], // Letra blanca
-        fontStyle: 'bold',
-        halign: 'center' // Centrar encabezados
-      },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245] // Filas intercaladas gris muy claro
-      },
-      footStyles: {
-        fillColor: [50, 50, 50],
-        textColor: [255, 255, 255],
-        fontStyle: 'bold'
-      },
-      columnStyles: {
-        // Por si necesitas alinear la última columna al extremo derecho (ej. precios)
-        [keys.length - 1]: { halign: 'right' }
+      doc.setFontSize(10);
+
+      doc.text(`Generado: ${fechaColombia}`, 105, 32, { align: 'center' });
+
+      let startY = 40;
+
+      // =============================
+      // DASHBOARD FINANCIERO
+      // =============================
+      if (this.tabSeleccionada === 0) {
+
+        const totalIngresos = data.reduce((acc, c) => acc + (c.subtotal || 0), 0);
+
+        const totalCitas = data.length;
+
+        const promedio = totalIngresos / (totalCitas || 1);
+
+        doc.setFillColor(240, 240, 240);
+
+        doc.rect(14, startY, 60, 18, 'F');
+
+        doc.rect(80, startY, 60, 18, 'F');
+
+        doc.rect(146, startY, 50, 18, 'F');
+
+        doc.setFontSize(10);
+
+        doc.text('Total Ingresos', 18, startY + 6);
+
+        doc.text(`$${totalIngresos.toLocaleString('es-CO')}`, 18, startY + 12);
+
+        doc.text('Total Citas', 84, startY + 6);
+
+        doc.text(`${totalCitas}`, 84, startY + 12);
+
+        doc.text('Promedio', 150, startY + 6);
+
+        doc.text(`$${Math.round(promedio).toLocaleString('es-CO')}`, 150, startY + 12);
+
+        startY += 26;
+
+        // TOP BARBEROS
+        const ranking: any = {};
+
+        this.citas.forEach((c: any) => {
+
+          ranking[c.peluquero] = (ranking[c.peluquero] || 0) + 1;
+
+        });
+
+        const topBarberos = Object.entries(ranking)
+
+          .sort((a: any, b: any) => b[1] - a[1])
+
+          .slice(0, 5);
+
+        doc.setFontSize(11);
+
+        doc.text('Top 5 Barberos', 14, startY);
+
+        topBarberos.forEach((b: any, i: number) => {
+
+          doc.text(`${i + 1}. ${b[0]} - ${b[1]} citas`, 14, startY + 6 + (i * 5));
+
+        });
+
+        startY += 35;
+
       }
-    });
 
-    // 6️⃣ Pie de página
-    const pageCount = (doc as any).internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text(
-        `Página ${i} de ${pageCount}`,
-        doc.internal.pageSize.width / 2,
-        doc.internal.pageSize.height - 10,
-        { align: 'center' }
-      );
-    }
+      // =============================
+      // INVENTARIO CRITICO
+      // =============================
+      if (this.tabSeleccionada === 3) {
 
-    // 7️⃣ Descargar
-    doc.save(`${title.replace(/ /g, '_')}_${new Date().getTime()}.pdf`);
+        const criticos = data.filter(i => i.cantidad <= 2);
+
+        if (criticos.length) {
+
+          doc.setTextColor(200, 0, 0);
+
+          doc.text('Inventario Crítico:', 14, startY);
+
+          criticos.forEach((item, index) => {
+
+            doc.text(
+
+              `${item.tipo} - ${item.cantidad} unidades`,
+
+              14,
+
+              startY + 6 + index * 5
+
+            );
+
+          });
+
+          doc.setTextColor(0, 0, 0);
+
+          startY += 10 + criticos.length * 5;
+
+        }
+
+      }
+
+      // =============================
+      // TABLA
+      // =============================
+      autoTable(doc, {
+
+        head: [headers],
+
+        body: bodyData,
+
+        startY: startY,
+
+        theme: 'grid',
+
+        headStyles: { fillColor: [30, 30, 30] },
+
+        styles: { fontSize: 9 }
+
+      });
+
+      // =============================
+      // RESUMEN DE INGRESOS
+      // =============================
+      if (this.tabSeleccionada === 0) {
+
+        const totalIngresos = data.reduce((acc, c) => acc + (c.subtotal || 0), 0);
+
+        const totalCitas = data.length;
+
+        const promedio = totalIngresos / (totalCitas || 1);
+
+        const finalY = (doc as any).lastAutoTable.finalY + 10;
+
+        doc.setFontSize(11);
+
+        doc.text(`Total Ingresos: $${totalIngresos.toLocaleString('es-CO')}`, 14, finalY);
+
+        doc.text(`Total Citas: ${totalCitas}`, 14, finalY + 6);
+
+        doc.text(`Promedio por cita: $${Math.round(promedio).toLocaleString('es-CO')}`, 14, finalY + 12);
+
+      }
+
+      // =============================
+      // FOOTER
+      // =============================
+      const pageCount = (doc as any).internal.getNumberOfPages();
+
+      for (let i = 1; i <= pageCount; i++) {
+
+        doc.setPage(i);
+
+        doc.setFontSize(8);
+
+        doc.text(
+
+          `Página ${i} de ${pageCount}`,
+
+          105,
+
+          doc.internal.pageSize.height - 10,
+
+          { align: 'center' }
+
+        );
+
+      }
+
+      doc.save(`${title.replace(/ /g, '_')}_${Date.now()}.pdf`);
+
+    };
+
   }
 }

@@ -39,6 +39,7 @@ export class ReportesService {
    *   ok,
    *   rango,
    *   resumen,
+   *   ingresosPorSede,
    *   detalle
    * }
    */
@@ -55,13 +56,20 @@ export class ReportesService {
 
           return {
             ok: res?.ok ?? false,
+
             rango: res?.rango ?? {},
+
             resumen: res?.resumen ?? {
               cantidadCitas: 0,
               totalServicios: 0,
               ingresosTotales: 0,
               promedioPorCita: 0
             },
+
+            // 🔵 NUEVO: ingresos agrupados por sede
+            ingresosPorSede: res?.ingresosPorSede ?? {},
+
+            // 🔹 detalle de citas (tu tabla actual)
             detalle: this.normalizarArray(res?.detalle)
           };
 
@@ -83,7 +91,7 @@ export class ReportesService {
     return this.http
       .get<any>(`${this.apiUrl}/reportes/barberos`, { params })
       .pipe(
-        map(res => this.normalizarArray(res))
+        map((res: any) => this.normalizarArray(res))
       );
   }
 
@@ -101,7 +109,7 @@ export class ReportesService {
     return this.http
       .get<any>(`${this.apiUrl}/reportes/clientes`, { params })
       .pipe(
-        map(res => this.normalizarArray(res))
+        map((res: any) => this.normalizarArray(res))
       );
   }
 
@@ -115,7 +123,7 @@ export class ReportesService {
     return this.http
       .get<any>(`${this.apiUrl}/reportes/inventario`)
       .pipe(
-        map(res => this.normalizarArray(res))
+        map((res: any) => this.normalizarArray(res))
       );
   }
 

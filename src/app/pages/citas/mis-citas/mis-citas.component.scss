@@ -1,182 +1,294 @@
+/* ================================
+   CONTENEDOR GENERAL
+================================ */
 .mis-citas-container {
-  padding: 1rem;
+  padding: 1.5rem;
+  background: #f5f7fb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
-/* Header */
+/* ================================
+   HEADER
+================================ */
 .titulo-citas {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: .6rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2e3a59;
 
   mat-icon {
-    font-size: 28px;
-    color: #1976d2;
+    color: #4f46e5;
   }
 
   h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
     margin: 0;
+    font-size: 1.4rem;
   }
 }
 
-/* Filtros */
+/* ================================
+   FILTROS
+================================ */
 .filtros-container {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  align-items: center;
 
-  .filtro-fecha {
+  mat-form-field {
     flex: 1;
     min-width: 200px;
   }
 
-  .full-width {
-    flex: 2;
-    min-width: 260px;
+  .filtro-fecha {
+    max-width: 200px;
   }
 
   .btn-limpiar {
-    height: 56px;
+    height: 52px;
+    border-radius: 10px;
   }
 }
 
-/* TABLA DESKTOP */
+/* ================================
+   TABLA DESKTOP
+================================ */
 .tabla-wrapper {
+  width: 100%;
   overflow-x: auto;
-  border-radius: 12px;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
 }
 
 .tabla-citas {
   width: 100%;
-  min-width: 750px;
-  border-radius: 12px;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  th.mat-header-cell {
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #64748b;
+  }
+
+  td.mat-cell {
+    font-size: .9rem;
+    color: #334155;
+  }
+
+  tr.mat-row:hover {
+    background: #f1f5ff;
+    transition: .2s;
+  }
 }
 
-.mat-mdc-header-cell {
-  font-weight: 600;
-  background: #f5f5f5;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-}
+/* ================================
+   BADGES
+================================ */
 
-.mat-mdc-row:hover {
-  background: #f0f7ff;
-  transition: 0.2s;
-}
-
-/* BADGES */
 .turno-badge {
-  background: linear-gradient(135deg, #64b5f6, #1976d2);
-  color: white;
+  background: #eef2ff;
+  color: #4338ca;
   padding: 4px 10px;
-  border-radius: 16px;
+  border-radius: 20px;
+  font-size: .75rem;
   font-weight: 600;
-  font-size: 0.75rem;
 }
 
 .estado-badge {
   padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  border-radius: 20px;
+  font-size: .75rem;
   font-weight: 600;
 }
 
+.estado-pendiente {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
 .estado-confirmada {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: #ecfeff;
+  color: #0e7490;
+}
+
+.estado-pagado {
+  background: #ecfdf5;
+  color: #047857;
 }
 
 .estado-cancelada {
-  background: #ffebee;
-  color: #c62828;
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
-.estado-pendiente {
-  background: #fff8e1;
-  color: #ef6c00;
-}
+/* ================================
+   MOBILE VIEW
+================================ */
 
-/* ================= MOBILE CARDS ================= */
 .mobile-view {
   display: none;
 }
 
 .card-cita {
-  background: #ffffff;
-  border-radius: 18px;
+  background: white;
+  border-radius: 16px;
   padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease;
-}
-
-.card-cita:active {
-  transform: scale(0.98);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
-}
 
-.fecha {
-  font-weight: 600;
-}
+  .fecha {
+    font-weight: 600;
+    color: #334155;
+  }
 
-.hora {
-  font-size: 0.85rem;
-  color: #666;
+  .hora {
+    font-size: .85rem;
+    color: #64748b;
+  }
 }
 
 .card-body {
-  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
+  font-size: .9rem;
+
+  span {
+    color: #64748b;
+  }
+
+  strong {
+    color: #1e293b;
+  }
 }
 
 .card-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: .5rem;
 }
 
-/* SIN CITAS */
+/* ================================
+   PAGINADOR PROFESIONAL
+================================ */
+
+.paginator-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+mat-paginator {
+  width: 100%;
+  max-width: 720px;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  padding: .4rem .6rem;
+}
+
+/* Angular Material paginator container */
+
+::ng-deep .mat-mdc-paginator-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Botones del paginador */
+
+::ng-deep .mat-mdc-icon-button {
+  border-radius: 10px;
+}
+
+/* ================================
+   SIN CITAS
+================================ */
+
 .sin-citas {
   text-align: center;
-  padding: 2rem;
-  color: #757575;
+  padding: 3rem;
+  color: #64748b;
+
+  mat-icon {
+    font-size: 60px;
+    color: #cbd5f5;
+  }
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
 
   .tabla-wrapper {
     display: none;
   }
 
-  mat-paginator {
-    display: none;
-  }
-
   .mobile-view {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .filtros-container {
     flex-direction: column;
+    align-items: stretch;
   }
 
-  .btn-limpiar {
-    width: 100%;
+}
+
+/* ================================
+   MOBILE OPTIMIZATION PAGINADOR
+================================ */
+
+@media (max-width: 768px) {
+
+  mat-paginator {
+    border-radius: 12px;
+    padding: .3rem;
   }
+
+  /* ocultar selector de tamaño en móvil */
+  ::ng-deep .mat-mdc-paginator-page-size {
+    display: none;
+  }
+
+  /* texto compacto */
+  ::ng-deep .mat-mdc-paginator-range-label {
+    font-size: .75rem;
+  }
+
+  /* centrar botones */
+  ::ng-deep .mat-mdc-paginator-container {
+    justify-content: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+
 }

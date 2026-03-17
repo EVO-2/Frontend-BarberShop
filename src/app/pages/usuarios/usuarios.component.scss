@@ -1,43 +1,68 @@
+/* ================================
+   CONTENEDOR GENERAL
+================================ */
+
 .usuarios-container {
   padding: 1.5rem;
-  background-color: #f4f6fb;
+  background: linear-gradient(180deg, #f4f6fb 0%, #eef2f9 100%);
+  min-height: 100%;
 }
+
+/* ================================
+   CARD PRINCIPAL
+================================ */
 
 .usuarios-card {
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 18px;
+  padding: 1.6rem;
   background: #ffffff;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.04),
+    0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-/* Header */
+/* ================================
+   HEADER
+================================ */
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.4rem;
   gap: 1rem;
+  flex-wrap: wrap;
 
   .title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1.4rem;
+    gap: 0.55rem;
+    font-size: 1.35rem;
     font-weight: 600;
     color: #2e3a59;
+
+    mat-icon {
+      font-size: 26px;
+    }
   }
 
   .add-btn {
     border-radius: 12px;
-    padding: 0 1.25rem;
+    padding: 0 1.3rem;
     height: 42px;
+    font-weight: 500;
+    letter-spacing: .3px;
   }
 }
 
-/* Toolbar */
+/* ================================
+   TOOLBAR
+================================ */
+
 .toolbar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 
   .filter-input {
     width: 100%;
@@ -45,7 +70,10 @@
   }
 }
 
-/* Tabla */
+/* ================================
+   TABLA
+================================ */
+
 .tabla-usuarios {
   border-radius: 14px;
   overflow-x: auto;
@@ -53,46 +81,54 @@
 
   table {
     width: 100%;
-    min-width: 900px; // 🔑 evita cortes en apps modernas
+    min-width: 900px;
     border-collapse: separate;
     border-spacing: 0;
   }
 
+  /* HEADER */
+
   th.mat-mdc-header-cell {
     background: #f7f9fc;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     color: #6b7280;
-    letter-spacing: 0.6px;
-    padding: 0.85rem 1rem;
+    letter-spacing: 0.7px;
+    padding: 0.9rem 1rem;
     border-bottom: 1px solid #e5e7eb;
   }
+
+  /* CELDAS */
 
   td.mat-mdc-cell {
     font-size: 0.9rem;
     color: #374151;
-    padding: 0.85rem 1rem;
+    padding: 0.9rem 1rem;
     border-bottom: 1px solid #f1f5f9;
   }
+
+  /* HOVER */
 
   tr.mat-mdc-row:hover {
     background-color: #f0f7ff;
     transition: background-color 0.2s ease;
   }
 
-  /* Column widths */
+  /* COLUMNAS */
+
   .mat-column-id {
     width: 60px;
     text-align: center;
   }
 
   .mat-column-acciones {
-    width: 140px;
+    width: 150px;
     text-align: center;
   }
 
-  /* Nombre */
+  /* NOMBRE USUARIO */
+
   .user-name {
     display: flex;
     align-items: center;
@@ -105,7 +141,8 @@
     }
   }
 
-  /* Rol */
+  /* CHIP ROL */
+
   .rol-chip {
     padding: 4px 12px;
     border-radius: 999px;
@@ -116,7 +153,8 @@
     display: inline-block;
   }
 
-  /* Estado */
+  /* ESTADO */
+
   .estado {
     font-size: 0.75rem;
     padding: 4px 12px;
@@ -135,18 +173,143 @@
     }
   }
 
-  /* Acciones */
+  /* ACCIONES */
+
   .acciones {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
   }
 }
 
-/* Paginador */
-mat-paginator {
+/* ================================
+   MOBILE CARDS
+================================ */
+
+.mobile-view {
+  display: none;
   margin-top: 1rem;
+}
+
+.card-usuario {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #edf0f6;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04);
+
+  transition: all .25s ease;
+}
+
+.card-usuario:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* HEADER CARD */
+
+.card-header-mobile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .8rem;
+
+  .card-title {
+    font-weight: 600;
+    font-size: .95rem;
+    color: #1f2937;
+  }
+
+  .card-subtitle {
+    font-size: .78rem;
+    color: #6b7280;
+  }
+}
+
+/* BODY */
+
+.card-body {
+  margin-top: .6rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .8rem;
+  margin-bottom: .35rem;
+
+  span {
+    color: #64748b;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #1f2937;
+  }
+}
+
+/* ACCIONES MOBILE */
+
+.card-actions {
+  margin-top: .8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ================================
+   PAGINADOR
+================================ */
+
+mat-paginator {
+  margin-top: 1.2rem;
   border-radius: 12px;
   background: #f7f9fc;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.no-usuarios {
+  text-align: center;
+  padding: 2rem;
+  color: #94a3b8;
+  font-size: .9rem;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+
+  .tabla-usuarios {
+    display: none;
+  }
+
+  .mobile-view {
+    display: block;
+  }
+
+  .toolbar {
+    justify-content: center;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .usuarios-container {
+    padding: 1rem;
+  }
+
+  .usuarios-card {
+    padding: 1.2rem;
+  }
+
 }

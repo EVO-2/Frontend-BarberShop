@@ -1,322 +1,345 @@
-<div class="container p-4">
-  <h2 class="text-xl font-bold mb-4">📊 Reportes del Sistema</h2>
+<div class="reportes-container">
 
-  <!-- 🔹 FILTRO DE FECHAS -->
-  <form [formGroup]="filtroForm" class="flex flex-wrap gap-3 items-end mb-4">
+  <!-- HEADER -->
+  <div class="report-header">
 
-    <mat-form-field appearance="fill">
-      <mat-label>Fecha inicio</mat-label>
-      <input matInput type="date" formControlName="fechaInicio" />
-    </mat-form-field>
+    <div class="title-section">
+      <mat-icon class="title-icon">analytics</mat-icon>
+      <h2>Reportes del Sistema</h2>
+    </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Fecha fin</mat-label>
-      <input matInput type="date" formControlName="fechaFin" />
-    </mat-form-field>
+    <p class="subtitle">
+      Visualiza métricas, ingresos y estadísticas operativas del sistema.
+    </p>
 
-    <button mat-raised-button color="primary" type="button" (click)="aplicarFiltro()">
-      🔍 Aplicar Filtro
-    </button>
+  </div>
 
-    <div class="flex-spacer" style="flex: 1 1 auto;"></div>
 
-    <button mat-raised-button color="accent" type="button" (click)="exportarExcel()" [disabled]="cargando">
-      <mat-icon>table_view</mat-icon>
-      Exportar Excel
-    </button>
+  <!-- FILTROS -->
+  <mat-card class="filtros-card">
 
-    <button mat-raised-button color="warn" type="button" (click)="exportarPDF()" [disabled]="cargando">
-      <mat-icon>picture_as_pdf</mat-icon>
-      Exportar PDF
-    </button>
+    <form [formGroup]="filtroForm" class="filtros-form">
 
-  </form>
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha inicio</mat-label>
+        <input matInput type="date" formControlName="fechaInicio">
+      </mat-form-field>
 
-  <mat-tab-group [(selectedIndex)]="tabSeleccionada" (selectedIndexChange)="onTabChange($event)" class="mt-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha fin</mat-label>
+        <input matInput type="date" formControlName="fechaFin">
+      </mat-form-field>
 
-    <!-- 🟢 TAB INGRESOS -->
+      <button mat-raised-button color="primary" type="button" (click)="aplicarFiltro()">
+
+        <mat-icon>search</mat-icon>
+        Aplicar filtro
+
+      </button>
+
+      <span class="spacer"></span>
+
+      <button mat-raised-button color="accent" type="button" (click)="exportarExcel()" [disabled]="cargando">
+
+        <mat-icon>table_view</mat-icon>
+        Excel
+
+      </button>
+
+      <button mat-raised-button color="warn" type="button" (click)="exportarPDF()" [disabled]="cargando">
+
+        <mat-icon>picture_as_pdf</mat-icon>
+        PDF
+
+      </button>
+
+    </form>
+
+  </mat-card>
+
+
+  <!-- TABS -->
+  <mat-tab-group class="tabs-reportes" [(selectedIndex)]="tabSeleccionada" (selectedIndexChange)="onTabChange($event)">
+
+
+    <!-- INGRESOS -->
     <mat-tab label="Ingresos">
 
-      <div *ngIf="cargando" class="text-center p-4">
-        Cargando...
+      <div *ngIf="cargando" class="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
       </div>
 
       <div *ngIf="!cargando && (citas?.length ?? 0) > 0; else sinCitas">
 
-        <table mat-table [dataSource]="citas || []" class="mat-elevation-z2">
+        <mat-card class="tabla-card">
 
-          <!-- Fecha -->
-          <ng-container matColumnDef="fecha">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>event</mat-icon> Fecha
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.fecha | date }}
-            </td>
-          </ng-container>
+          <div class="table-wrapper">
 
-          <!-- Sede -->
-          <ng-container matColumnDef="sede">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>business</mat-icon> Sede
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.sede }}
-            </td>
-          </ng-container>
+            <table mat-table [dataSource]="citas || []">
 
-          <!-- Cliente -->
-          <ng-container matColumnDef="cliente">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>person</mat-icon> Cliente
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.cliente }}
-            </td>
-          </ng-container>
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-icon>event</mat-icon> Fecha
+                </th>
+                <td mat-cell *matCellDef="let c">
+                  {{ c.fecha | date }}
+                </td>
+              </ng-container>
 
-          <!-- Barbero -->
-          <ng-container matColumnDef="peluquero">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>content_cut</mat-icon> Barbero
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.peluquero }}
-            </td>
-          </ng-container>
+              <ng-container matColumnDef="sede">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-icon>business</mat-icon> Sede
+                </th>
+                <td mat-cell *matCellDef="let c">
+                  {{ c.sede }}
+                </td>
+              </ng-container>
 
-          <!-- Servicios -->
-          <ng-container matColumnDef="servicios">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>design_services</mat-icon> Servicios
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.serviciosStr }}
-            </td>
-          </ng-container>
+              <ng-container matColumnDef="cliente">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-icon>person</mat-icon> Cliente
+                </th>
+                <td mat-cell *matCellDef="let c">
+                  {{ c.cliente }}
+                </td>
+              </ng-container>
 
-          <!-- Subtotal -->
-          <ng-container matColumnDef="subtotal">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>payments</mat-icon> Subtotal
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.subtotal | currency:'COP':'symbol':'1.0-0' }}
-            </td>
-          </ng-container>
+              <ng-container matColumnDef="peluquero">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-icon>content_cut</mat-icon> Barbero
+                </th>
+                <td mat-cell *matCellDef="let c">
+                  {{ c.peluquero }}
+                </td>
+              </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal'];">
-          </tr>
+              <ng-container matColumnDef="servicios">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-icon>design_services</mat-icon> Servicios
+                </th>
+                <td mat-cell *matCellDef="let c">
+                  {{ c.serviciosStr }}
+                </td>
+              </ng-container>
 
-        </table>
+              <ng-container matColumnDef="subtotal">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-icon>payments</mat-icon> Subtotal
+                </th>
+                <td mat-cell *matCellDef="let c">
+                  {{ c.subtotal | currency:'COP':'symbol':'1.0-0' }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal'];">
+              </tr>
+
+            </table>
+
+          </div>
+
+        </mat-card>
+
 
         <!-- KPI -->
-        <div class="resumen-info mt-4">
+        <div class="kpi-grid">
 
-          <div class="item">
+          <mat-card class="kpi-card">
+
             <mat-icon>attach_money</mat-icon>
-            <span>
-              <strong>Ingresos totales:</strong>
-              {{ total | currency:'COP':'symbol':'1.0-0' }}
-            </span>
-          </div>
 
-          <div class="item">
+            <div>
+              <p>Ingresos totales</p>
+              <h3>{{ total | currency:'COP':'symbol':'1.0-0' }}</h3>
+            </div>
+
+          </mat-card>
+
+          <mat-card class="kpi-card">
+
             <mat-icon>design_services</mat-icon>
-            <span>
-              <strong>Total servicios:</strong>
-              {{ totalServicios }}
-            </span>
-          </div>
 
-          <div class="item">
+            <div>
+              <p>Total servicios</p>
+              <h3>{{ totalServicios }}</h3>
+            </div>
+
+          </mat-card>
+
+          <mat-card class="kpi-card">
+
             <mat-icon>analytics</mat-icon>
-            <span>
-              <strong>Promedio por cita:</strong>
-              {{ promedio | currency:'COP':'symbol':'1.0-0' }}
-            </span>
-          </div>
+
+            <div>
+              <p>Promedio por cita</p>
+              <h3>{{ promedio | currency:'COP':'symbol':'1.0-0' }}</h3>
+            </div>
+
+          </mat-card>
 
         </div>
+
+
+        <!-- INGRESOS POR SEDE -->
+        <mat-card *ngIf="ingresosPorSede | keyvalue as sedes" class="tabla-card">
+
+          <h3 class="card-title">
+            <mat-icon>business</mat-icon>
+            Ingresos por sede
+          </h3>
+
+          <div class="table-wrapper">
+
+            <table mat-table [dataSource]="sedes">
+
+              <ng-container matColumnDef="sede">
+                <th mat-header-cell *matHeaderCellDef>Sede</th>
+                <td mat-cell *matCellDef="let s">
+                  {{ s.key }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="ingresos">
+                <th mat-header-cell *matHeaderCellDef>Ingresos</th>
+                <td mat-cell *matCellDef="let s">
+                  {{ s.value | currency:'COP':'symbol':'1.0-0' }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['sede','ingresos']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['sede','ingresos'];"></tr>
+
+            </table>
+
+          </div>
+
+        </mat-card>
 
       </div>
 
       <ng-template #sinCitas>
-        <p class="text-center no-results">
-          No hay datos para el rango seleccionado.
-        </p>
+        <div class="no-data">
+          <mat-icon>info</mat-icon>
+          No hay datos para el rango seleccionado
+        </div>
       </ng-template>
 
     </mat-tab>
 
-    <!-- 🟡 TAB BARBEROS -->
+
+    <!-- BARBEROS -->
     <mat-tab label="Citas por Barbero">
 
-      <div *ngIf="cargando" class="text-center p-4">
-        Cargando...
-      </div>
+      <mat-card class="tabla-card" *ngIf="reportesBarberos?.length">
 
-      <div *ngIf="!cargando && (reportesBarberos?.length ?? 0) > 0; else sinBarberos">
+        <div class="table-wrapper">
 
-        <table mat-table [dataSource]="reportesBarberos || []" class="mat-elevation-z2">
+          <table mat-table [dataSource]="reportesBarberos || []">
 
-          <ng-container matColumnDef="sede">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>business</mat-icon> Sede
-            </th>
-            <td mat-cell *matCellDef="let b">
-              {{ b.sede }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="sede">
+              <th mat-header-cell *matHeaderCellDef>Sede</th>
+              <td mat-cell *matCellDef="let b">{{ b.sede }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="barbero">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>content_cut</mat-icon> Barbero
-            </th>
-            <td mat-cell *matCellDef="let b">
-              {{ b.barbero }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="barbero">
+              <th mat-header-cell *matHeaderCellDef>Barbero</th>
+              <td mat-cell *matCellDef="let b">{{ b.barbero }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>schedule</mat-icon> Citas atendidas
-            </th>
-            <td mat-cell *matCellDef="let b">
-              {{ b.cantidad }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef>Citas</th>
+              <td mat-cell *matCellDef="let b">{{ b.cantidad }}</td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['sede','barbero','cantidad']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['sede','barbero','cantidad'];"></tr>
+            <tr mat-header-row *matHeaderRowDef="['sede','barbero','cantidad']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','barbero','cantidad'];"></tr>
 
-        </table>
+          </table>
 
-      </div>
+        </div>
 
-      <ng-template #sinBarberos>
-        <p class="text-center no-results">
-          No hay datos para el rango seleccionado.
-        </p>
-      </ng-template>
+      </mat-card>
 
     </mat-tab>
 
-    <!-- 🔵 TAB CLIENTES -->
+
+    <!-- CLIENTES -->
     <mat-tab label="Clientes Frecuentes">
 
-      <div *ngIf="cargando" class="text-center p-4">
-        Cargando...
-      </div>
+      <mat-card class="tabla-card" *ngIf="reportesClientes?.length">
 
-      <div *ngIf="!cargando && (reportesClientes?.length ?? 0) > 0; else sinClientes">
+        <div class="table-wrapper">
 
-        <table mat-table [dataSource]="reportesClientes || []" class="mat-elevation-z2">
+          <table mat-table [dataSource]="reportesClientes || []">
 
-          <ng-container matColumnDef="sede">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>business</mat-icon> Sede
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.sede }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="sede">
+              <th mat-header-cell *matHeaderCellDef>Sede</th>
+              <td mat-cell *matCellDef="let c">{{ c.sede }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="cliente">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>groups</mat-icon> Cliente
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.cliente }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="cliente">
+              <th mat-header-cell *matHeaderCellDef>Cliente</th>
+              <td mat-cell *matCellDef="let c">{{ c.cliente }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>event_available</mat-icon> Citas
-            </th>
-            <td mat-cell *matCellDef="let c">
-              {{ c.cantidad }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef>Citas</th>
+              <td mat-cell *matCellDef="let c">{{ c.cantidad }}</td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['sede','cliente','cantidad']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['sede','cliente','cantidad'];"></tr>
+            <tr mat-header-row *matHeaderRowDef="['sede','cliente','cantidad']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','cliente','cantidad'];"></tr>
 
-        </table>
+          </table>
 
-      </div>
+        </div>
 
-      <ng-template #sinClientes>
-        <p class="text-center no-results">
-          No hay datos para el rango seleccionado.
-        </p>
-      </ng-template>
+      </mat-card>
 
     </mat-tab>
 
-    <!-- 🟣 TAB INVENTARIO -->
+
+    <!-- INVENTARIO -->
     <mat-tab label="Inventario">
 
-      <div *ngIf="cargando" class="text-center p-4">
-        Cargando...
-      </div>
+      <mat-card class="tabla-card" *ngIf="reportesInventario?.length">
 
-      <div *ngIf="!cargando && (reportesInventario?.length ?? 0) > 0; else sinInventario">
+        <div class="table-wrapper">
 
-        <table mat-table [dataSource]="reportesInventario || []" class="mat-elevation-z2">
+          <table mat-table [dataSource]="reportesInventario || []">
 
-          <ng-container matColumnDef="sede">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>business</mat-icon> Sede
-            </th>
-            <td mat-cell *matCellDef="let p">
-              {{ p.sede }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="sede">
+              <th mat-header-cell *matHeaderCellDef>Sede</th>
+              <td mat-cell *matCellDef="let p">{{ p.sede }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="tipo">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>category</mat-icon> Tipo
-            </th>
-            <td mat-cell *matCellDef="let p">
-              {{ p.tipo }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="tipo">
+              <th mat-header-cell *matHeaderCellDef>Tipo</th>
+              <td mat-cell *matCellDef="let p">{{ p.tipo }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>inventory_2</mat-icon> Cantidad
-            </th>
-            <td mat-cell *matCellDef="let p">
-              {{ p.cantidad }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+              <td mat-cell *matCellDef="let p">{{ p.cantidad }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="totalSede">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-icon>summarize</mat-icon> Total por Sede
-            </th>
-            <td mat-cell *matCellDef="let p">
-              {{ p.totalSede }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="totalSede">
+              <th mat-header-cell *matHeaderCellDef>Total sede</th>
+              <td mat-cell *matCellDef="let p">{{ p.totalSede }}</td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['sede','tipo','cantidad','totalSede']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede'];"></tr>
+            <tr mat-header-row *matHeaderRowDef="['sede','tipo','cantidad','totalSede']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede'];"></tr>
 
-        </table>
+          </table>
 
-      </div>
+        </div>
 
-      <ng-template #sinInventario>
-        <p class="text-center no-results">
-          No hay datos disponibles.
-        </p>
-      </ng-template>
+      </mat-card>
 
     </mat-tab>
 
   </mat-tab-group>
+
 </div>

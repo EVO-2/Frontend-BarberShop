@@ -52,6 +52,7 @@ export class ReporteIngresosComponent implements OnInit {
   total = 0;
   promedio: number = 0;
   totalServicios: number = 0;
+  ingresosPorSede: { [key: string]: number } = {};
 
   // === 2️⃣ Barberos ===
   reportesBarberos: BarberoReporte[] = [];
@@ -131,11 +132,13 @@ export class ReporteIngresosComponent implements OnInit {
     const { fechaInicio, fechaFin } = this.filtroForm.value;
 
     this.cargando = true;
+
     this.citas = [];
     this.total = 0;
     this.cantidadCitas = 0;
     this.promedio = 0;
     this.totalServicios = 0;
+    this.ingresosPorSede = {};
 
     this.reportesService.obtenerIngresos(fechaInicio, fechaFin).subscribe({
 
@@ -144,6 +147,10 @@ export class ReporteIngresosComponent implements OnInit {
         const detalle = res?.detalle ?? [];
         const resumen = res?.resumen ?? {};
 
+        // 🔹 NUEVO: ingresos agrupados por sede
+        this.ingresosPorSede = res?.ingresosPorSede ?? {};
+
+        // 🔹 Mapear citas
         this.citas = detalle.map((c: any) => ({
           fecha: c.fecha,
           sede: c.sede || 'N/D',
@@ -155,12 +162,14 @@ export class ReporteIngresosComponent implements OnInit {
           subtotal: c.subtotal || 0
         }));
 
-        this.cantidadCitas = resumen.cantidadCitas ?? 0;
-        this.total = resumen.ingresosTotales ?? 0;
-        this.promedio = Number(resumen.promedioPorCita ?? 0);
-        this.totalServicios = resumen.totalServicios ?? 0;
+        // 🔹 Resumen financiero
+        this.cantidadCitas = resumen?.cantidadCitas ?? 0;
+        this.total = resumen?.ingresosTotales ?? 0;
+        this.promedio = Number(resumen?.promedioPorCita ?? 0);
+        this.totalServicios = resumen?.totalServicios ?? 0;
 
         this.cargando = false;
+
       },
 
       error: (err) => {
@@ -191,12 +200,19 @@ export class ReporteIngresosComponent implements OnInit {
 
     const { fechaInicio, fechaFin } = this.filtroForm.value;
 
+    // 🔹 Ajustar rango completo del día
+    const inicio = new Date(fechaInicio);
+    inicio.setHours(0, 0, 0, 0);
+
+    const fin = new Date(fechaFin);
+    fin.setHours(23, 59, 59, 999);
+
     this.cargando = true;
     this.reportesBarberos = [];
 
     this.reportesService.obtenerCitasPorBarbero(fechaInicio, fechaFin).subscribe({
 
-      next: (res) => {
+      next: (res: any) => {
 
         this.reportesBarberos = (res || []).map((r: any) => ({
           sede: r.sede || 'N/D',
@@ -226,6 +242,7 @@ export class ReporteIngresosComponent implements OnInit {
 
   }
 
+
   // =============================
   // 3️⃣ Clientes frecuentes
   // =============================
@@ -236,12 +253,19 @@ export class ReporteIngresosComponent implements OnInit {
 
     const { fechaInicio, fechaFin } = this.filtroForm.value;
 
+    // 🔹 Ajustar rango completo del día
+    const inicio = new Date(fechaInicio);
+    inicio.setHours(0, 0, 0, 0);
+
+    const fin = new Date(fechaFin);
+    fin.setHours(23, 59, 59, 999);
+
     this.cargando = true;
     this.reportesClientes = [];
 
     this.reportesService.obtenerClientesFrecuentes(fechaInicio, fechaFin).subscribe({
 
-      next: (res) => {
+      next: (res: any) => {
 
         this.reportesClientes = (res || []).map((r: any) => ({
           sede: r.sede || 'N/D',
@@ -270,6 +294,7 @@ export class ReporteIngresosComponent implements OnInit {
     });
 
   }
+
 
   // =============================
   // 4️⃣ Inventario
@@ -639,19 +664,21 @@ export class ReporteIngresosComponent implements OnInit {
 
         headers = ['Sede', 'Barbero', 'Citas'];
 
-        keys = ['sede', 'peluquero', 'cantidadCitas'];
+        keys = ['sede', 'barbero', 'cantidad'];
 
         break;
+
 
       case 2:
 
         data = this.reportesClientes;
 
-        title = 'Clientes Frecuentes';
+        title = 'Citas por Cliente';
 
         headers = ['Sede', 'Cliente', 'Citas'];
 
-        keys = ['sede', 'cliente', 'cantidadCitas'];
+        keys = ['sede', 'cliente', 'cantidad'];
+
 
         break;
 
@@ -718,7 +745,6 @@ export class ReporteIngresosComponent implements OnInit {
 
         let value = row[k];
 
-        // formatear fecha
         if (k === 'fecha' && value) {
 
           value = new Intl.DateTimeFormat('es-CO', {
@@ -732,7 +758,6 @@ export class ReporteIngresosComponent implements OnInit {
 
         }
 
-        // objetos populate
         if (typeof value === 'object' && value !== null) {
 
           value =
@@ -758,21 +783,15 @@ export class ReporteIngresosComponent implements OnInit {
 
     logo.onload = () => {
 
-      // =============================
-      // HEADER
-      // =============================
       doc.addImage(logo, 'PNG', 14, 10, 30, 15);
 
       doc.setFontSize(14);
-
       doc.text(barberiaNombre, 105, 15, { align: 'center' });
 
       doc.setFontSize(18);
-
       doc.text(title, 105, 25, { align: 'center' });
 
       doc.setFontSize(10);
-
       doc.text(`Generado: ${fechaColombia}`, 105, 32, { align: 'center' });
 
       let startY = 40;
@@ -783,31 +802,24 @@ export class ReporteIngresosComponent implements OnInit {
       if (this.tabSeleccionada === 0) {
 
         const totalIngresos = data.reduce((acc, c) => acc + (c.subtotal || 0), 0);
-
         const totalCitas = data.length;
-
         const promedio = totalIngresos / (totalCitas || 1);
 
         doc.setFillColor(240, 240, 240);
 
         doc.rect(14, startY, 60, 18, 'F');
-
         doc.rect(80, startY, 60, 18, 'F');
-
         doc.rect(146, startY, 50, 18, 'F');
 
         doc.setFontSize(10);
 
         doc.text('Total Ingresos', 18, startY + 6);
-
         doc.text(`$${totalIngresos.toLocaleString('es-CO')}`, 18, startY + 12);
 
         doc.text('Total Citas', 84, startY + 6);
-
         doc.text(`${totalCitas}`, 84, startY + 12);
 
         doc.text('Promedio', 150, startY + 6);
-
         doc.text(`$${Math.round(promedio).toLocaleString('es-CO')}`, 150, startY + 12);
 
         startY += 26;
@@ -816,28 +828,49 @@ export class ReporteIngresosComponent implements OnInit {
         const ranking: any = {};
 
         this.citas.forEach((c: any) => {
-
           ranking[c.peluquero] = (ranking[c.peluquero] || 0) + 1;
-
         });
 
         const topBarberos = Object.entries(ranking)
-
           .sort((a: any, b: any) => b[1] - a[1])
-
           .slice(0, 5);
 
         doc.setFontSize(11);
-
         doc.text('Top 5 Barberos', 14, startY);
 
         topBarberos.forEach((b: any, i: number) => {
-
           doc.text(`${i + 1}. ${b[0]} - ${b[1]} citas`, 14, startY + 6 + (i * 5));
-
         });
 
         startY += 35;
+
+        // =============================
+        // NUEVA SECCION: INGRESOS POR SEDE
+        // =============================
+        const ingresosPorSede: any = {};
+
+        this.citas.forEach((c: any) => {
+          const sede = c.sede || 'N/D';
+          ingresosPorSede[sede] = (ingresosPorSede[sede] || 0) + (c.subtotal || 0);
+        });
+
+        const rankingSedes = Object.entries(ingresosPorSede)
+          .sort((a: any, b: any) => b[1] - a[1]);
+
+        doc.setFontSize(11);
+        doc.text('Ingresos por sede', 14, startY);
+
+        rankingSedes.forEach((s: any, i: number) => {
+
+          doc.text(
+            `${s[0]}   $${s[1].toLocaleString('es-CO')} COP`,
+            14,
+            startY + 6 + (i * 5)
+          );
+
+        });
+
+        startY += 10 + rankingSedes.length * 5;
 
       }
 
@@ -857,13 +890,9 @@ export class ReporteIngresosComponent implements OnInit {
           criticos.forEach((item, index) => {
 
             doc.text(
-
               `${item.tipo} - ${item.cantidad} unidades`,
-
               14,
-
               startY + 6 + index * 5
-
             );
 
           });
@@ -901,9 +930,7 @@ export class ReporteIngresosComponent implements OnInit {
       if (this.tabSeleccionada === 0) {
 
         const totalIngresos = data.reduce((acc, c) => acc + (c.subtotal || 0), 0);
-
         const totalCitas = data.length;
-
         const promedio = totalIngresos / (totalCitas || 1);
 
         const finalY = (doc as any).lastAutoTable.finalY + 10;
@@ -911,9 +938,7 @@ export class ReporteIngresosComponent implements OnInit {
         doc.setFontSize(11);
 
         doc.text(`Total Ingresos: $${totalIngresos.toLocaleString('es-CO')}`, 14, finalY);
-
         doc.text(`Total Citas: ${totalCitas}`, 14, finalY + 6);
-
         doc.text(`Promedio por cita: $${Math.round(promedio).toLocaleString('es-CO')}`, 14, finalY + 12);
 
       }
@@ -930,15 +955,10 @@ export class ReporteIngresosComponent implements OnInit {
         doc.setFontSize(8);
 
         doc.text(
-
           `Página ${i} de ${pageCount}`,
-
           105,
-
           doc.internal.pageSize.height - 10,
-
           { align: 'center' }
-
         );
 
       }
@@ -948,4 +968,5 @@ export class ReporteIngresosComponent implements OnInit {
     };
 
   }
+
 }

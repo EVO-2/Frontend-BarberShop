@@ -1,4 +1,118 @@
-/* === Arreglo definitivo de headers con iconos === */
+/* =========================================================
+   CONTENEDOR PRINCIPAL DE REPORTES
+========================================================= */
+
+.reportes-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: auto;
+}
+
+/* HEADER */
+
+.report-header {
+  margin-bottom: 20px;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-icon {
+  font-size: 30px;
+  color: #4f46e5;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================================================
+   FILTROS
+========================================================= */
+
+.filtros-card {
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.filtros-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tabs-reportes {
+  margin-top: 10px;
+}
+
+/* =========================================================
+   TABLAS
+========================================================= */
+
+.tabla-card {
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* =========================================================
+   KPI CARDS
+========================================================= */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.kpi-card mat-icon {
+  font-size: 32px;
+  color: #4f46e5;
+}
+
+/* =========================================================
+   NO DATA
+========================================================= */
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}
+
+/* =========================================================
+   ARREGLO DEFINITIVO HEADERS CON ICONOS
+========================================================= */
 
 th.mat-header-cell {
   text-align: center !important;
@@ -32,19 +146,21 @@ td.mat-cell {
   justify-content: center !important;
 }
 
-th.mat-header-cell, 
+th.mat-header-cell,
 td.mat-cell {
   height: 48px !important;
 }
 
-/* === ESTILOS PRINCIPALES DEL CONTENEDOR === */
+/* =========================================================
+   ESTILOS PRINCIPALES DEL CONTENEDOR
+========================================================= */
 
 .reporte-ingresos-container,
 .container {
   background: #fff;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   margin: 20px;
 
   h2 {
@@ -57,7 +173,10 @@ td.mat-cell {
     gap: 8px;
   }
 
-  /* === FILTROS === */
+  /* ======================
+     FILTROS
+  ====================== */
+
   form {
     display: flex;
     flex-wrap: wrap;
@@ -77,10 +196,20 @@ td.mat-cell {
       align-items: center;
       gap: 0.5rem;
       font-size: 15px;
+      border-radius: 8px;
+      transition: 0.25s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      }
     }
   }
 
-  /* === TABLAS === */
+  /* ======================
+     TABLAS
+  ====================== */
+
   table {
     width: 100%;
     border-collapse: separate !important;
@@ -120,11 +249,11 @@ td.mat-cell {
       background: #ffffff;
       border-radius: 10px;
       transition: 0.25s ease;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 
       &:hover {
         background: #f3f3f3;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         transform: translateY(-2px);
       }
     }
@@ -138,7 +267,10 @@ td.mat-cell {
   }
 }
 
-/* CENTRADO PERFECTO EN HEADERS + ICONOS */
+/* =========================================================
+   CENTRADO PERFECTO DE CELDAS
+========================================================= */
+
 .mat-header-cell,
 .mat-cell {
   display: flex !important;
@@ -146,14 +278,16 @@ td.mat-cell {
   justify-content: center;
 }
 
-/* === NUEVO BLOQUE: TARJETA PROFESIONAL DE TOTALES === */
+/* =========================================================
+   TARJETA PROFESIONAL DE TOTALES
+========================================================= */
 
 .resumen-info {
   margin-top: 1.5rem;
   padding: 1.2rem;
   border-radius: 12px;
   background: #f9fafb;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -161,7 +295,7 @@ td.mat-cell {
 
   &:hover {
     background: #ffffff;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
   }
 
@@ -183,4 +317,106 @@ td.mat-cell {
       color: #1d4ed8;
     }
   }
+}
+
+/* =========================================================
+   INGRESOS POR SEDE (DASHBOARD)
+========================================================= */
+
+.ingresos-sede-container {
+  margin-top: 2rem;
+  padding: 1.4rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    mat-icon {
+      color: #2563eb;
+    }
+  }
+}
+
+/* GRID */
+
+.ingresos-sede-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* CARDS */
+
+.ingresos-sede-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* NOMBRE SEDE */
+
+.ingresos-sede-nombre {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* VALOR */
+
+.ingresos-sede-valor {
+  font-size: 20px;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* BARRA VISUAL */
+
+.ingresos-sede-barra {
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+
+/* =========================================================
+   RESPONSIVE MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .reportes-container {
+    padding: 12px;
+  }
+
+  .filtros-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtros-form button {
+    width: 100%;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
 }

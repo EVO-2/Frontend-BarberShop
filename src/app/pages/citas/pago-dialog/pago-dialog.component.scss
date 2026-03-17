@@ -1,3 +1,7 @@
+/* =========================
+   CARD PRINCIPAL
+========================= */
+
 .pago-dialog-card {
   width: 400px;
   max-width: 95vw;
@@ -5,10 +9,32 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  border-radius: 16px;
 }
 
-.full-width {
-  width: 100%;
+/* =========================
+   HEADER
+========================= */
+
+.pago-header {
+  margin-bottom: 10px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icono-pago {
+  font-size: 32px;
+  color: #4f46e5;
+}
+
+.header-text mat-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 mat-card-header {
@@ -25,10 +51,80 @@ mat-card-subtitle {
   color: #666;
 }
 
+/* =========================
+   CONTENT
+========================= */
+
+.pago-content {
+  padding-top: 10px;
+}
+
+/* =========================
+   FORMULARIO
+========================= */
+
+.pago-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* =========================
+   ESTADO PAGADO
+========================= */
+
+.estado-pagada {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ecfdf5;
+  padding: 12px;
+  border-radius: 10px;
+  color: #047857;
+  margin-bottom: 10px;
+
+  mat-icon {
+    color: #10b981;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+  }
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.pago-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
 mat-card-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.btn-cancelar {
+  border-radius: 10px;
+}
+
+.btn-pagar {
+  border-radius: 10px;
+  padding: 0 20px;
 }
 
 button.mat-primary {
@@ -40,7 +136,42 @@ button.mat-stroked-button {
   color: #555;
 }
 
+/* =========================
+   ERRORES
+========================= */
+
 .mat-error {
   font-size: 0.85rem;
   color: #d32f2f;
+}
+
+/* =========================
+   MOBILE OPTIMIZATION
+========================= */
+
+@media (max-width: 600px) {
+
+  .pago-dialog-card {
+    border-radius: 14px;
+    padding: 12px;
+  }
+
+  .header-text mat-card-title {
+    font-size: 1.1rem;
+  }
+
+  .icono-pago {
+    font-size: 26px;
+  }
+
+  .pago-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .btn-cancelar,
+  .btn-pagar {
+    width: 100%;
+  }
+
 }

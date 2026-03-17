@@ -34,20 +34,21 @@ export class ReportesService {
    * ===================================================
    * 🧾 Reporte de ingresos
    * ===================================================
-   * Devuelve:
-   * {
-   *   ok,
-   *   rango,
-   *   resumen,
-   *   ingresosPorSede,
-   *   detalle
-   * }
    */
-  obtenerIngresos(fechaInicio: string, fechaFin: string): Observable<any> {
+  obtenerIngresos(
+    fechaInicio: string,
+    fechaFin: string,
+    sede?: string
+  ): Observable<any> {
 
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
+
+    // 🔵 Si se selecciona sede se envía al backend
+    if (sede) {
+      params = params.set('sede', sede);
+    }
 
     return this.http
       .get<any>(`${this.apiUrl}/reportes/ingresos`, { params })
@@ -66,10 +67,10 @@ export class ReportesService {
               promedioPorCita: 0
             },
 
-            // 🔵 NUEVO: ingresos agrupados por sede
+            // 🔵 Ingresos agrupados por sede
             ingresosPorSede: res?.ingresosPorSede ?? {},
 
-            // 🔹 detalle de citas (tu tabla actual)
+            // 🔹 Detalle de citas (tabla del reporte)
             detalle: this.normalizarArray(res?.detalle)
           };
 
@@ -82,11 +83,19 @@ export class ReportesService {
    * 💈 Reporte de citas por barbero
    * ===================================================
    */
-  obtenerCitasPorBarbero(fechaInicio: string, fechaFin: string): Observable<any[]> {
+  obtenerCitasPorBarbero(
+    fechaInicio: string,
+    fechaFin: string,
+    sede?: string
+  ): Observable<any[]> {
 
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
+
+    if (sede) {
+      params = params.set('sede', sede);
+    }
 
     return this.http
       .get<any>(`${this.apiUrl}/reportes/barberos`, { params })
@@ -100,11 +109,19 @@ export class ReportesService {
    * 👥 Reporte de clientes frecuentes
    * ===================================================
    */
-  obtenerClientesFrecuentes(fechaInicio: string, fechaFin: string): Observable<any[]> {
+  obtenerClientesFrecuentes(
+    fechaInicio: string,
+    fechaFin: string,
+    sede?: string
+  ): Observable<any[]> {
 
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
+
+    if (sede) {
+      params = params.set('sede', sede);
+    }
 
     return this.http
       .get<any>(`${this.apiUrl}/reportes/clientes`, { params })

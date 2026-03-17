@@ -1,4 +1,5 @@
 <div class="usuarios-container">
+
   <mat-card class="usuarios-card mat-elevation-z6">
 
     <!-- Header -->
@@ -23,7 +24,8 @@
       </mat-form-field>
     </div>
 
-    <!-- Tabla -->
+    <!-- ================= DESKTOP TABLA ================= -->
+
     <div class="tabla-usuarios">
       <table mat-table [dataSource]="dataSource" matSort>
 
@@ -78,6 +80,7 @@
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let usuario" class="acciones">
+
             <button mat-icon-button color="primary" matTooltip="Editar" (click)="abrirDialog(usuario)">
               <mat-icon>edit</mat-icon>
             </button>
@@ -85,6 +88,7 @@
             <mat-slide-toggle [checked]="usuario.estado" (change)="cambiarEstado(usuario)" color="primary"
               matTooltip="Cambiar estado">
             </mat-slide-toggle>
+
           </td>
         </ng-container>
 
@@ -94,9 +98,74 @@
       </table>
     </div>
 
+    <!-- ================= MOBILE CARDS ================= -->
+
+    <div class="mobile-view" *ngIf="dataSource.data.length > 0">
+
+      <div class="card-usuario" *ngFor="let usuario of dataSource.data; let i = index">
+
+        <!-- Header -->
+        <div class="card-header-mobile">
+
+          <div>
+            <div class="card-title">
+              {{ usuario.nombre }}
+            </div>
+
+            <div class="card-subtitle">
+              {{ usuario.correo }}
+            </div>
+          </div>
+
+          <span class="rol-chip">
+            {{ usuario.rol.nombre | titlecase }}
+          </span>
+
+        </div>
+
+        <!-- Body -->
+        <div class="card-body">
+
+          <div class="info-row">
+            <span>ID</span>
+            <strong>#{{ i + 1 }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Estado</span>
+            <strong [class.activo]="usuario.estado" [class.inactivo]="!usuario.estado">
+              {{ usuario.estado ? 'Activo' : 'Inactivo' }}
+            </strong>
+          </div>
+
+        </div>
+
+        <!-- Acciones -->
+        <div class="card-actions">
+
+          <button mat-stroked-button color="primary" (click)="abrirDialog(usuario)">
+            Editar
+          </button>
+
+          <mat-slide-toggle [checked]="usuario.estado" (change)="cambiarEstado(usuario)" color="primary">
+            {{ usuario.estado ? 'Activo' : 'Inactivo' }}
+          </mat-slide-toggle>
+
+        </div>
+
+      </div>
+
+    </div>
+
     <!-- Paginador -->
     <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
     </mat-paginator>
 
+    <!-- Sin usuarios -->
+    <div *ngIf="dataSource.data.length === 0" class="no-usuarios">
+      <p>No hay usuarios registrados.</p>
+    </div>
+
   </mat-card>
+
 </div>

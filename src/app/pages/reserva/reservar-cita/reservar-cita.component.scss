@@ -11,6 +11,9 @@
     margin-bottom: 16px;
   }
 
+
+  /* ================== SERVICIOS ================== */
+
   .servicios-container {
     max-height: 250px;
     overflow-y: auto;
@@ -36,13 +39,11 @@
     cursor: pointer;
   }
 
-  /* hover */
   .servicio-card:hover {
     background: #e5f4ff;
     transform: translateY(-1px);
   }
 
-  /* seleccionado */
   .servicio-card.selected {
     background: #96d3ff;
     color: #fff;
@@ -60,7 +61,6 @@
   .nombre {
     font-weight: 500;
     font-size: 0.95rem;
-    line-height: 1.2;
   }
 
   .detalles {
@@ -75,42 +75,18 @@
     margin-left: 12px;
   }
 
-  .servicio-actions button[mat-icon-button] {
-    flex-shrink: 0;
-  }
-
   .servicio-checkbox {
     --mat-checkbox-size: 20px;
-    padding: 0;
-    margin: 0;
-  }
-
-  .servicio-card:focus {
-    outline: 3px solid rgba(24, 159, 255, 0.18);
-    outline-offset: 2px;
-  }
-
-  mat-form-field {
-    .mat-form-field-label {
-      font-weight: 500;
-    }
   }
 
   mat-select {
     mat-icon {
-      vertical-align: middle;
       margin-left: 8px;
     }
 
-    .mat-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      &.mat-option-disabled {
-        opacity: 0.6;
-        font-style: italic;
-      }
+    .mat-option-disabled {
+      opacity: 0.6;
+      font-style: italic;
     }
   }
 
@@ -119,14 +95,11 @@
     cursor: not-allowed;
   }
 
-  /* BOTONES */
-
   button {
     width: 100%;
     padding: 12px 0;
     font-weight: 600;
     display: flex;
-    align-items: center;
     justify-content: center;
     gap: 8px;
 
@@ -135,16 +108,10 @@
     }
   }
 
-  /* Spinner dentro del botón */
-
   .spinner-btn {
     margin-right: 8px;
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
-
-  /* Animación suave mientras carga */
 
   button[disabled] {
     opacity: 0.85;
@@ -155,13 +122,52 @@
     .servicios-container {
       max-height: 200px;
     }
-
-    .servicio-card {
-      padding: 0.5rem;
-    }
-
-    .servicio-actions {
-      gap: 6px;
-    }
   }
+}
+
+/* ================== 🔥 PELUQUEROS PRO UI ================== */
+/* Se debe colocar por fuera de .reserva-form para que ::ng-deep alcance el CDK Overlay! */
+
+::ng-deep .option-peluquero {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 4px 0 !important;
+}
+
+::ng-deep .peluquero-info {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* 🔥 Avatar estilo red social (limpio y proporcionado) */
+::ng-deep .avatar-peluquero {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  background-color: #fafafa !important;
+  transition: transform 0.2s ease !important;
+  display: block !important;
+}
+
+::ng-deep .option-peluquero:hover .avatar-peluquero,
+::ng-deep .mat-select-trigger .peluquero-info:hover .avatar-peluquero {
+  transform: scale(1.1) !important; 
+}
+
+::ng-deep .nombre-peluquero {
+  font-size: 0.9rem !important; 
+  font-weight: 500 !important;
+  color: #262626 !important; 
+  letter-spacing: 0.15px !important;
+}
+
+::ng-deep .icon-estado {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  opacity: 0.85 !important;
 }

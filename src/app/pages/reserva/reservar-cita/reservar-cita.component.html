@@ -29,12 +29,41 @@
   <!-- Peluquero -->
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Peluquero</mat-label>
+
     <mat-select formControlName="peluquero" (selectionChange)="onPeluqueroChange($event.value)">
+
+      <!-- TRIGGER PARA MOSTRAR FOTO Y NOMBRE CUANDO ESTÁ SELECCIONADO -->
+      <mat-select-trigger>
+        <div class="peluquero-info" *ngIf="getSelectedPeluquero() as selectedP">
+          <img [src]="selectedP.foto || 'assets/img/default-avatar.png'" class="avatar-peluquero" />
+          <span class="nombre-peluquero">{{ selectedP.nombre || 'Sin nombre' }}</span>
+        </div>
+      </mat-select-trigger>
+
       <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id" [disabled]="p?.ocupado">
-        {{ p?.nombre || 'Sin nombre' }}
-        <mat-icon *ngIf="p?.ocupado" color="warn" matTooltip="Ocupado" class="ml-2">lock</mat-icon>
+        <div class="option-peluquero">
+
+          <!-- IZQUIERDA: avatar + nombre -->
+          <div class="peluquero-info">
+
+            <img [src]="p.foto || 'assets/img/default-avatar.png'" class="avatar-peluquero" />
+
+            <span class="nombre-peluquero">
+              {{ p?.nombre || 'Sin nombre' }}
+            </span>
+
+          </div>
+
+          <!-- DERECHA: estado -->
+          <mat-icon *ngIf="p?.ocupado" color="warn" matTooltip="Ocupado" class="icon-estado">
+            lock
+          </mat-icon>
+
+        </div>
       </mat-option>
+
     </mat-select>
+
     <mat-error *ngIf="reservarForm.get('peluquero')?.hasError('required')">
       El peluquero es obligatorio
     </mat-error>

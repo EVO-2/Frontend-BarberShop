@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ServicioCardDialogComponent } from 'src/app/shared/components/servicio-card-dialog/servicio-card-dialog.component';
+import { environment } from 'src/environments/environment';
 
 interface PeluqueroDropdownItem {
   _id: string;
@@ -13,6 +14,7 @@ interface PeluqueroDropdownItem {
   puestoId: string;
   puestoNombre: string;
   ocupado: boolean;
+  foto?: string;
 }
 
 @Component({
@@ -35,6 +37,8 @@ export class ReservarCitaComponent implements OnInit {
   puestos: any[] = [];
   peluquerosFiltrados: any[] = [];
   peluquerosDropdown: PeluqueroDropdownItem[] = [];
+
+  fotoPeluqueroSeleccionado: string = 'assets/img/default-avatar.png';
 
   fechaHoraInvalida = false;
   loading = false;
@@ -73,7 +77,7 @@ export class ReservarCitaComponent implements OnInit {
     this.rolUsuario = this.usuarioLogueado?.rol || '';
     this.esAdmin = this.rolUsuario === 'admin';
 
-    // 🔥 Leer query param
+
     this.route.queryParams.subscribe((params: any) => {
       this.servicioIdFromQuery = params['servicioId'] || null;
     });
@@ -167,7 +171,6 @@ export class ReservarCitaComponent implements OnInit {
       }
     });
 
-    // 🔥 AQUÍ SE HACE LA SELECCIÓN AUTOMÁTICA LIMPIA
     this.reservaService.getServicios().subscribe({
       next: res => {
         this.servicios = Array.isArray(res.data) ? res.data : res;
@@ -194,7 +197,7 @@ export class ReservarCitaComponent implements OnInit {
     });
   }
 
-  // 🔥 NUEVO MÉTODO LIMPIO
+
   private seleccionarServicioAutomaticamente(servicioId: string): void {
 
     const current: string[] = Array.isArray(this.serviciosArray.value)
@@ -239,7 +242,8 @@ export class ReservarCitaComponent implements OnInit {
             nombre: p.__nombreCalc,
             puestoId,
             puestoNombre,
-            ocupado: false
+            ocupado: false,
+            foto: this.getFotoUrl(p?.usuario?.foto || p?.foto)
           };
         });
 
@@ -258,6 +262,26 @@ export class ReservarCitaComponent implements OnInit {
 
     this.ctrl('puestoTrabajo')?.setValue(pel.puestoId);
     this.puestoSeleccionado = { _id: pel.puestoId, nombre: pel.puestoNombre };
+    this.fotoPeluqueroSeleccionado =
+      pel.foto && pel.foto.trim() !== ''
+        ? pel.foto
+        : 'assets/img/default-avatar.png';
+  }
+
+  getFotoUrl(fotoStr: string | undefined): string {
+    if (!fotoStr || fotoStr.trim() === '') {
+      return '';
+    }
+    // Si ya viene con http (por si acaso), lo retornamos igual
+    if (fotoStr.startsWith('http')) {
+      return fotoStr;
+    }
+    return `${environment.baseUrl}/uploads/${fotoStr}`;
+  }
+
+  getSelectedPeluquero() {
+    const id = this.ctrl('peluquero')?.value;
+    return this.peluquerosDropdown.find(p => p._id === id);
   }
 
   validarFechaHoraYActualizarOcupacion(): void {

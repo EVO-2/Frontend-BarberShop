@@ -50,21 +50,9 @@ export class DashboardComponent implements OnInit {
 
   displayedColumns: string[] = ['cliente', 'servicio', 'sede', 'fecha', 'estado'];
 
-  /* ================================
-     🏢 SEDE SELECCIONADA
-  ================================ */
-
   sedeSeleccionada: string | null = null;
 
-  /* ================================
-     LISTA DE SEDES
-  ================================ */
-
   sedes: any[] = [];
-
-  /* ================================
-     MAPA DÍAS SEMANA
-  ================================ */
 
   diasSemanaMap: { [key: number]: string } = {
     1: 'Dom',
@@ -84,17 +72,46 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // Obtener sede guardada
     this.sedeSeleccionada = localStorage.getItem('sedeSeleccionada');
 
-    // Cargar sedes
     this.cargarSedes();
 
-    // Si existe sede cargar dashboard
     if (this.sedeSeleccionada) {
       this.cargarResumen();
     }
 
+  }
+
+  /* ================================
+     🔥 KPI: PELUQUERO TOP
+  ================================ */
+
+  get peluqueroTopNombre(): string {
+    return this.resumen?.peluqueroTop?.nombre || '—';
+  }
+
+  get peluqueroTopServicios(): number {
+    return this.resumen?.peluqueroTop?.totalServicios || 0;
+  }
+
+  get existePeluqueroTop(): boolean {
+    return !!this.resumen?.peluqueroTop;
+  }
+
+  /* ================================
+     🔥 KPI: CLIENTE TOP (NUEVO)
+  ================================ */
+
+  get clienteTopNombre(): string {
+    return this.resumen?.clienteTop?.nombre || '—';
+  }
+
+  get clienteTopServicios(): number {
+    return this.resumen?.clienteTop?.totalServicios || 0;
+  }
+
+  get existeClienteTop(): boolean {
+    return !!this.resumen?.clienteTop;
   }
 
   /* ================================
@@ -118,10 +135,8 @@ export class DashboardComponent implements OnInit {
           this.loading = false;
 
           setTimeout(() => {
-
             this.crearGraficoIngresos();
             this.crearGraficoEstados();
-
           }, 0);
 
         },
@@ -160,6 +175,7 @@ export class DashboardComponent implements OnInit {
     this.cargarResumen();
 
   }
+
   /* ================================
      📊 GRÁFICO INGRESOS
   ================================ */
@@ -191,9 +207,7 @@ export class DashboardComponent implements OnInit {
       type: 'line',
 
       data: {
-
         labels,
-
         datasets: [
           {
             label: 'Ingresos semana actual',
@@ -203,21 +217,16 @@ export class DashboardComponent implements OnInit {
             fill: true
           }
         ]
-
       },
 
       options: {
-
         responsive: true,
         maintainAspectRatio: false,
-
         animation: {
           duration: 1200,
           easing: 'easeOutQuart'
         },
-
         plugins: {
-
           tooltip: {
             backgroundColor: '#111827',
             padding: 12,
@@ -227,13 +236,10 @@ export class DashboardComponent implements OnInit {
                 `$${Number(context.raw).toLocaleString()}`
             }
           },
-
           legend: {
             display: false
           }
-
         }
-
       }
 
     });
@@ -241,7 +247,7 @@ export class DashboardComponent implements OnInit {
   }
 
   /* ================================
-     📈 GRÁFICO ESTADOS CITAS
+     📈 GRÁFICO ESTADOS
   ================================ */
 
   crearGraficoEstados(): void {
@@ -276,36 +282,26 @@ export class DashboardComponent implements OnInit {
       },
 
       options: {
-
         responsive: true,
         maintainAspectRatio: false,
-
         animation: {
           animateScale: true,
           duration: 1000
         },
-
         plugins: {
-
           tooltip: {
-
             backgroundColor: '#111827',
             padding: 12,
             cornerRadius: 8,
-
             callbacks: {
               label: (context) =>
                 `${context.label}: ${context.raw} citas`
             }
-
           },
-
           legend: {
             position: 'bottom'
           }
-
         }
-
       }
 
     });
@@ -342,10 +338,8 @@ export class DashboardComponent implements OnInit {
     return this.variacionSemana >= 0;
   }
 
-
-
   /* ================================
-     MÉTODOS AUXILIARES
+     AUXILIARES
   ================================ */
 
   obtenerServiciosTexto(servicios: any[]): string {
@@ -375,15 +369,11 @@ export class DashboardComponent implements OnInit {
 
           this.sedes = data;
 
-          // Si hay sede seleccionada buscar su nombre
           if (this.sedeSeleccionada) {
-
             const sede = this.sedes.find(s => s._id === this.sedeSeleccionada);
             this.nombreSede = sede?.nombre || '';
-
           }
 
-          // Si no hay sede seleccionada usar la primera
           if (!this.sedeSeleccionada && this.sedes.length > 0) {
 
             this.sedeSeleccionada = this.sedes[0]._id;
@@ -411,4 +401,3 @@ export class DashboardComponent implements OnInit {
   }
 
 }
-

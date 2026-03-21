@@ -4,13 +4,10 @@
     <div class="header">
 
         <div class="header-left">
-
             <h1>Dashboard</h1>
-
             <p class="subtitle">
                 {{ nombreSede }} • Resumen operativo
             </p>
-
         </div>
 
         <div class="header-right">
@@ -30,10 +27,8 @@
             </mat-form-field>
 
             <button mat-raised-button color="primary" (click)="cargarResumen()">
-
                 <mat-icon>refresh</mat-icon>
                 Actualizar
-
             </button>
 
         </div>
@@ -47,7 +42,6 @@
     <div *ngIf="error" class="error-state">
 
         <mat-icon>error</mat-icon>
-
         <p>Error cargando el resumen</p>
 
         <button mat-raised-button color="primary" (click)="cargarResumen()">
@@ -62,8 +56,8 @@
         <!-- ================= KPI ================= -->
         <div class="kpi-grid" *ngIf="!loading">
 
+            <!-- CLIENTES -->
             <mat-card class="kpi-card primary">
-
                 <div class="kpi-header">
                     <div class="kpi-icon">
                         <mat-icon>groups</mat-icon>
@@ -76,12 +70,10 @@
                         {{ data.totalClientes }}
                     </div>
                 </div>
-
             </mat-card>
 
-
+            <!-- CITAS -->
             <mat-card class="kpi-card success">
-
                 <div class="kpi-header">
                     <div class="kpi-icon">
                         <mat-icon>event</mat-icon>
@@ -94,12 +86,10 @@
                         {{ data.citasHoy }}
                     </div>
                 </div>
-
             </mat-card>
 
-
+            <!-- INGRESOS -->
             <mat-card class="kpi-card warning">
-
                 <div class="kpi-header">
                     <div class="kpi-icon">
                         <mat-icon>payments</mat-icon>
@@ -112,12 +102,10 @@
                         ${{ data.ingresosHoy | number }}
                     </div>
                 </div>
-
             </mat-card>
 
-
+            <!-- PELUQUEROS -->
             <mat-card class="kpi-card dark">
-
                 <div class="kpi-header">
                     <div class="kpi-icon">
                         <mat-icon>content_cut</mat-icon>
@@ -129,6 +117,53 @@
                     <div class="kpi-value">
                         {{ data.peluquerosActivos }}
                     </div>
+                </div>
+            </mat-card>
+
+            <!-- TOP PELUQUERO -->
+            <mat-card class="kpi-card accent" *ngIf="existePeluqueroTop">
+
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <mat-icon>emoji_events</mat-icon>
+                    </div>
+                    <span class="kpi-title">Top Peluquero</span>
+                </div>
+
+                <div class="kpi-body">
+
+                    <div class="kpi-value">
+                        {{ peluqueroTopNombre }}
+                    </div>
+
+                    <div class="kpi-subvalue">
+                        {{ peluqueroTopServicios }} servicios 🔥
+                    </div>
+
+                </div>
+
+            </mat-card>
+
+            <!-- 🔥 CLIENTE TOP -->
+            <mat-card class="kpi-card accent" *ngIf="existeClienteTop">
+
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <mat-icon>star</mat-icon>
+                    </div>
+                    <span class="kpi-title">Cliente Top</span>
+                </div>
+
+                <div class="kpi-body">
+
+                    <div class="kpi-value">
+                        {{ clienteTopNombre }}
+                    </div>
+
+                    <div class="kpi-subvalue">
+                        {{ clienteTopServicios }} servicios 💎
+                    </div>
+
                 </div>
 
             </mat-card>
@@ -166,15 +201,13 @@
 
         </div>
 
-        <!-- ================= SERVICIOS MAS PRESTADOS ================= -->
+        <!-- ================= SERVICIOS ================= -->
 
         <div class="services-section" *ngIf="!loading && data.serviciosTop?.length">
 
             <div class="section-header">
-
                 <mat-icon>bar_chart</mat-icon>
                 <h2>Servicios más prestados</h2>
-
             </div>
 
             <div class="services-grid">
@@ -207,15 +240,13 @@
 
         </div>
 
-        <!-- ================= ULTIMAS CITAS ================= -->
+        <!-- ================= TABLA ================= -->
 
         <div class="table-section">
 
             <div class="section-header">
-
                 <mat-icon>schedule</mat-icon>
                 <h2>Últimas citas registradas</h2>
-
             </div>
 
             <div class="table-card desktop-view">
@@ -265,50 +296,6 @@
                 </table>
 
             </div>
-
-        </div>
-
-        <!-- ================= MOBILE ================= -->
-
-        <div class="mobile-view" *ngIf="data.ultimasCitas.length > 0">
-
-            <mat-card class="cita-card" *ngFor="let cita of data.ultimasCitas">
-
-                <div class="cita-header">
-
-                    <div>
-
-                        <div class="cita-title">
-                            {{ cita?.cliente?.usuario?.nombre }}
-                        </div>
-
-                        <div class="cita-subtitle">
-                            {{ cita?.peluquero?.usuario?.nombre }}
-                        </div>
-
-                    </div>
-
-                    <span class="status-badge" [ngClass]="cita.estado">
-                        {{ cita.estado }}
-                    </span>
-
-                </div>
-
-                <div class="cita-date">
-                    {{ cita.fecha | date:'fullDate' }}
-                </div>
-
-            </mat-card>
-
-        </div>
-
-        <!-- ================= EMPTY ================= -->
-
-        <div *ngIf="!loading && data.ultimasCitas.length === 0" class="empty-state-global">
-
-            <mat-icon>event_busy</mat-icon>
-
-            <p>No hay citas recientes</p>
 
         </div>
 

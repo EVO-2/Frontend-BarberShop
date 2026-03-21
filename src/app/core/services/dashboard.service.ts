@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-
 export interface DashboardResumen {
     totalClientes: number;
     citasHoy: number;
@@ -32,6 +31,17 @@ export interface DashboardResumen {
         nombre: string;
         total: number;
     }[];
+
+    peluqueroTop: {
+        nombre: string;
+        totalServicios: number;
+    } | null;
+
+    // 🔥 NUEVO KPI: CLIENTE TOP
+    clienteTop: {
+        nombre: string;
+        totalServicios: number;
+    } | null;
 }
 
 @Injectable({
@@ -39,7 +49,7 @@ export interface DashboardResumen {
 })
 export class DashboardService {
 
-    // 🔹 Se apunta al endpoint correcto del backend
+    // 🔹 Endpoint backend
     private apiUrl = `${environment.apiUrl}/dashboard/resumen`;
 
     constructor(private http: HttpClient) { }

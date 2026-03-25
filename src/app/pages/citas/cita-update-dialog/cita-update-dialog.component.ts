@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, FormControl, AbstractControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ReservaService, ReprogramarCitaPayload } from 'src/app/shared/services/reserva.service';
 import { PeluqueroService } from 'src/app/core/services/peluquero.service';
@@ -24,6 +24,12 @@ export class CitaUpdateDialogComponent implements OnInit {
   fechaHoraInvalida = false;
   rolUsuario: string = '';
 
+  fechaMinima: Date = new Date();
+  horasDisponibles: string[] = [];
+  horaApertura = 9;
+  horaCierre = 19;
+  intervaloMinutos = 30;
+
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CitaUpdateDialogComponent>,
@@ -45,7 +51,20 @@ export class CitaUpdateDialogComponent implements OnInit {
       this.onSedeChange(this.cita.sede._id, true);
     }
 
-    this.citaForm.get('fecha')?.valueChanges.subscribe(() => this.validarDisponibilidad());
+    this.generarHorasDisponibles();
+
+    this.ctrl('fecha')?.valueChanges.subscribe(() => {
+      this.generarHorasDisponibles();
+      this.validarFechaHoraYActualizarOcupacion();
+    });
+
+    this.ctrl('hora')?.valueChanges.subscribe(() => {
+      this.validarFechaHoraYActualizarOcupacion();
+    });
+  }
+
+  private ctrl(name: string): AbstractControl | null {
+    return this.citaForm.get(name);
   }
 
   get serviciosArray(): FormArray {
@@ -58,11 +77,20 @@ export class CitaUpdateDialogComponent implements OnInit {
 
   private initForm(): void {
     const fechaObj = new Date(this.cita?.fecha || new Date());
-    const offsetMs = fechaObj.getTimezoneOffset() * 60 * 1000;
-    const fechaLocal = new Date(fechaObj.getTime() - offsetMs).toISOString().slice(0, 16);
+    
+    // Redondear los minutos a 00 o 30 para que coincida con las horas disponibles
+    let h = fechaObj.getHours();
+    let m = fechaObj.getMinutes();
+    if (m < 15) { m = 0; }
+    else if (m < 45) { m = 30; }
+    else { m = 0; h += 1; }
+    if (h >= 24) h = 0;
+    
+    const horaLocal = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 
     this.citaForm = this.fb.group({
-      fecha: [fechaLocal, Validators.required],
+      fecha: [fechaObj, Validators.required],
+      hora: [horaLocal, Validators.required],
       sede: new FormControl({ value: this.cita?.sede?._id || null, disabled: true }),
       peluquero: new FormControl({ value: this.cita?.peluquero?._id || null, disabled: true }),
       puestoTrabajoId: new FormControl({ value: this.cita?.puestoTrabajo?._id || null, disabled: true }),
@@ -84,7 +112,8 @@ export class CitaUpdateDialogComponent implements OnInit {
         this.servicios = res || [];
         const controls = this.servicios.map(s => {
           const selected = this.cita?.servicios?.some((cs: any) => cs._id === s._id) || false;
-          return new FormControl({ value: selected, disabled: false });
+          const canEdit = this.esEditable() && this.rolUsuario !== 'cliente';
+          return new FormControl({ value: selected, disabled: !canEdit });
         });
         this.citaForm.setControl('servicios', new FormArray(controls));
       },
@@ -129,7 +158,7 @@ export class CitaUpdateDialogComponent implements OnInit {
       this.puestosTrabajo = [];
       this.citaForm.patchValue({ puestoTrabajoId: null });
     }
-    this.validarDisponibilidad();
+    this.validarFechaHoraYActualizarOcupacion();
   }
 
   esEditable(): boolean {
@@ -138,31 +167,56 @@ export class CitaUpdateDialogComponent implements OnInit {
     return this.cita?.estado === 'pendiente' && (fechaCita.getTime() - now.getTime()) >= 3600000;
   }
 
-  validarDisponibilidad() {
-    if (this.rolUsuario === 'cliente') return;
+  validarFechaHoraYActualizarOcupacion(): void {
+    let fecha = this.ctrl('fecha')?.value;
+    let hora = this.ctrl('hora')?.value;
+    let sedeId = this.citaForm.getRawValue().sede;
 
-    const sedeId = this.citaForm.getRawValue().sede;
-    const fechaHora = this.citaForm.value.fecha;
-    const peluqueroId = this.citaForm.getRawValue().peluquero;
+    if (!fecha || !hora || !sedeId) {
+      this.fechaHoraInvalida = false;
+      return;
+    }
 
-    if (!sedeId || !fechaHora) return;
+    const fechaSeleccionada = this.combinarFechaHora(fecha, hora);
+    // 🔒 Bloquear horas pasadas del mismo día (solo si se está editando una cita futura)
+    if (this.esEditable() && this.esHoraPasadaHoy(fecha, hora)) {
+      this.fechaHoraInvalida = true;
+      return;
+    }
 
-    const fechaUtc = new Date(fechaHora).toISOString();
-    const fechaInicio = new Date(new Date(fechaUtc).getTime() - 45 * 60 * 1000).toISOString(); 
-    const fechaFin = new Date(new Date(fechaUtc).getTime() + 45 * 60 * 1000).toISOString();   
+    this.reservaService.getCitasPorFechaYHora(sedeId, fechaSeleccionada.toISOString()).subscribe({
+      next: (res: any) => {
+        const citasArray: any[] = Array.isArray(res.data) ? res.data : res;
 
-    this.reservaService.getCitasPorRango(sedeId, fechaInicio, fechaFin).subscribe({
-      next: (citas: any[]) => {
-        const ocupados = new Set((citas || []).filter(c => c._id !== this.cita?._id).map(c => c.peluquero._id));
+        // Skip the current cita being edited
+        const citasActivas = citasArray.filter((c: any) => c.estado !== 'cancelada' && c._id !== this.cita?._id);
 
-        this.peluquerosDropdown = this.peluqueros.map(p => ({
-          _id: p._id,
-          nombre: p.nombre || p.usuario?.nombre || 'Sin nombre',
-          puestoTrabajo: p.puestoTrabajo,
-          ocupado: ocupados.has(p._id)
-        }));
+        const idsOcupados = new Set<string>();
 
-        this.fechaHoraInvalida = peluqueroId && ocupados.has(peluqueroId);
+        citasActivas.forEach((c: any) => {
+          const inicioCita = new Date(c.fecha);
+          const duracion = (c.servicios || []).reduce((t: number, sId: string) => {
+            const s = this.servicios.find(sv => sv._id === sId);
+            return t + (s?.duracion || 30);
+          }, 0);
+          const fin = new Date(inicioCita.getTime() + duracion * 60000);
+
+          if (fechaSeleccionada < fin && new Date(fechaSeleccionada.getTime() + 60 * 60000) > inicioCita) {
+            idsOcupados.add(this.extractId(c.peluquero) || '');
+          }
+        });
+
+        if (this.rolUsuario !== 'cliente') {
+          this.peluquerosDropdown = this.peluqueros.map(p => ({
+            _id: p._id,
+            nombre: p.nombre || p.usuario?.nombre || 'Sin nombre',
+            puestoTrabajo: p.puestoTrabajo,
+            ocupado: idsOcupados.has(p._id)
+          }));
+        }
+
+        const pelSel = this.citaForm.getRawValue().peluquero;
+        this.fechaHoraInvalida = !!(pelSel && idsOcupados.has(pelSel));
       },
       error: () => {}
     });
@@ -179,9 +233,14 @@ export class CitaUpdateDialogComponent implements OnInit {
 
     this.guardando = true;
     const rawValues = this.citaForm.getRawValue();
-    const fechaObj = new Date(rawValues.fecha);
-    const fechaIso = fechaObj.toISOString();
-    const hora = fechaObj.toISOString().split('T')[1].slice(0, 5);
+    const fechaBase = this.combinarFechaHora(rawValues.fecha, rawValues.hora);
+    const fechaIso = fechaBase.toISOString();
+    const hora = rawValues.hora;
+
+    // Obtener servicios seleccionados
+    const serviciosSeleccionados = this.servicios
+      .filter((_, i) => rawValues.servicios[i])
+      .map(s => s._id);
 
     let request$;
     if (this.rolUsuario === 'cliente') {
@@ -195,7 +254,8 @@ export class CitaUpdateDialogComponent implements OnInit {
         this.cita._id,
         fechaIso,
         hora,
-        rawValues.observaciones || ''
+        rawValues.observaciones || '',
+        serviciosSeleccionados
       );
     }
 
@@ -204,6 +264,77 @@ export class CitaUpdateDialogComponent implements OnInit {
       error: () => this.guardando = false,
       complete: () => this.guardando = false
     });
+  }
+
+  private esHoraPasadaHoy(fecha: Date, hora: string): boolean {
+    const hoy = new Date();
+    const esHoy =
+      fecha.getFullYear() === hoy.getFullYear() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getDate() === hoy.getDate();
+
+    if (!esHoy) return false;
+
+    const [h, m] = hora.split(':').map(Number);
+    const horaSeleccionada = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate(),
+      h,
+      m,
+      0
+    );
+
+    return horaSeleccionada <= hoy;
+  }
+
+  private generarHorasDisponibles(): void {
+    const fecha = this.ctrl('fecha')?.value;
+    if (!fecha) {
+      this.horasDisponibles = [];
+      return;
+    }
+
+    const hoy = new Date();
+    const esHoy =
+      fecha.getFullYear() === hoy.getFullYear() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getDate() === hoy.getDate();
+
+    const horas: string[] = [];
+
+    for (let h = this.horaApertura; h < this.horaCierre; h++) {
+      for (let m = 0; m < 60; m += this.intervaloMinutos) {
+        const horaStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+
+        if (esHoy) {
+          const ahora = new Date();
+          const horaCita = this.combinarFechaHora(fecha, horaStr);
+          if (horaCita <= ahora) {
+            continue;
+          }
+        }
+        horas.push(horaStr);
+      }
+    }
+    this.horasDisponibles = horas;
+  }
+
+  private combinarFechaHora(fecha: any, hora: string): Date {
+    try {
+      const [h, m] = hora.split(':').map(Number);
+      const f = new Date(fecha);
+      return new Date(f.getFullYear(), f.getMonth(), f.getDate(), h, m, 0);
+    } catch {
+      return new Date(NaN);
+    }
+  }
+
+  private extractId(val: any): string | null {
+    if (!val) return null;
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object' && val._id) return val._id;
+    return null;
   }
 
   compareById(a: any, b: any): boolean {

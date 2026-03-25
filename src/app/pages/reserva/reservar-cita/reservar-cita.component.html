@@ -86,7 +86,7 @@
     <mat-label>Fecha</mat-label>
 
     <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="fechaMinima"
-      (dateChange)="validarFechaHoraYActualizarOcupacion()">
+      readonly (click)="picker.open()" (dateChange)="validarFechaHoraYActualizarOcupacion()">
 
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>

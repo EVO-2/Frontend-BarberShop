@@ -10,10 +10,40 @@
   <mat-dialog-content class="dialog-content">
     <div class="form-grid">
 
-      <!-- Fecha y hora -->
+      <!-- Fecha -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Fecha y hora</mat-label>
-        <input matInput type="datetime-local" formControlName="fecha" [readonly]="!esEditable()">
+        <mat-label>Fecha</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="fechaMinima"
+          readonly (click)="esEditable() ? picker.open() : null" (dateChange)="validarFechaHoraYActualizarOcupacion()">
+        <mat-datepicker-toggle matSuffix [for]="picker" [disabled]="!esEditable()"></mat-datepicker-toggle>
+        <mat-datepicker #picker [disabled]="!esEditable()"></mat-datepicker>
+
+        <mat-error *ngIf="citaForm.get('fecha')?.hasError('required')">
+          La fecha es obligatoria
+        </mat-error>
+
+        <mat-error *ngIf="fechaHoraInvalida">
+          La fecha u hora seleccionada ya está ocupada
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Hora -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Hora</mat-label>
+        <mat-select formControlName="hora" [disabled]="!esEditable()"
+          (selectionChange)="validarFechaHoraYActualizarOcupacion()">
+          <mat-option *ngFor="let h of horasDisponibles" [value]="h">
+            {{ h }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="citaForm.get('hora')?.hasError('required')">
+          La hora es obligatoria
+        </mat-error>
+
+        <mat-error *ngIf="fechaHoraInvalida">
+          La hora seleccionada ya está ocupada en esta sede
+        </mat-error>
       </mat-form-field>
 
       <!-- Sede (readonly) -->
@@ -26,7 +56,7 @@
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Peluquero</mat-label>
         <mat-select formControlName="peluquero" [disabled]="true" [compareWith]="compareById">
-          <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id">
+          <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id" [disabled]="p?.ocupado">
             {{ p.nombre }}
           </mat-option>
         </mat-select>
@@ -53,14 +83,13 @@
         </textarea>
       </mat-form-field>
 
-      <!-- Servicios (readonly) -->
+      <!-- Servicios -->
       <div class="servicios-section" *ngIf="servicios.length">
         <label class="section-label">Servicios:</label>
         <div class="checkbox-grid">
           <mat-checkbox
             *ngFor="let s of servicios; let i = index"
-            [formControl]="serviciosFormControls[i]"
-            [disabled]="true">
+            [formControl]="serviciosFormControls[i]">
             {{ s.nombre }}
           </mat-checkbox>
         </div>

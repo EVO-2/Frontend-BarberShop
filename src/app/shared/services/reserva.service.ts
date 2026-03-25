@@ -82,8 +82,11 @@ export class ReservaService {
     return this.http.get<any>(`${this.apiUrl}/rango`, { params });
   }
 
-  actualizarCita(id: string, fecha: string, hora: string, observaciones?: string): Observable<any> {
-    const payload = { fecha, hora, observaciones };
+  actualizarCita(id: string, fecha: string, hora: string, observaciones?: string, servicios?: string[]): Observable<any> {
+    const payload: any = { fecha, hora, observaciones };
+    if (servicios && servicios.length > 0) {
+      payload.servicios = servicios;
+    }
     return this.http.put(`${this.apiUrl}/citas/${id}`, payload);
   }
 

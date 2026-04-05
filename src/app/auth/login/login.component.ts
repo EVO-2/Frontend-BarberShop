@@ -156,6 +156,7 @@ export class LoginComponent {
         break;
 
       case 'barbero':
+      case 'manicurista':
         this.router.navigate(['/gestionar-citas']);
         break;
 

@@ -88,13 +88,13 @@ const routes: Routes = [
         path: 'mis-citas',
         component: MisCitasComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['cliente', 'barbero', 'admin'] }
+        data: { roles: ['cliente', 'barbero', 'manicurista', 'admin'] }
       },
       {
         path: 'gestionar-citas',
         component: GestionarCitasComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['barbero', 'admin'] }
+        data: { roles: ['barbero', 'manicurista', 'admin'] }
       },
       {
         path: 'reportes/ingresos',

@@ -169,6 +169,13 @@ export class AuthService {
 
   refrescarUsuario(): void {
 
+    const token = this.getToken();
+
+    if (!token) {
+      console.warn('⚠️ No hay token, no se puede refrescar usuario');
+      return;
+    }
+
     this.http.get<any>(this.perfilUrl).subscribe({
 
       next: (resp) => {
@@ -188,8 +195,14 @@ export class AuthService {
 
       },
 
-      error: (error) =>
-        console.error('❌ Error al refrescar usuario:', error)
+      error: (error) => {
+        console.error('❌ Error al refrescar usuario:', error);
+
+        // 🔥 opcional pero PRO
+        if (error.status === 401) {
+          this.cerrarSesion(); // token inválido o expirado
+        }
+      }
 
     });
   }

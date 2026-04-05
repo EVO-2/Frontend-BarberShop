@@ -8,31 +8,44 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../auth/auth.service'; 
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
     const token = this.authService.getToken();
     let authReq = req;
 
+    // 🔐 Agregar token si existe
     if (token) {
       authReq = req.clone({
-        headers: req.headers.set('Authorization', `Bearer ${token}`)
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
       });
     }
 
     return next.handle(authReq).pipe(
+
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          // Token expirado o inválido → redirige al login
+
+        // 🔥 CONTROL INTELIGENTE DE 401
+        // Evita logout en login y en carga inicial de perfil
+        if (
+          error.status === 401 &&
+          !req.url.includes('/auth/login') &&
+          !req.url.includes('/usuarios/perfil')
+        ) {
           this.authService.logout();
         }
+
         return throwError(() => error);
       })
+
     );
   }
 }

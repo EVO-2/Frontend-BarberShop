@@ -42,16 +42,16 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
           const rolNombre = usuario.rol?.nombre || '';
 
           const esCliente = rolNombre === 'cliente';
-          const esBarbero = rolNombre === 'barbero';
+          const esPeluquero = rolNombre === 'barbero' || rolNombre === 'manicurista' || rolNombre === 'peluquero';
 
           return {
             ...usuario,
             telefono: esCliente ? usuario.detalles?.telefono : usuario.detalles?.telefono_profesional,
             direccion: esCliente ? usuario.detalles?.direccion : usuario.detalles?.direccion_profesional,
             genero: usuario.detalles?.genero || '',
-            especialidades: esBarbero ? usuario.detalles?.especialidades?.join(', ') : '',
-            sede: esBarbero ? usuario.detalles?.sede?.nombre : '',
-            puestoTrabajo: esBarbero ? usuario.detalles?.puestoTrabajo?.nombre : '',
+            especialidades: esPeluquero ? usuario.detalles?.especialidades?.join(', ') : '',
+            sede: esPeluquero ? usuario.detalles?.sede?.nombre : '',
+            puestoTrabajo: esPeluquero ? usuario.detalles?.puestoTrabajo?.nombre : '',
           };
         });
 

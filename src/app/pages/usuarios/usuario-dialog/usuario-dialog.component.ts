@@ -60,7 +60,7 @@ export class UsuarioDialogComponent implements OnInit {
       this.toggleCamposExtendidos(nombreRol);
 
       const puestoCtrl = this.usuarioForm.get('puestoTrabajo');
-      if (nombreRol === 'barbero') {
+      if (nombreRol === 'barbero' || nombreRol === 'manicurista') {
         puestoCtrl?.setValidators([Validators.required]);
         puestoCtrl?.valueChanges.subscribe((puestoId) => {
           if (puestoId) {
@@ -202,7 +202,7 @@ export class UsuarioDialogComponent implements OnInit {
 
   toggleCamposExtendidos(nombreRol: string): void {
     this.mostrarCamposCliente = nombreRol === 'cliente';
-    this.mostrarCamposPeluquero = nombreRol === 'barbero';
+    this.mostrarCamposPeluquero = nombreRol === 'barbero' || nombreRol === 'manicurista';
   }
 
   getNombrePuestoSeleccionado(): string {

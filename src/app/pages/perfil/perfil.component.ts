@@ -41,7 +41,7 @@ export class PerfilComponent implements OnInit {
 
     this.rol = (this.usuario.rol && this.usuario.rol.nombre) ? this.usuario.rol.nombre : this.usuario.rol || '';
     this.esCliente = this.rol === 'cliente';
-    this.esPeluquero = this.rol === 'peluquero' || this.rol === 'barbero';
+    this.esPeluquero = this.rol === 'peluquero' || this.rol === 'barbero' || this.rol === 'manicurista';
     this.fotoPerfilUrl = this.obtenerFotoUrl(this.usuario.foto);
 
     this.inicializarFormulario();
@@ -106,7 +106,7 @@ export class PerfilComponent implements OnInit {
           });
         }
 
-        if (resp.tipo === 'barbero' || resp.tipo === 'peluquero') {
+        if (resp.tipo === 'barbero' || resp.tipo === 'peluquero' || resp.tipo === 'manicurista') {
           this.esPeluquero = true;
           this.perfilForm.patchValue({
             telefono_profesional: datosPeluquero.telefono_profesional || '',

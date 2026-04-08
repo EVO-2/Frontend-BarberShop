@@ -28,44 +28,39 @@
 
   <!-- Peluquero -->
   <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Peluquero</mat-label>
+    <mat-label>{{ getLabelPeluquero() }}</mat-label>
 
     <mat-select formControlName="peluquero" (selectionChange)="onPeluqueroChange($event.value)">
 
-      <!-- TRIGGER PARA MOSTRAR FOTO Y NOMBRE CUANDO ESTÁ SELECCIONADO -->
+      <!-- TRIGGER: Mostrar foto, nombre y rol del peluquero seleccionado -->
       <mat-select-trigger>
         <div class="peluquero-info" *ngIf="getSelectedPeluquero() as selectedP">
           <img [src]="selectedP.foto || 'assets/img/default-avatar.png'" class="avatar-peluquero" />
-          <span class="nombre-peluquero">{{ selectedP.nombre || 'Sin nombre' }}</span>
+          <div class="nombre-rol">
+            <span class="nombre-peluquero">{{ selectedP.nombre || 'Sin nombre' }}</span>
+            <span class="rol-peluquero" *ngIf="selectedP.rol">({{ selectedP.rol }})</span>
+          </div>
         </div>
       </mat-select-trigger>
 
+      <!-- Opciones del dropdown -->
       <mat-option *ngFor="let p of peluquerosDropdown" [value]="p._id" [disabled]="p?.ocupado">
         <div class="option-peluquero">
-
-          <!-- IZQUIERDA: avatar + nombre -->
           <div class="peluquero-info">
-
             <img [src]="p.foto || 'assets/img/default-avatar.png'" class="avatar-peluquero" />
-
-            <span class="nombre-peluquero">
-              {{ p?.nombre || 'Sin nombre' }}
-            </span>
-
+            <div class="nombre-rol">
+              <span class="nombre-peluquero">{{ p?.nombre || 'Sin nombre' }}</span>
+              <span class="rol-peluquero" *ngIf="p.rol">({{ p.rol }})</span>
+            </div>
           </div>
-
-          <!-- DERECHA: estado -->
-          <mat-icon *ngIf="p?.ocupado" color="warn" matTooltip="Ocupado" class="icon-estado">
-            lock
-          </mat-icon>
-
+          <mat-icon *ngIf="p?.ocupado" color="warn" matTooltip="Ocupado" class="icon-estado">lock</mat-icon>
         </div>
       </mat-option>
 
     </mat-select>
 
     <mat-error *ngIf="reservarForm.get('peluquero')?.hasError('required')">
-      El peluquero es obligatorio
+      El profesional es obligatorio
     </mat-error>
   </mat-form-field>
 
@@ -77,7 +72,6 @@
       El puesto de trabajo es obligatorio
     </mat-error>
   </mat-form-field>
-
   <!-- Campo oculto para enviar el _id -->
   <input type="hidden" formControlName="puestoTrabajo">
 
@@ -85,8 +79,8 @@
   <mat-form-field appearance="fill" class="full-width">
     <mat-label>Fecha</mat-label>
 
-    <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="fechaMinima"
-      readonly (click)="picker.open()" (dateChange)="validarFechaHoraYActualizarOcupacion()">
+    <input matInput [matDatepicker]="picker" formControlName="fecha" [min]="fechaMinima" readonly
+      (click)="picker.open()" (dateChange)="validarFechaHoraYActualizarOcupacion()">
 
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>

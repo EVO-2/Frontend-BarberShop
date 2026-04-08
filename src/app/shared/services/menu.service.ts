@@ -25,6 +25,7 @@ export class MenuService {
         { label: 'Puestos de Trabajo', ruta: '/puestos', icono: 'chair' },
         { label: 'Servicios', ruta: '/servicios-admin', icono: 'build' },
         { label: 'Equipos', ruta: '/equipos', icono: 'inventory_2' },
+        { label: 'Roles', ruta: '/roles', icono: 'admin_panel_settings' }
       ]
     }
 

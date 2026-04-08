@@ -62,6 +62,9 @@ export class ServiciosComponent implements OnInit {
       formData.append('duracion', resultado.duracion?.toString() || '0');
       formData.append('precio', resultado.precio?.toString() || '0');
       formData.append('estado', resultado.estado?.toString() || 'true');
+      if (resultado.asignadoA) {
+        formData.append('asignadoA', JSON.stringify(resultado.asignadoA));
+      }
 
       if (Array.isArray(resultado.imagenes) && resultado.imagenes.length > 0) {
         resultado.imagenes.forEach((file: File) => {
@@ -128,6 +131,9 @@ export class ServiciosComponent implements OnInit {
         formData.append('precio', resultado.precio);
         formData.append('duracion', resultado.duracion || '');
         formData.append('estado', resultado.estado);
+        if (resultado.asignadoA) {
+          formData.append('asignadoA', JSON.stringify(resultado.asignadoA));
+        }
 
         if (resultado.imagenesExistentes?.length) {
           resultado.imagenesExistentes.forEach((img: string) => {

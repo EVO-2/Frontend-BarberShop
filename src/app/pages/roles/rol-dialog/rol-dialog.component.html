@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>
+  <mat-icon color="primary">admin_panel_settings</mat-icon>
+  {{ editando ? 'Editar Rol' : 'Nuevo Rol' }}
+</h2>
+
+<mat-dialog-content>
+
+  <form [formGroup]="form" class="form">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre del rol</mat-label>
+      <input matInput formControlName="nombre" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput rows="3" formControlName="descripcion"></textarea>
+    </mat-form-field>
+
+    <!-- 🔥 AQUÍ IRÁN LOS PERMISOS (SIGUIENTE PASO) -->
+
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+
+  <button mat-button (click)="cerrar()">Cancelar</button>
+
+  <button mat-flat-button color="primary" (click)="guardar()">
+    {{ editando ? 'Actualizar' : 'Crear' }}
+  </button>
+
+</mat-dialog-actions>

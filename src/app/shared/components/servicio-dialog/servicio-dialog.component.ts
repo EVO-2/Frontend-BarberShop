@@ -46,6 +46,7 @@ export class ServicioDialogComponent implements OnInit {
       descripcion: ['', Validators.required],
       duracion: [0, [Validators.required, Validators.min(1)]],
       precio: [0, [Validators.required, Validators.min(1)]],
+      asignadoA: [['barbero'], Validators.required],
       estado: [true]
     });
   }
@@ -60,6 +61,7 @@ export class ServicioDialogComponent implements OnInit {
         descripcion: this.data.descripcion,
         duracion: this.data.duracion,
         precio: this.data.precio,
+        asignadoA: this.data.asignadoA?.length ? this.data.asignadoA : ['barbero'],
         estado: this.data.estado
       });
     }

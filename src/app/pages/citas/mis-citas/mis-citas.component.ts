@@ -31,6 +31,15 @@ export class MisCitasComponent implements OnInit {
 
   userRole: string = '';
 
+  displayedColumns: string[] = [
+    'fecha',
+    'turno',
+    'profesional',
+    'servicios',
+    'estado',
+    'acciones'
+  ];
+
   constructor(
     private citaService: CitaService,
     private dialog: MatDialog,

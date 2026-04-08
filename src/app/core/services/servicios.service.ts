@@ -13,6 +13,7 @@ export interface Servicio {
   imagenes?: string[];
   estado?: boolean;
   sede?: string; // 🔹 ahora soporta sede
+  asignadoA?: string[]; // 🔹 roles permitidos para este servicio
   createdAt?: string;
   updatedAt?: string;
 }

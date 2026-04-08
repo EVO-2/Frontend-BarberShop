@@ -1,0 +1,53 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 🔥 Asegura ancho completo */
+.full-width {
+    width: 80%;
+}
+
+/* 🔥 FIX PRINCIPAL: evita que el label se corte */
+mat-form-field {
+    width: 80%;
+}
+
+/* 🔥 Corrige altura del campo */
+::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 3px;
+}
+
+/* 🔥 Corrige el label flotante (problema del corte) */
+::ng-deep .mat-mdc-form-field-label {
+    line-height: 1.2;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 🔥 Cuando el label sube (focused) */
+::ng-deep .mdc-floating-label--float-above {
+    transform: translateY(-1.5em) scale(0.75) !important;
+}
+
+/* 🔥 Input más cómodo */
+::ng-deep .mat-mdc-input-element {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* 🎯 Header del dialog */
+mat-dialog-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+}
+
+/* 🔥 Responsive */
+@media (max-width: 600px) {
+    mat-dialog-title {
+        font-size: 16px;
+    }
+}

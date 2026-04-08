@@ -31,9 +31,11 @@ import { GestionarPuestosComponent } from './pages/gestionar-puestos/gestionar-p
 import { PuestoDialogComponent } from './shared/components/puesto-dialog/puesto-dialog.component';
 import { ServiciosComponent } from './pages/servicios/servicios.component';
 import { ServicioDialogComponent } from './shared/components/servicio-dialog/servicio-dialog.component';
-
-
 import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
+
+// ======= 🔐 Roles =======
+import { RolesComponent } from './pages/roles/roles.component';
+import { RolDialogComponent } from './pages/roles/rol-dialog/rol-dialog.component';
 
 // ======= Reportes =======
 import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
@@ -65,7 +67,14 @@ import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dial
     ServicioDialogComponent,
     ServiciosClienteComponent,
 
+    // 🔐 Roles
+    RolesComponent,
+    RolDialogComponent,
+
+    // 📊 Reportes
     ReporteIngresosComponent,
+
+    // 🖥️ Equipos
     ListadoEquiposComponent,
     MovimientosEquipoDialogComponent,
     EquipoDialogComponent

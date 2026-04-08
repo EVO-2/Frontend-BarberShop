@@ -42,6 +42,17 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Roles Permitidos</mat-label>
+      <mat-select formControlName="asignadoA" multiple>
+        <mat-option value="barbero">Barbero(a)</mat-option>
+        <mat-option value="manicurista">Manicurista</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('asignadoA')?.hasError('required')">
+        Debes asignar al menos un rol
+      </mat-error>
+    </mat-form-field>
+
     <mat-form-field appearance="outline" class="descripcion w-full md:col-span-2">
       <mat-label>Descripción del servicio</mat-label>
       <textarea

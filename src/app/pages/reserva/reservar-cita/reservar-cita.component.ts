@@ -15,6 +15,7 @@ interface PeluqueroDropdownItem {
   puestoNombre: string;
   ocupado: boolean;
   foto?: string;
+  rol?: string;
 }
 
 @Component({
@@ -98,7 +99,14 @@ export class ReservarCitaComponent implements OnInit {
     });
 
     this.ctrl('sede')?.valueChanges.subscribe(val => {
-      this.onSedeChange(val);
+      this.actualizarPeluquerosCompatibles(val);
+    });
+
+    this.ctrl('servicios')?.valueChanges.subscribe(() => {
+      const sedeSeleccionada = this.ctrl('sede')?.value;
+      if (sedeSeleccionada) {
+        this.actualizarPeluquerosCompatibles(sedeSeleccionada);
+      }
     });
   }
 
@@ -212,42 +220,106 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   onSedeChange(sedeId: string): void {
+    // Deprecated: Lógica movida a actualizarPeluquerosCompatibles
+  }
+
+  private actualizarPeluquerosCompatibles(sedeId: string): void {
+    const serviciosSeleccionadosIds = this.ctrl('servicios')?.value || [];
+
+    // Limpiar selects y arrays
     this.ctrl('peluquero')?.setValue('');
     this.ctrl('puestoTrabajo')?.setValue('');
-
     this.puestos = [];
     this.peluquerosFiltrados = [];
     this.peluquerosDropdown = [];
 
     if (!sedeId) return;
 
+    // Helper para normalizar roles
+    const normalizarRoles = (roles: any): string[] => {
+      if (!roles) return [];
+      if (!Array.isArray(roles)) roles = [roles];
+      return roles
+        .map((r: any) =>
+          String(r)
+            .replace(/[\[\]"]/g, '')
+            .toLowerCase()
+            .trim()
+        )
+        .filter((r: string) => r.length > 0);
+    };
+
+    // 1. Calcular roles requeridos según servicios seleccionados
+    const serviciosSeleccionados = this.servicios.filter(s =>
+      serviciosSeleccionadosIds.includes(s._id)
+    );
+
+    let rolesRequeridos: string[] = ['barbero', 'manicurista'];
+
+    if (serviciosSeleccionados.length > 0) {
+      rolesRequeridos = normalizarRoles(serviciosSeleccionados[0].asignadoA);
+      for (let i = 1; i < serviciosSeleccionados.length; i++) {
+        const rolesDeServicio = normalizarRoles(serviciosSeleccionados[i].asignadoA);
+        rolesRequeridos = rolesRequeridos.filter(r => rolesDeServicio.includes(r));
+      }
+
+      // Asegurar que al menos se muestre algo si rolesRequeridos queda vacío
+      if (rolesRequeridos.length === 0) {
+        rolesRequeridos = Array.from(
+          new Set(
+            this.peluquerosAll
+              .map(p => p?.usuario?.rol?.nombre?.toLowerCase())
+              .filter(Boolean)
+          )
+        );
+      }
+    }
+
+    // 2. Filtrar peluqueros por sede, rol y estado activo
     this.reservaService.getPuestosPorSede(sedeId).subscribe({
       next: res => {
         this.puestos = Array.isArray(res.data) ? res.data : res;
 
         this.peluquerosFiltrados = this.peluquerosAll.filter(p => {
           const sedePel = this.extractId(p?.sede);
+          const rolPel = (p?.usuario?.rol?.nombre || 'barbero').toLowerCase().trim();
           const activo = p?.estado !== false && p?.usuario?.estado !== false;
-          return activo && sedePel === sedeId;
+          return activo && sedePel === sedeId && rolesRequeridos.includes(rolPel);
         });
 
+        // 3. Mapear peluqueros filtrados al dropdown
         this.peluquerosDropdown = this.peluquerosFiltrados.map(p => {
           const puestoId = this.extractId(p?.puestoTrabajo) || '';
           const puestoNombre =
-            typeof p?.puestoTrabajo === 'object' ? p.puestoTrabajo?.nombre
+            typeof p?.puestoTrabajo === 'object'
+              ? p.puestoTrabajo?.nombre
               : this.puestos.find(pt => pt?._id === puestoId)?.nombre || 'Sin puesto';
 
           return {
             _id: p._id,
-            nombre: p.__nombreCalc,
+            nombre: p.__nombreCalc || 'Sin nombre',
             puestoId,
             puestoNombre,
             ocupado: false,
-            foto: this.getFotoUrl(p?.usuario?.foto || p?.foto)
-          };
+            foto: this.getFotoUrl(p?.usuario?.foto || p?.foto),
+            rol: p?.usuario?.rol?.nombre || ''
+          } as PeluqueroDropdownItem;
         });
 
+        // 4. Mostrar mensaje si no hay profesional disponible
+        if (this.peluquerosDropdown.length === 0 && serviciosSeleccionados.length > 0) {
+          const servicioNombres = serviciosSeleccionados.map(s => s.nombre).join(', ');
+          this.snackBar.open(
+            `⚠️ La sede seleccionada no tiene profesionales disponibles para: ${servicioNombres}. Por favor, elige otra sede o servicio.`,
+            'Cerrar',
+            { duration: 6000, panelClass: ['snack-error'] }
+          );
+        }
+
         this.validarFechaHoraYActualizarOcupacion();
+      },
+      error: err => {
+        console.error('❌ Error al obtener puestos por sede:', err);
       }
     });
   }
@@ -269,14 +341,10 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   getFotoUrl(fotoStr: string | undefined): string {
-    if (!fotoStr || fotoStr.trim() === '') {
-      return '';
-    }
-    // Si ya viene con http (por si acaso), lo retornamos igual
-    if (fotoStr.startsWith('http')) {
-      return fotoStr;
-    }
-    return `${environment.baseUrl}/uploads/${fotoStr}`;
+    if (!fotoStr || fotoStr.trim() === '') return '';
+    return fotoStr.startsWith('http')
+      ? fotoStr
+      : `${environment.baseUrl}/uploads/${fotoStr}`;
   }
 
   getSelectedPeluquero() {
@@ -504,5 +572,22 @@ export class ReservarCitaComponent implements OnInit {
   onServiciosChange(selectedIds: string[]) {
     this.serviciosArray.setValue(selectedIds);
     this.serviciosArray.markAsTouched();
+  }
+
+  getLabelPeluquero(): string {
+    const serviciosSeleccionadosIds = this.ctrl('servicios')?.value || [];
+    if (!serviciosSeleccionadosIds.length) return 'Profesional';
+
+    const serviciosSeleccionados = this.servicios.filter(s =>
+      serviciosSeleccionadosIds.includes(s._id)
+    );
+
+    if (serviciosSeleccionados.length === 1) {
+      // Mostrar rol o nombre del servicio
+      const roles = serviciosSeleccionados[0].asignadoA;
+      return roles && roles.length ? `Profesional (${roles.join(', ')})` : 'Profesional';
+    } else {
+      return 'Profesionales disponibles';
+    }
   }
 }

@@ -20,6 +20,9 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
 import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
 
+// 🔐 NUEVO: Roles
+import { RolesComponent } from './pages/roles/roles.component';
+
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -55,14 +58,12 @@ const routes: Routes = [
         data: { roles: ['admin'] }
       },
 
-
       {
         path: 'servicios-admin',
         component: ServiciosComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
       },
-
 
       {
         path: 'servicios',
@@ -74,6 +75,14 @@ const routes: Routes = [
       {
         path: 'equipos',
         component: ListadoEquiposComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      },
+
+      // 🔐 NUEVA RUTA: Roles
+      {
+        path: 'roles',
+        component: RolesComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
       },

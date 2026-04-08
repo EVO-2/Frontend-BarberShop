@@ -1,19 +1,19 @@
+/* ================== FORMULARIO RESERVA ================== */
 .reserva-form {
   max-width: 700px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  font-family: 'Roboto', sans-serif;
 
   .full-width {
     width: 100%;
     margin-bottom: 16px;
   }
 
-
   /* ================== SERVICIOS ================== */
-
   .servicios-container {
     max-height: 250px;
     overflow-y: auto;
@@ -22,6 +22,22 @@
     padding: 0.5rem;
     background: #fafafa;
     margin-bottom: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: #b0c4de #f0f0f0;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #b0c4de;
+      border-radius: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: #f0f0f0;
+      border-radius: 12px;
+    }
   }
 
   .servicio-row {
@@ -37,18 +53,18 @@
     transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
     gap: 1rem;
     cursor: pointer;
-  }
 
-  .servicio-card:hover {
-    background: #e5f4ff;
-    transform: translateY(-1px);
-  }
+    &:hover {
+      background: #e5f4ff;
+      transform: translateY(-1px);
+    }
 
-  .servicio-card.selected {
-    background: #96d3ff;
-    color: #fff;
-    box-shadow: 0 8px 20px rgba(3, 46, 77, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    &.selected {
+      background: #96d3ff;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(3, 46, 77, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
   }
 
   .servicio-info {
@@ -56,16 +72,16 @@
     flex-direction: column;
     flex: 1;
     min-width: 0;
-  }
 
-  .nombre {
-    font-weight: 500;
-    font-size: 0.95rem;
-  }
+    .nombre {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
 
-  .detalles {
-    font-size: 0.8rem;
-    color: #666;
+    .detalles {
+      font-size: 0.8rem;
+      color: #666;
+    }
   }
 
   .servicio-actions {
@@ -119,6 +135,8 @@
   }
 
   @media (max-width: 600px) {
+    padding: 16px;
+
     .servicios-container {
       max-height: 200px;
     }
@@ -126,14 +144,21 @@
 }
 
 /* ================== 🔥 PELUQUEROS PRO UI ================== */
-/* Se debe colocar por fuera de .reserva-form para que ::ng-deep alcance el CDK Overlay! */
+/* Colocado fuera de .reserva-form para que ::ng-deep alcance el CDK Overlay */
 
 ::ng-deep .option-peluquero {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   width: 100% !important;
-  padding: 4px 0 !important;
+  padding: 6px 0 !important;
+  transition: background 0.18s ease, transform 0.12s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: #f0f8ff !important;
+    transform: translateY(-1px) !important;
+  }
 }
 
 ::ng-deep .peluquero-info {
@@ -142,10 +167,9 @@
   gap: 12px !important;
 }
 
-/* 🔥 Avatar estilo red social (limpio y proporcionado) */
 ::ng-deep .avatar-peluquero {
-  width: 28px !important;
-  height: 28px !important;
+  width: 32px !important;
+  height: 32px !important;
   border-radius: 50% !important;
   object-fit: cover !important;
   background-color: #fafafa !important;
@@ -155,14 +179,22 @@
 
 ::ng-deep .option-peluquero:hover .avatar-peluquero,
 ::ng-deep .mat-select-trigger .peluquero-info:hover .avatar-peluquero {
-  transform: scale(1.1) !important; 
+  transform: scale(1.15) !important;
 }
 
 ::ng-deep .nombre-peluquero {
-  font-size: 0.9rem !important; 
+  font-size: 0.95rem !important;
   font-weight: 500 !important;
-  color: #262626 !important; 
+  color: #262626 !important;
   letter-spacing: 0.15px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep .rol-peluquero {
+  font-size: 0.82rem !important;
+  color: #555 !important;
 }
 
 ::ng-deep .icon-estado {
@@ -170,4 +202,19 @@
   width: 18px !important;
   height: 18px !important;
   opacity: 0.85 !important;
+}
+
+@media (max-width: 600px) {
+  ::ng-deep .avatar-peluquero {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  ::ng-deep .nombre-peluquero {
+    font-size: 0.88rem !important;
+  }
+
+  ::ng-deep .rol-peluquero {
+    font-size: 0.78rem !important;
+  }
 }

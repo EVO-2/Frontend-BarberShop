@@ -3,13 +3,13 @@ import { RolesService } from '../../core/services/roles.service';
 import { Rol } from '../../shared/models/roles.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-// 🔥 Angular Material
+// Angular Material
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 
-// ✅ Dialog
+// Dialog
 import { RolDialogComponent } from './rol-dialog/rol-dialog.component';
 
 @Component({
@@ -27,8 +27,6 @@ export class RolesComponent implements OnInit, AfterViewInit {
 
   roles: Rol[] = [];
   form: FormGroup;
-  editando: boolean = false;
-  rolId: string | null = null;
 
   constructor(
     private rolesService: RolesService,
@@ -47,49 +45,57 @@ export class RolesComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    // Se asigna aquí para evitar problemas de visualización en móviles
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
   // =============================
-  // 📦 Cargar Roles
+  // Cargar Roles
   // =============================
   cargarRoles() {
     this.rolesService.getRoles().subscribe({
-      next: (data: Rol[]) => {
+      next: (res: any) => {
+        this.roles = res?.roles || [];
+        this.dataSource = new MatTableDataSource<Rol>(this.roles);
 
-        console.log('ROLES BACKEND:', data);
+        // Paginator y sort
+        setTimeout(() => {
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        });
 
-        this.roles = data;
-        this.dataSource = new MatTableDataSource<Rol>(data);
-
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        // Filtro que funcione en móviles y desktop
+        this.dataSource.filterPredicate = (data: Rol, filter: string) => {
+          const dataStr = (data.nombre + ' ' + (data.descripcion || '')).toLowerCase();
+          return dataStr.indexOf(filter) !== -1;
+        };
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error(err);
+        this.roles = [];
+        this.dataSource = new MatTableDataSource<Rol>([]);
+      }
     });
   }
 
   // =============================
-  // 🔍 Filtro
+  // Filtro
   // =============================
   aplicarFiltro(event: any) {
-    const valor = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = valor.trim().toLowerCase();
+    const valor = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = valor;
   }
 
-  // ===================
-  // 🔄 Cambiar estado
-  // ===================
+  // =============================
+  // Cambiar estado
+  // =============================
   cambiarEstado(rol: Rol, event: any) {
     const nuevoEstado = event.checked;
-
     rol.estado = nuevoEstado;
     this.dataSource.data = [...this.dataSource.data];
 
-    this.rolesService.actualizarRol(rol._id!, {
-      estado: nuevoEstado
-    } as Rol).subscribe({
+    this.rolesService.actualizarRol(rol._id!, { estado: nuevoEstado } as Rol).subscribe({
       error: () => {
         rol.estado = !nuevoEstado;
         this.dataSource.data = [...this.dataSource.data];
@@ -98,7 +104,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
   }
 
   // =============================
-  // 🗑️ Eliminar
+  // Eliminar
   // =============================
   eliminar(id: string) {
     if (!confirm('¿Eliminar rol?')) return;
@@ -109,12 +115,9 @@ export class RolesComponent implements OnInit, AfterViewInit {
   }
 
   // =============================
-  // 💎 DIALOG PRO (crear / editar)
+  // Crear / Editar dialog
   // =============================
   abrirDialog(rol?: Rol) {
-
-    console.log('ABRIENDO DIALOG');
-
     const dialogRef = this.dialog.open(RolDialogComponent, {
       width: '400px',
       maxWidth: '95vw',
@@ -125,13 +128,9 @@ export class RolesComponent implements OnInit, AfterViewInit {
       if (!result) return;
 
       if (rol) {
-        this.rolesService.actualizarRol(rol._id!, result).subscribe(() => {
-          this.cargarRoles();
-        });
+        this.rolesService.actualizarRol(rol._id!, result).subscribe(() => this.cargarRoles());
       } else {
-        this.rolesService.crearRol(result).subscribe(() => {
-          this.cargarRoles();
-        });
+        this.rolesService.crearRol(result).subscribe(() => this.cargarRoles());
       }
     });
   }

@@ -1,30 +1,37 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Rol } from '../../shared/models/roles.model';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class RolesService {
 
-    private baseUrl = 'http://localhost:3000/api/roles';
+    private apiUrl: string;
 
-    constructor(private http: HttpClient) { }
+    constructor(
+        private http: HttpClient,
+        private api: ApiService
+    ) {
+        this.apiUrl = `${this.api.url}/roles`;
 
-    getRoles(): Observable<Rol[]> {
-        return this.http.get<Rol[]>(this.baseUrl);
+        //console.log('API URL:', this.apiUrl);
     }
 
-    crearRol(data: Rol): Observable<Rol> {
-        return this.http.post<Rol>(this.baseUrl, data);
+    getRoles(): Observable<any> {
+        return this.http.get(this.apiUrl);
     }
 
-    actualizarRol(id: string, data: Rol): Observable<Rol> {
-        return this.http.put<Rol>(`${this.baseUrl}/${id}`, data);
+    crearRol(data: any): Observable<any> {
+        return this.http.post(this.apiUrl, data);
+    }
+
+    actualizarRol(id: string, data: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/${id}`, data);
     }
 
     eliminarRol(id: string): Observable<any> {
-        return this.http.delete(`${this.baseUrl}/${id}`);
+        return this.http.delete(`${this.apiUrl}/${id}`);
     }
 }

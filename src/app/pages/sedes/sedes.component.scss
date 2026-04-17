@@ -1,54 +1,100 @@
+/* ================================
+   CONTENEDOR GENERAL
+================================ */
+
 .sedes-container {
   position: relative;
   padding: 16px;
 }
 
+/* ================================
+   CARD
+================================ */
+
 .sedes-card {
-  padding: 16px;
-  border-radius: 12px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.04),
+    0 2px 6px rgba(0, 0, 0, 0.03);
 }
+
+/* ================================
+   TITLE
+================================ */
 
 mat-card-title {
   font-size: 1.6rem;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 12px;
+  color: #2e3a59;
+  margin-bottom: 14px;
 }
+
+/* ================================
+   TOOLBAR
+================================ */
 
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
-/* Contenedor del filtro y botón limpiar */
+/* ================================
+   FILTRO + BOTÓN LIMPIAR (PRO)
+================================ */
+
 .filtro-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
+  /* 🔥 separación real */
   flex-wrap: wrap;
-  
 
   .filter-input {
-    width: 280px;
+    width: 300px;
+    min-width: 250px;
   }
 
-  button {
+  /* BOTÓN LIMPIAR */
+  .btn-limpiar {
     height: 56px;
+    border-radius: 10px;
+    padding: 0 16px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: -5%;
+
+    transition: all 0.25s ease;
+
+    mat-icon {
+      font-size: 18px;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
   }
 }
+
+/* ================================
+   TABLA
+================================ */
 
 .tabla-sedes {
   width: 100%;
   min-width: 750px;
   overflow-x: auto;
+  border-radius: 12px;
+  background: #fff;
 
   table {
     width: 100%;
@@ -57,25 +103,29 @@ mat-card-title {
 
   th {
     font-weight: 600;
-    background-color: #fafafa;
-    color: #333;
+    background-color: #f8fafc;
+    color: #6b7280;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
   }
 
   td,
   th {
-    padding: 8px 12px;
+    padding: 10px 14px;
   }
 
   tr.mat-header-row {
     height: 56px;
+    border-bottom: 1px solid #e5e7eb;
   }
 
   tr.mat-row {
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
   }
 
   tr.mat-row:hover {
-    background-color: #f5f5f5;
+    background-color: #f0f7ff;
   }
 
   mat-icon {
@@ -83,7 +133,10 @@ mat-card-title {
   }
 }
 
-/* Botones de acción */
+/* ================================
+   BOTONES ACCIONES
+================================ */
+
 button[mat-icon-button] {
   margin-right: 6px;
   transition: transform 0.2s ease;
@@ -93,40 +146,85 @@ button[mat-icon-button] {
   }
 }
 
-/* Columna de estado visual */
+/* ================================
+   ESTADO
+================================ */
+
 .estado {
   font-weight: 600;
+
   &.activo {
-    color: #2e7d32; /* verde */
+    color: #2e7d32;
   }
+
   &.inactivo {
-    color: #c62828; /* rojo */
+    color: #c62828;
   }
 }
 
-/* Ajuste del toggle compacto */
+/* ================================
+   TOGGLE
+================================ */
+
 .compact-toggle {
-  transform: scale(0.8);
+  transform: scale(0.85);
   margin: 0;
 }
 
-/* Spinner centrado */
+/* ================================
+   SPINNER
+================================ */
+
 .spinner {
   display: flex;
   justify-content: center;
   margin-top: 24px;
 }
 
-/* Mensaje de no datos */
+/* ================================
+   EMPTY STATE
+================================ */
+
 .no-data {
   text-align: center;
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1.05rem;
+  color: #94a3b8;
   margin-top: 24px;
 }
 
-/* Ajustes del paginador */
+/* ================================
+   PAGINADOR
+================================ */
+
 mat-paginator {
-  margin-top: 16px;
+  margin-top: 18px;
   border-top: 1px solid #eee;
+  border-radius: 10px;
+  background: #f7f9fc;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro-container {
+    flex-direction: column;
+    align-items: stretch;
+
+    .filter-input {
+      width: 100%;
+    }
+
+    .btn-limpiar {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 }

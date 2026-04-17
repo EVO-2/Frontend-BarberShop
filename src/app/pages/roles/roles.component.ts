@@ -127,10 +127,19 @@ export class RolesComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result: any) => {
       if (!result) return;
 
+      const payload = {
+        nombre: result.nombre?.trim(),
+        descripcion: result.descripcion || '',
+        permisos: result.permisos || [],
+        estado: result.estado ?? true
+      };
+
       if (rol) {
-        this.rolesService.actualizarRol(rol._id!, result).subscribe(() => this.cargarRoles());
+        this.rolesService.actualizarRol(rol._id!, payload)
+          .subscribe(() => this.cargarRoles());
       } else {
-        this.rolesService.crearRol(result).subscribe(() => this.cargarRoles());
+        this.rolesService.crearRol(payload)
+          .subscribe(() => this.cargarRoles());
       }
     });
   }

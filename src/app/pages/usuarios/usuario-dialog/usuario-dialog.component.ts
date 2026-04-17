@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UsuarioService } from 'src/app/core/services/usuario.service';
 import { SedeService } from 'src/app/core/services/sede.service';
-import { RolService } from 'src/app/core/services/rol.service';
+import { RolesService } from 'src/app/core/services/roles.service';
 import { PuestoService } from 'src/app/core/services/puesto.service';
 import { telefonoValido, passwordsIguales } from 'src/app/shared/validators/validators';
 import { passwordSegura } from 'src/app/shared/validators/password-segura.validator';
@@ -38,12 +38,12 @@ export class UsuarioDialogComponent implements OnInit {
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
     private sedeService: SedeService,
-    private rolService: RolService,
+    private rolesService: RolesService,
     private puestoService: PuestoService,
     private authService: AuthService,
     private dialogRef: MatDialogRef<UsuarioDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.modo = this.data?.modo === 'editar' ? 'editar' : 'crear';
@@ -129,9 +129,13 @@ export class UsuarioDialogComponent implements OnInit {
   }
 
   cargarRoles(): void {
-    this.rolService.obtenerRoles().subscribe({
-      next: (roles) => this.roles = roles,
-      error: (err) => console.error('❌ Error cargando roles:', err)
+    this.rolesService.getRoles().subscribe({
+      next: (res: any) => {
+        this.roles = res.roles || [];
+      },
+      error: (err: any) => {
+        console.error('❌ Error cargando roles:', err);
+      }
     });
   }
 

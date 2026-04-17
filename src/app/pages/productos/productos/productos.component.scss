@@ -1,0 +1,283 @@
+/* ================================
+   CONTENEDOR GENERAL
+================================ */
+
+.container {
+    padding: 5rem;
+    background: linear-gradient(180deg, #f4f6fb 0%, #eef2f9 100%);
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* ================================
+   CARD PRINCIPAL
+================================ */
+
+.card {
+    width: 100%;
+    max-width: 1200px;
+
+    border-radius: 18px;
+
+    /* 🔥 equilibrio profesional (no excesivo) */
+    padding: 2.5rem 3rem;
+
+    background: #ffffff;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.04),
+        0 2px 6px rgba(0, 0, 0, 0.03);
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+}
+
+/* ================================
+   🔥 HEADER PRO (AJUSTADO UX/UI)
+================================ */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    /* 🔥 clave: separación real del borde del card */
+    padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+
+    margin-top: 0.5rem;
+
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* 🔥 TITULO MEJORADO */
+.header .title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    font-size: 1.65rem;
+    /* MÁS GRANDE */
+    font-weight: 700;
+    /* MÁS NEGRITA */
+    color: #1f2a44;
+    letter-spacing: 0.2px;
+}
+
+/* 🔥 ICONO PERFECTAMENTE ALINEADO */
+.header .title mat-icon {
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* BOTÓN */
+.header button {
+    border-radius: 12px;
+    padding: 0 1.3rem;
+    height: 42px;
+    font-weight: 500;
+}
+
+/* ================================
+   🔥 TOOLBAR PROFESIONAL
+================================ */
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0.5rem 1.5rem;
+    /* 🔥 separación del card */
+    margin-bottom: 1rem;
+
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+/* INPUT */
+.toolbar .filter-input {
+    flex: 1;
+    min-width: 260px;
+    max-width: 420px;
+}
+
+/* BOTÓN LIMPIAR */
+.toolbar .btn-limpiar {
+    height: 42px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+/* CONTENEDOR FLEX REAL */
+.filtro-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+/* ================================
+   TABLA
+================================ */
+
+.tabla-usuarios {
+    width: 100%;
+    padding: 0.3rem 0;
+}
+
+table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* HEADER CELDAS */
+th.mat-mdc-header-cell {
+    background: #f7f9fc;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.7px;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* CELDAS */
+td.mat-mdc-cell {
+    font-size: 0.9rem;
+    color: #374151;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* HOVER */
+tr.mat-mdc-row:hover {
+    background-color: #f0f7ff;
+    transition: background-color 0.2s ease;
+}
+
+/* ================================
+   BADGES
+================================ */
+
+.badge-venta {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-interno {
+    background-color: #fef3c7;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ================================
+   ESTADO
+================================ */
+
+.estado {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-block;
+
+    &.activo {
+        background-color: #e6f9f0;
+        color: #0f766e;
+    }
+
+    &.inactivo {
+        background-color: #fdecec;
+        color: #b91c1c;
+    }
+}
+
+/* ================================
+   ACCIONES
+================================ */
+
+.acciones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+/* ================================
+   PAGINADOR
+================================ */
+
+mat-paginator {
+    margin-top: 1.5rem;
+    border-radius: 12px;
+    background: #f7f9fc;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+
+    .card {
+        padding: 1.4rem;
+    }
+
+    table {
+        display: none;
+    }
+
+    .mobile-view {
+        display: block;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem 0;
+    }
+
+    .btn-limpiar {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .container {
+        padding: 1rem;
+    }
+
+    .header .title {
+        font-size: 1.35rem;
+    }
+}

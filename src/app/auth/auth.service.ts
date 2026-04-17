@@ -286,11 +286,8 @@ export class AuthService {
     const idUsuario = usuario._id || usuario.id;
 
     return {
-
       _id: idUsuario,
-
       nombre: usuario.nombre,
-
       correo: usuario.correo,
 
       rol: typeof usuario.rol === 'string'
@@ -299,14 +296,23 @@ export class AuthService {
 
       foto: usuario.foto || undefined,
 
+      // 🔐 Permisos (CLAVE para tu problema anterior)
+      permisos: usuario.permisos || [],
+
+      // 👤 Cliente
       cliente: usuario.cliente
         ? { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario }
         : undefined,
 
+      // 💇 Peluquero
       peluquero: usuario.peluquero
         ? { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario }
-        : undefined
+        : undefined,
 
+      // 💅 Manicurista (🔥 NUEVO)
+      manicurista: usuario.manicurista
+        ? { ...usuario.manicurista, _id: usuario.manicurista._id, usuario: idUsuario }
+        : undefined
     };
   }
 

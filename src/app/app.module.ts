@@ -37,13 +37,17 @@ import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-c
 import { RolesComponent } from './pages/roles/roles.component';
 import { RolDialogComponent } from './pages/roles/rol-dialog/rol-dialog.component';
 
-// ======= Reportes =======
+// ======= 📊 Reportes =======
 import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/reporte-ingresos.component';
 
-// ======= Equipos =======
+// ======= 🖥️ Equipos =======
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
 import { MovimientosEquipoDialogComponent } from './pages/equipos/movimientos-equipo-dialog/movimientos-equipo-dialog.component';
 import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dialog.component';
+
+// ======= 📦 Productos =======
+import { ProductosComponent } from './pages/productos/productos/productos.component';
+import { ProductoDialogComponent } from './pages/productos/producto-dialog/producto-dialog.component'; // ✅ NUEVO
 
 @NgModule({
   declarations: [
@@ -77,7 +81,11 @@ import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dial
     // 🖥️ Equipos
     ListadoEquiposComponent,
     MovimientosEquipoDialogComponent,
-    EquipoDialogComponent
+    EquipoDialogComponent,
+
+    // 📦 Productos
+    ProductosComponent,
+    ProductoDialogComponent // ✅ AGREGADO
   ],
   imports: [
     BrowserModule,

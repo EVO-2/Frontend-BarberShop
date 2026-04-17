@@ -20,8 +20,11 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
 import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
 
-// 🔐 NUEVO: Roles
+// 🔐 Roles
 import { RolesComponent } from './pages/roles/roles.component';
+
+// 🆕 Productos
+import { ProductosComponent } from './pages/productos/productos/productos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -79,7 +82,13 @@ const routes: Routes = [
         data: { roles: ['admin'] }
       },
 
-      // 🔐 NUEVA RUTA: Roles
+      {
+        path: 'productos',
+        component: ProductosComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      },
+
       {
         path: 'roles',
         component: RolesComponent,

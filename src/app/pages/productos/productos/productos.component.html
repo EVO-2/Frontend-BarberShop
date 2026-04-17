@@ -1,0 +1,239 @@
+<div class="usuarios-container">
+
+  <mat-card class="usuarios-card mat-elevation-z6">
+
+    <!-- ================= HEADER ================= -->
+    <div class="card-header">
+      <div class="title">
+        <mat-icon color="primary">inventory_2</mat-icon>
+        <span>Gestión de Productos</span>
+      </div>
+
+      <button mat-flat-button color="primary" class="add-btn" *ngIf="tienePermiso('crear_producto')"
+        (click)="crearProducto()">
+
+        <mat-icon>add_box</mat-icon>
+        Nuevo Producto
+      </button>
+    </div>
+
+    <!-- ================= TOOLBAR ================= -->
+    <div class="toolbar">
+
+      <mat-form-field appearance="outline" class="filter-input">
+        <mat-label>Buscar producto</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Nombre, categoría..." />
+      </mat-form-field>
+
+      <!-- 🔥 BOTÓN LIMPIAR SEPARADO -->
+      <button mat-stroked-button color="warn" class="btn-limpiar" (click)="limpiarFiltros()">
+        <mat-icon>cleaning_services</mat-icon>
+        Limpiar
+      </button>
+
+    </div>
+
+    <!-- ================= DESKTOP TABLA ================= -->
+    <div class="tabla-usuarios">
+
+      <table mat-table [dataSource]="dataSource" matSort>
+
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let p; let i = index">
+            {{ i + 1 }}
+          </td>
+        </ng-container>
+
+        <!-- Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let p">
+            <div class="user-name">
+              <mat-icon>inventory</mat-icon>
+              <span>{{ p.nombre }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Categoría -->
+        <ng-container matColumnDef="categoria">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Categoría</th>
+          <td mat-cell *matCellDef="let p">
+            {{ p.categoria?.nombre || '—' }}
+          </td>
+        </ng-container>
+
+        <!-- Proveedor -->
+        <ng-container matColumnDef="proveedor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Proveedor</th>
+          <td mat-cell *matCellDef="let p">
+            {{ p.proveedor?.nombre || '—' }}
+          </td>
+        </ng-container>
+
+        <!-- Sede -->
+        <ng-container matColumnDef="sede">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sede</th>
+          <td mat-cell *matCellDef="let p">
+            {{ p.sede?.nombre || '—' }}
+          </td>
+        </ng-container>
+
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="rol-chip" [ngClass]="{
+                'badge-venta': p.tipo === 'venta',
+                'badge-interno': p.tipo === 'uso_interno'
+              }">
+              {{ p.tipo | titlecase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Cantidad -->
+        <ng-container matColumnDef="cantidad">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+          <td mat-cell *matCellDef="let p">
+            {{ p.cantidad }}
+          </td>
+        </ng-container>
+
+        <!-- Precio -->
+        <ng-container matColumnDef="precio">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
+          <td mat-cell *matCellDef="let p">
+            {{ p.precio | currency:'COP':'symbol' }}
+          </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="estado" [class.activo]="p.estado" [class.inactivo]="!p.estado">
+              {{ p.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+
+          <td mat-cell *matCellDef="let p" class="acciones">
+
+            <button mat-icon-button color="primary" *ngIf="tienePermiso('editar_producto')" (click)="editarProducto(p)">
+
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <mat-slide-toggle *ngIf="tienePermiso('editar_producto')" [checked]="p.estado" (change)="cambiarEstado(p)"
+              color="primary" matTooltip="Cambiar estado">
+            </mat-slide-toggle>
+
+          </td>
+
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+
+    </div>
+
+    <!-- ================= MOBILE CARDS ================= -->
+    <div class="mobile-view" *ngIf="dataSource.data.length > 0">
+
+      <div class="card-usuario" *ngFor="let p of dataSource.data; let i = index">
+
+        <div class="card-header-mobile">
+
+          <div>
+            <div class="card-title">
+              {{ p.nombre }}
+            </div>
+
+            <div class="card-subtitle">
+              {{ p.categoria?.nombre || 'Sin categoría' }}
+            </div>
+          </div>
+
+          <span class="rol-chip">
+            {{ p.tipo | titlecase }}
+          </span>
+
+        </div>
+
+        <div class="card-body">
+
+          <div class="info-row">
+            <span>ID</span>
+            <strong>#{{ i + 1 }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Proveedor</span>
+            <strong>{{ p.proveedor?.nombre || '—' }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Sede</span>
+            <strong>{{ p.sede?.nombre || '—' }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Stock</span>
+            <strong>{{ p.cantidad }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Precio</span>
+            <strong>{{ p.precio | currency:'COP' }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>Estado</span>
+            <strong [class.activo]="p.estado" [class.inactivo]="!p.estado">
+              {{ p.estado ? 'Activo' : 'Inactivo' }}
+            </strong>
+          </div>
+
+        </div>
+
+        <div class="card-actions">
+
+          <button mat-stroked-button color="primary" *ngIf="tienePermiso('editar_producto')"
+            (click)="editarProducto(p)">
+            Editar
+          </button>
+
+          <mat-slide-toggle *ngIf="tienePermiso('editar_producto')" [checked]="p.estado" (change)="cambiarEstado(p)"
+            color="primary">
+
+            {{ p.estado ? 'Activo' : 'Inactivo' }}
+          </mat-slide-toggle>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= PAGINADOR ================= -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+    </mat-paginator>
+
+    <!-- ================= EMPTY ================= -->
+    <div *ngIf="dataSource.data.length === 0" class="no-usuarios">
+      <p>No hay productos registrados.</p>
+    </div>
+
+  </mat-card>
+
+</div>

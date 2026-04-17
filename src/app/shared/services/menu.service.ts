@@ -25,6 +25,7 @@ export class MenuService {
         { label: 'Puestos de Trabajo', ruta: '/puestos', icono: 'chair' },
         { label: 'Servicios', ruta: '/servicios-admin', icono: 'build' },
         { label: 'Equipos', ruta: '/equipos', icono: 'inventory_2' },
+        { label: 'Productos', ruta: '/productos', icono: 'inventory' },
         { label: 'Roles', ruta: '/roles', icono: 'admin_panel_settings' }
       ]
     }
@@ -34,6 +35,17 @@ export class MenuService {
   constructor() { }
 
   getMenuPorRol(rol: string) {
-    return this.menu.filter(item => item.roles.includes(rol));
+    return this.menu
+      .filter(item => item.roles.includes(rol))
+      .map(item => {
+        // 🔥 Filtrar hijos si existen
+        if (item.children) {
+          return {
+            ...item,
+            children: item.children
+          };
+        }
+        return item;
+      });
   }
 }

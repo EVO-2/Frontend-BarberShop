@@ -1,23 +1,40 @@
-<h2 mat-dialog-title>
+<h2 mat-dialog-title class="dialog-title">
   <mat-icon color="primary">admin_panel_settings</mat-icon>
-  {{ editando ? 'Editar Rol' : 'Nuevo Rol' }}
+  <span>
+    {{ editando ? 'Editar Rol' : 'Nuevo Rol' }}
+  </span>
 </h2>
 
 <mat-dialog-content>
 
   <form [formGroup]="form" class="form">
 
+    <!-- Nombre -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombre del rol</mat-label>
       <input matInput formControlName="nombre" />
     </mat-form-field>
 
+    <!-- Descripción -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Descripción</mat-label>
       <textarea matInput rows="3" formControlName="descripcion"></textarea>
     </mat-form-field>
 
-    <!-- 🔥 AQUÍ IRÁN LOS PERMISOS (SIGUIENTE PASO) -->
+    <!-- 🔥 PERMISOS -->
+    <div class="permisos-container">
+
+      <h3>Permisos</h3>
+
+      <div class="permisos-grid">
+        <mat-checkbox *ngFor="let permiso of permisos" [checked]="isChecked(permiso._id)"
+          (change)="togglePermiso(permiso._id)">
+
+          {{ permiso.nombre }}
+        </mat-checkbox>
+      </div>
+
+    </div>
 
   </form>
 
@@ -25,7 +42,9 @@
 
 <mat-dialog-actions align="end">
 
-  <button mat-button (click)="cerrar()">Cancelar</button>
+  <button mat-button (click)="cerrar()">
+    Cancelar
+  </button>
 
   <button mat-flat-button color="primary" (click)="guardar()">
     {{ editando ? 'Actualizar' : 'Crear' }}

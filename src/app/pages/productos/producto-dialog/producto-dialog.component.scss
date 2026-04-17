@@ -1,0 +1,31 @@
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+mat-dialog-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+mat-dialog-actions {
+    margin-top: 10px;
+}
+
+button[mat-flat-button] {
+    min-width: 120px;
+}

@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "outputDirectory": "dist/frontend-barber-shop",
   "rewrites": [
     {
       "source": "/(.*)",

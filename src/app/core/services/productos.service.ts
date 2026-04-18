@@ -15,6 +15,7 @@ export interface Producto {
     precio: number;
     usado: boolean;
     estado: boolean;
+    imagen?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -26,15 +27,13 @@ export class ProductosService {
 
     private apiUrl = `${environment.apiUrl}/productos`;
 
-    constructor(private http: HttpClient) {
-        //console.log('🧪 ENVIRONMENT:', environment);
-        //console.log('📦 PRODUCTOS API:', this.apiUrl);
-    }
+    constructor(private http: HttpClient) { }
 
     // =========================
     // 📥 Obtener productos (con filtros)
     // =========================
     obtenerProductos(filtros?: any): Observable<{ ok: boolean; productos: Producto[] }> {
+
         let params = new HttpParams();
 
         if (filtros) {
@@ -45,24 +44,25 @@ export class ProductosService {
             });
         }
 
-        console.log('📡 GET ->', this.apiUrl, 'params:', filtros);
-
-        return this.http.get<{ ok: boolean; productos: Producto[] }>(this.apiUrl, { params });
+        return this.http.get<{ ok: boolean; productos: Producto[] }>(
+            this.apiUrl,
+            { params }
+        );
     }
 
     // =========================
     // 📥 Obtener producto por ID
     // =========================
     obtenerProducto(id: string): Observable<{ ok: boolean; producto: Producto }> {
-        console.log('📡 GET ->', `${this.apiUrl}/${id}`);
-        return this.http.get<{ ok: boolean; producto: Producto }>(`${this.apiUrl}/${id}`);
+        return this.http.get<{ ok: boolean; producto: Producto }>(
+            `${this.apiUrl}/${id}`
+        );
     }
 
     // =========================
     // ➕ Crear producto
     // =========================
     crearProducto(data: Partial<Producto>): Observable<any> {
-        console.log('📡 POST ->', this.apiUrl, data);
         return this.http.post(this.apiUrl, data);
     }
 
@@ -70,7 +70,6 @@ export class ProductosService {
     // ✏️ Actualizar producto
     // =========================
     actualizarProducto(id: string, data: Partial<Producto>): Observable<any> {
-        console.log('📡 PUT ->', `${this.apiUrl}/${id}`, data);
         return this.http.put(`${this.apiUrl}/${id}`, data);
     }
 
@@ -78,15 +77,16 @@ export class ProductosService {
     // ❌ Eliminar (soft delete)
     // =========================
     eliminarProducto(id: string): Observable<any> {
-        console.log('📡 DELETE ->', `${this.apiUrl}/${id}`);
         return this.http.delete(`${this.apiUrl}/${id}`);
     }
 
     // =========================
-    // 🔄 Activar / Desactivar (extra PRO)
+    // 🔄 Activar / Desactivar
     // =========================
     cambiarEstado(id: string, estado: boolean): Observable<any> {
-        console.log('📡 PATCH ->', `${this.apiUrl}/${id}/estado`, { estado });
-        return this.http.patch(`${this.apiUrl}/${id}/estado`, { estado });
+        return this.http.patch(
+            `${this.apiUrl}/${id}/estado`,
+            { estado }
+        );
     }
 }

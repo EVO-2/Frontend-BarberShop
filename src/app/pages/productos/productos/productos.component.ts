@@ -5,8 +5,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ProductoDialogComponent } from '../producto-dialog/producto-dialog.component';
-
-// 🔐 (ajústalo a tu implementación real)
 import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
@@ -16,10 +14,8 @@ import { AuthService } from 'src/app/auth/auth.service';
 })
 export class ProductosComponent implements OnInit {
 
-  // =========================
-  // 📊 Tabla
-  // =========================
   displayedColumns: string[] = [
+    'imagen',
     'nombre',
     'categoria',
     'proveedor',
@@ -32,14 +28,13 @@ export class ProductosComponent implements OnInit {
   ];
 
   dataSource = new MatTableDataSource<Producto>([]);
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   loading = false;
 
-  // =========================
-  // 🔍 Filtros
-  // =========================
+  // fallback local estable
+  imagenFallback: string = 'assets/img/placeholder.svg';
+
   filtros: any = {
     nombre: '',
     categoria: '',
@@ -47,9 +42,6 @@ export class ProductosComponent implements OnInit {
     estado: ''
   };
 
-  // =========================
-  // 🔐 Permisos dinámicos
-  // =========================
   permisos: string[] = [];
 
   constructor(
@@ -58,12 +50,9 @@ export class ProductosComponent implements OnInit {
     private authService: AuthService
   ) { }
 
-  // =========================
-  // 🚀 Init
-  // =========================
   ngOnInit(): void {
     this.cargarPermisos();
-    this.configurarFiltro(); // 🔥 IMPORTANTE
+    this.configurarFiltro();
     this.obtenerProductos();
   }
 
@@ -72,31 +61,42 @@ export class ProductosComponent implements OnInit {
   }
 
   // =========================
-  // 🔐 Cargar permisos usuario
+  // 🔐 Permisos (CORREGIDO)
   // =========================
   cargarPermisos() {
     const usuario = this.authService.getUsuario();
 
-    console.log('👤 Usuario completo:', usuario); // 🔥 IMPORTANTE
+    if (!usuario) {
+      this.permisos = [];
+      return;
+    }
 
-    if (usuario?.permisos) {
+    if (usuario.rol === 'admin') {
+      this.permisos = ['*'];
+      return;
+    }
+
+    if (usuario.permisos && Array.isArray(usuario.permisos)) {
       this.permisos = usuario.permisos;
-    } else if (usuario?.rol?.permisos) {
+      return;
+    }
+
+    if (usuario.rol?.permisos) {
       this.permisos = usuario.rol.permisos.map((p: any) =>
         typeof p === 'string' ? p : p.nombre
       );
-    } else {
-      this.permisos = [];
+      return;
     }
 
-    console.log('🔐 Permisos usuario:', this.permisos);
+    this.permisos = [];
   }
 
   tienePermiso(permiso: string): boolean {
     const usuario = this.authService.getUsuario();
 
-    // 🔥 ADMIN VE TODO (modo debug)
     if (usuario?.rol === 'admin') return true;
+
+    if (this.permisos.includes('*')) return true;
 
     return this.permisos.includes(permiso);
   }
@@ -108,22 +108,41 @@ export class ProductosComponent implements OnInit {
     this.loading = true;
 
     this.productosService.obtenerProductos(this.filtros).subscribe({
-      next: (resp) => {
-        this.dataSource.data = resp.productos || [];
+      next: (resp: any) => {
+
+        let productos = resp?.productos || [];
+
+        productos = productos.map((p: any) => {
+
+          if (!p.imagen || typeof p.imagen !== 'string') {
+            p.imagen = this.imagenFallback;
+          }
+
+          if (p.imagen && p.imagen.includes('res.cloudinary.com/demo/')) {
+            p.imagen = this.imagenFallback;
+          }
+
+          if (p.imagen && !p.imagen.startsWith('http') && !p.imagen.startsWith('assets')) {
+            p.imagen = this.imagenFallback;
+          }
+
+          return p;
+        });
+
+        this.dataSource.data = productos;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('❌ Error cargando productos', err);
+
+      error: () => {
         this.loading = false;
       }
     });
   }
 
   // =========================
-  // 🔍 Aplicar filtros backend
+  // 🔍 Filtros backend
   // =========================
   aplicarFiltros() {
-    console.log('🔍 Filtros:', this.filtros);
     this.obtenerProductos();
   }
 
@@ -134,30 +153,34 @@ export class ProductosComponent implements OnInit {
       sede: '',
       estado: ''
     };
+
     this.obtenerProductos();
   }
 
   // =========================
-  // 🔍 Filtro frontend (tabla)
+  // 🔍 Filtro frontend
   // =========================
   configurarFiltro() {
     this.dataSource.filterPredicate = (data: any, filter: string) => {
+
+      const texto = filter.trim().toLowerCase();
+
       return (
-        data.nombre?.toLowerCase().includes(filter) ||
-        data.categoria?.nombre?.toLowerCase().includes(filter) ||
-        data.proveedor?.nombre?.toLowerCase().includes(filter) ||
-        data.sede?.nombre?.toLowerCase().includes(filter)
+        (data?.nombre || '').toLowerCase().includes(texto) ||
+        (data?.categoria?.nombre || '').toLowerCase().includes(texto) ||
+        (data?.proveedor?.nombre || '').toLowerCase().includes(texto) ||
+        (data?.sede?.nombre || '').toLowerCase().includes(texto)
       );
     };
   }
 
   aplicarFiltro(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const value = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = value.trim().toLowerCase();
   }
 
   // =========================
-  // ➕ Crear producto
+  // ➕ Crear
   // =========================
   crearProducto() {
     if (!this.tienePermiso('crear_producto')) return;
@@ -167,12 +190,13 @@ export class ProductosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.obtenerProductos();
-      }
+      if (result) this.obtenerProductos();
     });
   }
 
+  // =========================
+  // ✏️ Editar
+  // =========================
   editarProducto(producto: any) {
     if (!this.tienePermiso('editar_producto')) return;
 
@@ -182,35 +206,27 @@ export class ProductosComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.obtenerProductos();
-      }
+      if (result) this.obtenerProductos();
     });
   }
 
   // =========================
-  // ❌ Eliminar (soft delete)
+  // ❌ Eliminar
   // =========================
   eliminarProducto(producto: Producto) {
     if (!this.tienePermiso('eliminar_producto')) return;
 
     const confirmar = confirm(`¿Eliminar producto ${producto.nombre}?`);
-
     if (!confirmar) return;
 
     this.productosService.eliminarProducto(producto._id).subscribe({
-      next: () => {
-        console.log('✅ Producto eliminado');
-        this.obtenerProductos();
-      },
-      error: (err) => {
-        console.error('❌ Error eliminando', err);
-      }
+      next: () => this.obtenerProductos(),
+      error: () => { }
     });
   }
 
   // =========================
-  // 🔄 Cambiar estado
+  // 🔄 Estado
   // =========================
   cambiarEstado(producto: Producto) {
     if (!this.tienePermiso('editar_producto')) return;
@@ -221,9 +237,15 @@ export class ProductosComponent implements OnInit {
         next: () => {
           producto.estado = !producto.estado;
         },
-        error: (err) => {
-          console.error('❌ Error cambiando estado', err);
-        }
+        error: () => { }
       });
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+
+    if (img.src.includes('placeholder.svg')) return;
+
+    img.src = 'assets/img/placeholder.svg';
   }
 }

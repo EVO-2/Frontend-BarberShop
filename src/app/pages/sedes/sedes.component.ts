@@ -24,7 +24,7 @@ export class SedesComponent implements OnInit, AfterViewInit {
     private sedeService: SedeService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarSedes();
@@ -95,5 +95,10 @@ export class SedesComponent implements OnInit, AfterViewInit {
         });
       },
     });
+  }
+
+  limpiarFiltro(): void {
+    this.dataSource.filter = '';
+    if (this.paginator) this.paginator.firstPage();
   }
 }

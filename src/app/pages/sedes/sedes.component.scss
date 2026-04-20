@@ -3,32 +3,56 @@
 ================================ */
 
 .sedes-container {
-  position: relative;
-  padding: 16px;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, #f4f6fb 0%, #eef2f9 100%);
+  min-height: 100%;
 }
 
 /* ================================
-   CARD
+   CARD PRINCIPAL
 ================================ */
 
 .sedes-card {
-  padding: 18px;
-  border-radius: 14px;
+  border-radius: 18px;
+  padding: 1.6rem;
   background: #ffffff;
   box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.04),
+    0 6px 20px rgba(0, 0, 0, 0.04),
     0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 /* ================================
-   TITLE
+   HEADER
 ================================ */
 
-mat-card-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #2e3a59;
-  margin-bottom: 14px;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.4rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #2e3a59;
+
+    mat-icon {
+      font-size: 26px;
+    }
+  }
+
+  .add-btn {
+    border-radius: 12px;
+    padding: 0 1.3rem;
+    height: 42px;
+    font-weight: 500;
+    letter-spacing: .3px;
+  }
 }
 
 /* ================================
@@ -37,50 +61,27 @@ mat-card-title {
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 18px;
-}
-
-/* ================================
-   FILTRO + BOTÓN LIMPIAR (PRO)
-================================ */
-
-.filtro-container {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  /* 🔥 separación real */
+  justify-content: flex-end;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
   flex-wrap: wrap;
 
   .filter-input {
-    width: 300px;
-    min-width: 250px;
+    width: 100%;
+    max-width: 380px;
   }
 
-  /* BOTÓN LIMPIAR */
-  .btn-limpiar {
-    height: 56px;
+  button {
     border-radius: 10px;
-    padding: 0 16px;
+    padding: 0 1rem;
+    height: 42px;
     font-weight: 500;
-    letter-spacing: 0.3px;
-
     display: flex;
     align-items: center;
     gap: 6px;
 
-    transition: all 0.25s ease;
-
     mat-icon {
       font-size: 18px;
-    }
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     }
   }
 }
@@ -90,106 +91,178 @@ mat-card-title {
 ================================ */
 
 .tabla-sedes {
-  width: 100%;
-  min-width: 750px;
+  border-radius: 14px;
   overflow-x: auto;
-  border-radius: 12px;
-  background: #fff;
+  background: #ffffff;
 
   table {
     width: 100%;
+    min-width: 900px;
+    border-collapse: separate;
     border-spacing: 0;
   }
 
-  th {
+  /* HEADER */
+
+  th.mat-mdc-header-cell {
+    background: #f7f9fc;
+    font-size: 0.72rem;
     font-weight: 600;
-    background-color: #f8fafc;
-    color: #6b7280;
-    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }
-
-  td,
-  th {
-    padding: 10px 14px;
-  }
-
-  tr.mat-header-row {
-    height: 56px;
+    color: #6b7280;
+    letter-spacing: 0.7px;
+    padding: 0.9rem 1rem;
     border-bottom: 1px solid #e5e7eb;
   }
 
-  tr.mat-row {
+  /* CELDAS */
+
+  td.mat-mdc-cell {
+    font-size: 0.9rem;
+    color: #374151;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  /* HOVER */
+
+  tr.mat-mdc-row:hover {
+    background-color: #f0f7ff;
     transition: background-color 0.2s ease;
   }
 
-  tr.mat-row:hover {
-    background-color: #f0f7ff;
+  /* COLUMNAS */
+
+  .mat-column-id {
+    width: 60px;
+    text-align: center;
   }
 
-  mat-icon {
-    vertical-align: middle;
+  .mat-column-acciones {
+    width: 150px;
+    text-align: center;
+  }
+
+  /* NOMBRE SEDE */
+
+  .sede-name {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 500;
+
+    mat-icon {
+      font-size: 18px;
+      color: #64748b;
+    }
+  }
+
+  /* ESTADO */
+
+  .estado {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-block;
+
+    &.activo {
+      background-color: #e6f9f0;
+      color: #0f766e;
+    }
+
+    &.inactivo {
+      background-color: #fdecec;
+      color: #b91c1c;
+    }
+  }
+
+  /* ACCIONES */
+
+  .acciones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
   }
 }
 
 /* ================================
-   BOTONES ACCIONES
+   MOBILE CARDS
 ================================ */
 
-button[mat-icon-button] {
-  margin-right: 6px;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
+.mobile-view {
+  display: none;
+  margin-top: 1rem;
 }
 
-/* ================================
-   ESTADO
-================================ */
+.card-sede {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #edf0f6;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04);
 
-.estado {
-  font-weight: 600;
-
-  &.activo {
-    color: #2e7d32;
-  }
-
-  &.inactivo {
-    color: #c62828;
-  }
+  transition: all .25s ease;
 }
 
-/* ================================
-   TOGGLE
-================================ */
-
-.compact-toggle {
-  transform: scale(0.85);
-  margin: 0;
+.card-sede:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
-/* ================================
-   SPINNER
-================================ */
+/* HEADER CARD */
 
-.spinner {
+.card-header-mobile {
   display: flex;
-  justify-content: center;
-  margin-top: 24px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .8rem;
+
+  .card-title {
+    font-weight: 600;
+    font-size: .95rem;
+    color: #1f2937;
+  }
+
+  .card-subtitle {
+    font-size: .78rem;
+    color: #6b7280;
+  }
 }
 
-/* ================================
-   EMPTY STATE
-================================ */
+/* BODY */
 
-.no-data {
-  text-align: center;
-  font-size: 1.05rem;
-  color: #94a3b8;
-  margin-top: 24px;
+.card-body {
+  margin-top: .6rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .8rem;
+  margin-bottom: .35rem;
+
+  span {
+    color: #64748b;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #1f2937;
+  }
+}
+
+/* ACCIONES MOBILE */
+
+.card-actions {
+  margin-top: .8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* ================================
@@ -197,10 +270,20 @@ button[mat-icon-button] {
 ================================ */
 
 mat-paginator {
-  margin-top: 18px;
-  border-top: 1px solid #eee;
-  border-radius: 10px;
+  margin-top: 1.2rem;
+  border-radius: 12px;
   background: #f7f9fc;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.no-sedes {
+  text-align: center;
+  padding: 2rem;
+  color: #94a3b8;
+  font-size: .9rem;
 }
 
 /* ================================
@@ -209,22 +292,28 @@ mat-paginator {
 
 @media (max-width: 768px) {
 
+  .tabla-sedes {
+    display: none;
+  }
+
+  .mobile-view {
+    display: block;
+  }
+
   .toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    justify-content: center;
   }
 
-  .filtro-container {
-    flex-direction: column;
-    align-items: stretch;
+}
 
-    .filter-input {
-      width: 100%;
-    }
+@media (max-width: 480px) {
 
-    .btn-limpiar {
-      width: 100%;
-      justify-content: center;
-    }
+  .sedes-container {
+    padding: 1rem;
   }
+
+  .sedes-card {
+    padding: 1.2rem;
+  }
+
 }

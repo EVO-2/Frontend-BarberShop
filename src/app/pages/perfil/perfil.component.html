@@ -96,17 +96,13 @@
         <!-- 🔹 Sede (solo visualización) -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Sede</mat-label>
-          <input matInput 
-                [value]="perfilForm.get('sede')?.value || ''" 
-                readonly />
+          <input matInput [value]="perfilForm.get('sede')?.value || ''" readonly />
         </mat-form-field>
 
         <!-- 🔹 Puesto de trabajo (solo visualización) -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Puesto de trabajo</mat-label>
-          <input matInput 
-                [value]="perfilForm.get('puestoTrabajo')?.value || ''" 
-                readonly />
+          <input matInput [value]="perfilForm.get('puestoTrabajo')?.value || ''" readonly />
         </mat-form-field>
       </ng-container>
 

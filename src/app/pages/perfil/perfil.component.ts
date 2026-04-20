@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'; 
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UsuarioService } from 'src/app/core/services/usuario.service';
@@ -30,7 +30,7 @@ export class PerfilComponent implements OnInit {
     private usuarioService: UsuarioService,
     private router: Router,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
@@ -129,7 +129,7 @@ export class PerfilComponent implements OnInit {
   }
 
   obtenerFotoUrl(foto: string): string {
-    return foto ? `${environment.baseUrl}/uploads/${foto}` : 'assets/img/default-avatar.png';
+    return foto ? foto : 'assets/img/default-avatar.png';
   }
 
   onFileSelected(event: Event): void {

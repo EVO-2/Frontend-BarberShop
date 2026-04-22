@@ -415,9 +415,6 @@ export class ReservarCitaComponent implements OnInit {
       return;
     }
 
-    // 🔒 ACTIVAR BLOQUEO
-    this.loading = true;
-
     const datos = this.reservarForm.value;
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
 
@@ -425,6 +422,23 @@ export class ReservarCitaComponent implements OnInit {
       ? this.usuarioLogueado?.clienteId
       : datos.cliente;
 
+    // 🚨 VALIDACIONES CRÍTICAS (ANTES DEL POST)
+    if (!clienteId) {
+      this.snackBar.open('Cliente no válido', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    if (!datos.sede || !datos.peluquero || !datos.puestoTrabajo) {
+      this.snackBar.open('Datos de sede o profesional incompletos', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    if (!datos.servicios || datos.servicios.length === 0) {
+      this.snackBar.open('Debes seleccionar al menos un servicio', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    // 🔥 PAYLOAD LIMPIO (CLAVE)
     const citaData = {
       cliente: clienteId,
       sede: datos.sede,
@@ -432,16 +446,19 @@ export class ReservarCitaComponent implements OnInit {
       puestoTrabajo: datos.puestoTrabajo,
       servicios: datos.servicios,
       fecha: fechaBase.toISOString(),
-      fechaBase: fechaBase.toISOString(),
       hora: datos.hora,
       observacion: datos.observaciones || ''
     };
+
+    console.log('📤 Payload cita:', citaData); // 👈 DEBUG REAL
+
+    this.loading = true;
 
     this.reservaService.crearCita(citaData).subscribe({
 
       next: () => {
 
-        this.loading = false; // 🔓 liberar botón
+        this.loading = false;
 
         this.snackBar.open('Cita creada exitosamente', 'Cerrar', { duration: 3000 });
 
@@ -452,7 +469,10 @@ export class ReservarCitaComponent implements OnInit {
 
       error: (err) => {
 
-        this.loading = false; // 🔓 liberar botón si falla
+        this.loading = false;
+
+        console.error('❌ Error completo:', err);
+        console.error('📩 Backend dice:', err.error);
 
         const mensaje = err.error?.mensaje?.includes('duplicate key')
           ? 'El peluquero ya tiene una cita en esa fecha y hora.'

@@ -14,6 +14,7 @@ import { SedeDialogComponent } from 'src/app/shared/components/sede-dialog/sede-
   styleUrls: ['./sedes.component.scss']
 })
 export class SedesComponent implements OnInit, AfterViewInit {
+
   displayedColumns: string[] = ['id', 'nombre', 'direccion', 'telefono', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Sede>([]);
 
@@ -52,7 +53,10 @@ export class SedesComponent implements OnInit, AfterViewInit {
   aplicarFiltro(event: Event): void {
     const filtro = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.dataSource.filter = filtro;
-    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   /** 🔹 Abrir diálogo para crear o editar sede */
@@ -68,20 +72,28 @@ export class SedesComponent implements OnInit, AfterViewInit {
         const mensaje = sede
           ? 'Sede actualizada correctamente'
           : 'Sede creada correctamente';
+
         this.snackBar.open(mensaje, 'Cerrar', { duration: 3000 });
         this.cargarSedes();
       }
     });
   }
 
-  /** 🔹 Cambiar estado de sede */
-  cambiarEstado(sede: Sede): void {
+  /** 🔹 Cambiar estado de sede (CORREGIDO) */
+  cambiarEstado(sede: Sede, nuevoEstado: boolean): void {
     if (!sede._id) return;
 
-    const nuevoEstado = !sede.estado;
+    const estadoAnterior = sede.estado;
+
+    // 🔥 UI optimista
+    sede.estado = nuevoEstado;
+
     this.sedeService.actualizarEstado(sede._id, nuevoEstado).subscribe({
-      next: () => {
-        sede.estado = nuevoEstado;
+      next: (sedeActualizada) => {
+
+        // 🔒 sincronización real con backend
+        sede.estado = sedeActualizada.estado;
+
         this.snackBar.open(
           `Sede ${nuevoEstado ? 'activada' : 'desactivada'}`,
           'Cerrar',
@@ -90,15 +102,25 @@ export class SedesComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('❌ Error al cambiar estado de la sede:', err);
-        this.snackBar.open('Error al cambiar estado de la sede', 'Cerrar', {
-          duration: 3000,
-        });
+
+        // 🔁 rollback si falla
+        sede.estado = estadoAnterior;
+
+        this.snackBar.open(
+          'Error al cambiar estado de la sede',
+          'Cerrar',
+          { duration: 3000 }
+        );
       },
     });
   }
 
+  /** 🔹 Limpiar filtro */
   limpiarFiltro(): void {
     this.dataSource.filter = '';
-    if (this.paginator) this.paginator.firstPage();
+
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 }

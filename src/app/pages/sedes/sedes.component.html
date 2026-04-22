@@ -83,7 +83,8 @@
               <mat-icon>edit</mat-icon>
             </button>
 
-            <mat-slide-toggle [checked]="sede.estado" (change)="cambiarEstado(sede)" color="primary"
+            <!-- ✅ CORREGIDO -->
+            <mat-slide-toggle [checked]="sede.estado" (change)="cambiarEstado(sede, $event.checked)" color="primary"
               matTooltip="Cambiar estado">
             </mat-slide-toggle>
 
@@ -145,7 +146,8 @@
             Editar
           </button>
 
-          <mat-slide-toggle [checked]="sede.estado" (change)="cambiarEstado(sede)" color="primary">
+          <!-- ✅ CORREGIDO -->
+          <mat-slide-toggle [checked]="sede.estado" (change)="cambiarEstado(sede, $event.checked)" color="primary">
             {{ sede.estado ? 'Activo' : 'Inactivo' }}
           </mat-slide-toggle>
 

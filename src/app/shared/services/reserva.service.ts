@@ -11,7 +11,7 @@ export interface CrearCitaPayload {
   puestoTrabajo: string;
   servicios: string[];
   fecha: string;
-  fechaBase: string;
+  // fechaBase: string;
   hora: string;
   observaciones?: string;
 }
@@ -28,7 +28,7 @@ export interface ReprogramarCitaPayload {
 export class ReservaService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getClientes(): Observable<any> {
     return this.http.get(`${this.apiUrl}/clientes`);

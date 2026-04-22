@@ -20,7 +20,7 @@ export class SedeDialogComponent implements OnInit {
     private sedeService: SedeService,
     private snack: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data?: Sede
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -48,7 +48,15 @@ export class SedeDialogComponent implements OnInit {
     if (this.form.invalid) return;
 
     this.cargando = true;
-    const sedeData: Sede = this.form.value;
+
+    const formValue = this.form.value;
+
+    const sedeData: Sede = {
+      nombre: formValue.nombre.trim(),
+      direccion: formValue.direccion.trim(),
+      telefono: formValue.telefono.trim(),
+      estado: formValue.estado ?? true
+    };
 
     const peticion = this.data
       ? this.sedeService.actualizarSede(this.data._id!, sedeData)
@@ -63,7 +71,8 @@ export class SedeDialogComponent implements OnInit {
         );
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Error al guardar sede:', err);
         this.snack.open('Error al guardar la sede', 'Cerrar', { duration: 3000 });
         this.cargando = false;
       },

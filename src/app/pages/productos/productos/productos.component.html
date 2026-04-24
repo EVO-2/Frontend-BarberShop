@@ -19,9 +19,9 @@
     <div class="toolbar">
 
       <mat-form-field appearance="outline" class="filter-input">
-        <mat-label>Buscar producto (Nombre o Categoría)</mat-label>
+        <mat-label>Buscar producto</mat-label>
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ej. Shampoo..." />
+        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Nombre o Categoría..." />
       </mat-form-field>
 
       <button mat-stroked-button color="warn" class="btn-limpiar" (click)="limpiarFiltros()"

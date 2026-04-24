@@ -103,4 +103,14 @@ export class ProductosService {
     activarProducto(id: string): Observable<any> {
         return this.http.put(`${this.apiUrl}/activar/${id}`, {});
     }
+
+    // =========================
+    // 📷 Subir Imagen
+    // =========================
+    subirImagen(id: string, archivo: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('imagen', archivo);
+
+        return this.http.post(`${this.apiUrl}/${id}/imagen`, formData);
+    }
 }

@@ -5,6 +5,23 @@
 
 <mat-dialog-content [formGroup]="form" class="dialog-content">
 
+  <!-- ================= IMAGEN ================= -->
+  <div class="image-upload-container">
+    <div class="image-preview" *ngIf="imagenPreview; else noImage">
+      <img [src]="imagenPreview" alt="Vista previa">
+      <button mat-icon-button color="warn" type="button" class="btn-remove" (click)="removerImagen()" matTooltip="Remover imagen">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    <ng-template #noImage>
+      <div class="image-placeholder" (click)="fileInput.click()">
+        <mat-icon>add_a_photo</mat-icon>
+        <span>Añadir foto</span>
+      </div>
+    </ng-template>
+    <input type="file" #fileInput style="display: none" accept="image/*" (change)="onFileSelected($event)">
+  </div>
+
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Nombre del producto</mat-label>
     <input matInput formControlName="nombre" />

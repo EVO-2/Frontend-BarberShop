@@ -5,7 +5,8 @@ import { ProductosService } from 'src/app/core/services/productos.service';
 import { SedeService } from 'src/app/core/services/sede.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-producto-dialog',
@@ -21,6 +22,9 @@ export class ProductoDialogComponent implements OnInit {
   categorias: any[] = [];
   proveedores: any[] = [];
   sedes: any[] = [];
+
+  archivoImagen: File | null = null;
+  imagenPreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -50,6 +54,10 @@ export class ProductoDialogComponent implements OnInit {
         precio: p?.precio ?? 0,
         estado: p?.estado ?? true
       });
+
+      if (p?.imagen) {
+        this.imagenPreview = p.imagen;
+      }
     }
   }
 
@@ -144,7 +152,17 @@ export class ProductoDialogComponent implements OnInit {
       : this.productosService.crearProducto(payload);
 
     request
-      .pipe(finalize(() => this.loading = false))
+      .pipe(
+        switchMap((resp: any) => {
+          const productoId = this.esEdicion ? this.data.producto._id : (resp.producto?._id || resp._id);
+          
+          if (this.archivoImagen && productoId) {
+            return this.productosService.subirImagen(productoId, this.archivoImagen);
+          }
+          return of(resp);
+        }),
+        finalize(() => this.loading = false)
+      )
       .subscribe({
         next: () => {
           this.dialogRef.close(true);
@@ -153,6 +171,27 @@ export class ProductoDialogComponent implements OnInit {
           console.error('❌ Error guardando producto', err);
         }
       });
+  }
+
+  // =========================
+  // 📷 Imagen
+  // =========================
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.archivoImagen = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagenPreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removerImagen() {
+    this.archivoImagen = null;
+    this.imagenPreview = null;
   }
 
   cerrar() {

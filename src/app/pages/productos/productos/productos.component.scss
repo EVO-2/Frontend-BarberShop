@@ -108,25 +108,79 @@ table {
 }
 
 /* =======================
-   ESTADO
+   🔥 ESTADO PRO (ANIMADO)
 ======================= */
 
 .estado {
-    padding: 4px 10px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
     font-size: 12px;
-    display: inline-block;
-    white-space: nowrap;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    transition: all 0.25s ease;
+    transform: scale(1);
 }
 
+/* 🟢 ACTIVO */
 .estado.activo {
-    background: #e6f9f0;
-    color: #0f766e;
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
 }
 
+/* 🔴 INACTIVO */
 .estado.inactivo {
-    background: #fdecec;
+    background: #fee2e2;
     color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+/* 🔥 EFECTO CLICK */
+.estado:active {
+    transform: scale(0.95);
+}
+
+/* ICONO */
+.estado-icon {
+    font-size: 16px;
+}
+
+/* =======================
+   🔥 TOGGLE PRO
+======================= */
+
+/* base */
+.toggle-estado {
+    transition: all 0.3s ease;
+}
+
+/* 🟢 ACTIVO */
+.toggle-activo .mdc-switch__track {
+    background-color: #22c55e !important;
+}
+
+/* 🔴 INACTIVO */
+.toggle-inactivo .mdc-switch__track {
+    background-color: #ef4444 !important;
+}
+
+/* círculo */
+.toggle-estado .mdc-switch__handle {
+    transition: all 0.3s ease;
+}
+
+/* hover */
+.toggle-estado:hover {
+    transform: scale(1.05);
+}
+
+/* click */
+.toggle-estado:active {
+    transform: scale(0.95);
 }
 
 /* =======================
@@ -143,7 +197,7 @@ table {
 }
 
 /* =======================
-   🔥 MOBILE VIEW PRO (FIX TOTAL)
+   🔥 MOBILE VIEW PRO
 ======================= */
 
 .mobile-view {
@@ -152,7 +206,7 @@ table {
     gap: 14px;
 }
 
-/* CARD PRODUCTO MODERNA */
+/* CARD PRODUCTO */
 .card-producto {
     background: #fff;
     border: 1px solid #eee;
@@ -189,7 +243,6 @@ table {
     display: flex;
     flex-direction: column;
     gap: 4px;
-
     min-width: 0;
 }
 
@@ -230,14 +283,13 @@ table {
 }
 
 /* =======================
-   🔥 ACCIONES MOBILE (FIX FINAL)
+   ACCIONES MOBILE
 ======================= */
 
 .card-actions {
     display: flex;
     flex-direction: column;
     gap: 6px;
-
     flex-shrink: 0;
     align-items: flex-end;
     justify-content: center;

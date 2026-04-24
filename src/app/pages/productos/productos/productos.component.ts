@@ -231,16 +231,20 @@ export class ProductosComponent implements OnInit {
   cambiarEstado(producto: Producto) {
     if (!this.tienePermiso('editar_producto')) return;
 
+    const nuevoEstado = !producto.estado;
+
+    // 🔥 Optimistic UI (respuesta inmediata)
+    producto.estado = nuevoEstado;
+
     this.productosService
-      .cambiarEstado(producto._id, !producto.estado)
+      .cambiarEstado(producto._id, nuevoEstado)
       .subscribe({
-        next: () => {
-          producto.estado = !producto.estado;
-        },
-        error: () => { }
+        next: () => { },
+        error: () => {
+          producto.estado = !nuevoEstado;
+        }
       });
   }
-
   onImageError(event: Event) {
     const img = event.target as HTMLImageElement;
 

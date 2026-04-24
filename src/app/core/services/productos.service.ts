@@ -89,4 +89,18 @@ export class ProductosService {
             { estado }
         );
     }
+
+    // =========================
+    // 🔴 Desactivar producto
+    // =========================
+    desactivarProducto(id: string): Observable<any> {
+        return this.http.put(`${this.apiUrl}/desactivar/${id}`, {});
+    }
+
+    // =========================
+    // 🟢 Activar producto
+    // =========================
+    activarProducto(id: string): Observable<any> {
+        return this.http.put(`${this.apiUrl}/activar/${id}`, {});
+    }
 }

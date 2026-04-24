@@ -3,27 +3,26 @@
 ======================= */
 
 .container {
-    padding: 2rem;
-    background: #f4f6fb;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
+  padding: 2rem;
+  background: #f4f6fb;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
 /* CARD PRINCIPAL */
 mat-card.card {
-    width: 100%;
-    max-width: 1200px;
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    overflow: hidden;
-    min-width: 0;
+  width: 100%;
+  max-width: 1200px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: hidden;
+  min-width: 0;
 }
 
 /* =======================
@@ -31,18 +30,26 @@ mat-card.card {
 ======================= */
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #edf2f7;
+  padding-bottom: 1rem;
 }
 
 .title {
-    display: flex;
-    gap: .5rem;
-    font-size: 1.4rem;
-    font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
+
+  mat-icon {
+    transform: scale(1.2);
+  }
 }
 
 /* =======================
@@ -50,16 +57,22 @@ mat-card.card {
 ======================= */
 
 .toolbar {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .filter-input {
+    flex: 1;
+    min-width: 250px;
+  }
 }
 
-.toolbar mat-form-field {
-    flex: 1;
-    min-width: 180px;
+.btn-limpiar {
+  height: 54px;
+  border-radius: 8px;
 }
 
 /* =======================
@@ -67,44 +80,74 @@ mat-card.card {
 ======================= */
 
 .tabla-usuarios {
-    width: 100%;
-    overflow-x: auto;
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #edf2f7;
 }
 
 table {
-    width: 100%;
-    min-width: 900px;
+  width: 100%;
+  min-width: 800px; /* Reducido para evitar scroll en pantallas normales */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th.mat-header-cell {
+  background: #f8fafc;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px;
+}
+
+td.mat-cell {
+  padding: 12px 16px;
+  color: #2d3748;
+  vertical-align: middle;
+  border-bottom: 1px solid #edf2f7;
 }
 
 /* IMAGEN */
+.mat-column-imagen {
+  width: 70px;
+  text-align: center;
+}
+
 .img-producto {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    object-fit: cover;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 auto;
 }
 
 /* =======================
-   BADGES
+   BADGES Y ESTILOS DE TEXTO
 ======================= */
 
 .badge-venta,
 .badge-interno {
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    display: inline-block;
-    white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .badge-venta {
-    background: #e0f2fe;
-    color: #0369a1;
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 .badge-interno {
-    background: #fef3c7;
-    color: #92400e;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 /* =======================
@@ -112,75 +155,52 @@ table {
 ======================= */
 
 .estado {
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-
-    transition: all 0.25s ease;
-    transform: scale(1);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
 }
 
-/* 🟢 ACTIVO */
 .estado.activo {
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #86efac;
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
 }
 
-/* 🔴 INACTIVO */
 .estado.inactivo {
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fca5a5;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
 }
 
-/* 🔥 EFECTO CLICK */
-.estado:active {
-    transform: scale(0.95);
-}
-
-/* ICONO */
 .estado-icon {
-    font-size: 16px;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 /* =======================
    🔥 TOGGLE PRO
 ======================= */
 
-/* base */
 .toggle-estado {
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-/* 🟢 ACTIVO */
-.toggle-activo .mdc-switch__track {
-    background-color: #22c55e !important;
+.toggle-activo ::ng-deep .mdc-switch__track {
+  background-color: #22c55e !important;
 }
 
-/* 🔴 INACTIVO */
-.toggle-inactivo .mdc-switch__track {
-    background-color: #ef4444 !important;
+.toggle-inactivo ::ng-deep .mdc-switch__track {
+  background-color: #ef4444 !important;
 }
 
-/* círculo */
-.toggle-estado .mdc-switch__handle {
-    transition: all 0.3s ease;
-}
-
-/* hover */
 .toggle-estado:hover {
-    transform: scale(1.05);
-}
-
-/* click */
-.toggle-estado:active {
-    transform: scale(0.95);
+  transform: scale(1.05);
 }
 
 /* =======================
@@ -188,12 +208,12 @@ table {
 ======================= */
 
 .acciones {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 /* =======================
@@ -201,108 +221,87 @@ table {
 ======================= */
 
 .mobile-view {
-    display: none;
-    flex-direction: column;
-    gap: 14px;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* CARD PRODUCTO */
 .card-producto {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 14px;
-    padding: 12px;
-
-    display: flex;
-    gap: 12px;
-    align-items: center;
-
-    min-width: 0;
-    overflow: hidden;
-
-    transition: all 0.25s ease;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
 }
 
 .card-producto:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
-/* IMAGEN */
+.card-header-mobile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .img-mobile {
-    width: 72px;
-    height: 72px;
-    border-radius: 10px;
-    object-fit: cover;
-    flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* INFO */
 .card-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
-/* TITULO */
 .card-title {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: #111827;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #1a202c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }
 
-/* DESCRIPCION */
-.card-desc {
-    font-size: 0.85rem;
-    color: #6b7280;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+.card-subtitle {
+  font-size: 0.85rem;
+  color: #718096;
+  margin: 0;
 }
 
-/* PRECIO */
-.card-price {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #16a34a;
+.card-price-stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5568;
 }
 
-/* BADGES */
-.card-badges {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+.price-tag {
+  color: #16a34a;
 }
 
-/* =======================
-   ACCIONES MOBILE
-======================= */
-
-.card-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex-shrink: 0;
-    align-items: flex-end;
-    justify-content: center;
-}
-
-.card-actions button {
-    border-radius: 10px;
-    min-width: 38px;
-    min-height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.card-actions-mobile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #edf2f7;
 }
 
 /* =======================
@@ -310,9 +309,14 @@ table {
 ======================= */
 
 .no-data {
-    text-align: center;
-    padding: 2rem;
-    color: #888;
+  text-align: center;
+  padding: 3rem;
+  color: #718096;
+  font-size: 1.1rem;
+  font-weight: 500;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
 }
 
 /* =======================
@@ -320,18 +324,25 @@ table {
 ======================= */
 
 @media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
 
-    table {
-        display: none;
-    }
+  mat-card.card {
+    padding: 1rem;
+  }
 
-    .mobile-view {
-        display: flex;
-    }
+  .tabla-usuarios {
+    display: none;
+  }
 
-    .header,
-    .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .mobile-view {
+    display: flex;
+  }
+
+  .header,
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

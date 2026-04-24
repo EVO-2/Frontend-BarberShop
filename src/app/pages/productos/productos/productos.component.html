@@ -19,12 +19,12 @@
     <div class="toolbar">
 
       <mat-form-field appearance="outline" class="filter-input">
-        <mat-label>Buscar producto</mat-label>
+        <mat-label>Buscar producto (Nombre o Categoría)</mat-label>
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput (keyup)="aplicarFiltro($event)" />
+        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ej. Shampoo..." />
       </mat-form-field>
 
-      <button mat-stroked-button color="warn" class="btn-limpiar" (click)="limpiarFiltros()">
+      <button mat-stroked-button color="warn" class="btn-limpiar" (click)="limpiarFiltros()" matTooltip="Limpiar filtros">
         <mat-icon>cleaning_services</mat-icon>
         Limpiar
       </button>
@@ -38,7 +38,7 @@
 
         <!-- IMAGEN -->
         <ng-container matColumnDef="imagen">
-          <th mat-header-cell *matHeaderCellDef>Imagen</th>
+          <th mat-header-cell *matHeaderCellDef>Foto</th>
           <td mat-cell *matCellDef="let p">
             <img [src]="p.imagen || imagenFallback" (error)="p.imagen = imagenFallback" class="img-producto"
               alt="producto" />
@@ -49,7 +49,7 @@
         <ng-container matColumnDef="nombre">
           <th mat-header-cell *matHeaderCellDef>Nombre</th>
           <td mat-cell *matCellDef="let p">
-            {{ p.nombre }}
+            <strong>{{ p.nombre }}</strong>
           </td>
         </ng-container>
 
@@ -92,7 +92,7 @@
 
         <!-- CANTIDAD -->
         <ng-container matColumnDef="cantidad">
-          <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+          <th mat-header-cell *matHeaderCellDef>Stock</th>
           <td mat-cell *matCellDef="let p">
             {{ p.cantidad }}
           </td>
@@ -112,11 +112,9 @@
           <td mat-cell *matCellDef="let p">
 
             <span class="estado" [class.activo]="p.estado" [class.inactivo]="!p.estado">
-
               <mat-icon class="estado-icon">
                 {{ p.estado ? 'check_circle' : 'cancel' }}
               </mat-icon>
-
               {{ p.estado ? 'Activo' : 'Inactivo' }}
             </span>
 
@@ -128,12 +126,12 @@
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let p" class="acciones">
 
-            <button mat-icon-button color="primary" *ngIf="tienePermiso('editar_producto')" (click)="editarProducto(p)">
+            <button mat-icon-button color="primary" *ngIf="tienePermiso('editar_producto')" (click)="editarProducto(p)" matTooltip="Editar producto">
               <mat-icon>edit</mat-icon>
             </button>
 
             <mat-slide-toggle class="toggle-estado" *ngIf="tienePermiso('editar_producto')" [checked]="p.estado"
-              (change)="cambiarEstado(p)" [matTooltip]="p.estado ? 'Desactivar producto' : 'Activar producto'"
+              (change)="cambiarEstado(p)" [matTooltip]="p.estado ? 'Desactivar' : 'Activar'"
               [ngClass]="{
                 'toggle-activo': p.estado,
                 'toggle-inactivo': !p.estado
@@ -155,30 +153,43 @@
 
       <div class="card-producto" *ngFor="let p of dataSource.data">
 
-        <img [src]="p.imagen || imagenFallback" (error)="p.imagen = imagenFallback" class="img-mobile" />
+        <!-- Fila superior: Imagen e info básica -->
+        <div class="card-header-mobile">
+          <img [src]="p.imagen || imagenFallback" (error)="p.imagen = imagenFallback" class="img-mobile" />
 
-        <div class="info">
-          <h3>{{ p.nombre }}</h3>
-
-          <p>{{ p.categoria?.nombre || 'Sin categoría' }}</p>
-
-          <small>
-            Stock: {{ p.cantidad }} |
-            {{ p.precio | currency:'COP' }}
-          </small>
-
-          <!-- 🔥 ESTADO MOBILE PRO -->
-          <div class="estado-mobile">
-            <span class="estado" [class.activo]="p.estado" [class.inactivo]="!p.estado">
-
-              <mat-icon class="estado-icon">
-                {{ p.estado ? 'check_circle' : 'cancel' }}
-              </mat-icon>
-
-              {{ p.estado ? 'Activo' : 'Inactivo' }}
-            </span>
+          <div class="card-info">
+            <h3 class="card-title">{{ p.nombre }}</h3>
+            <p class="card-subtitle">{{ p.categoria?.nombre || 'Sin categoría' }}</p>
+            
+            <div class="card-price-stock">
+              <span>Stock: {{ p.cantidad }}</span>
+              <span>•</span>
+              <span class="price-tag">{{ p.precio | currency:'COP':'symbol' }}</span>
+            </div>
           </div>
+        </div>
 
+        <!-- Fila inferior: Estado y Acciones -->
+        <div class="card-actions-mobile">
+          <span class="estado" [class.activo]="p.estado" [class.inactivo]="!p.estado">
+            <mat-icon class="estado-icon">
+              {{ p.estado ? 'check_circle' : 'cancel' }}
+            </mat-icon>
+            {{ p.estado ? 'Activo' : 'Inactivo' }}
+          </span>
+
+          <div class="acciones" *ngIf="tienePermiso('editar_producto')">
+            <button mat-icon-button color="primary" (click)="editarProducto(p)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <mat-slide-toggle class="toggle-estado" [checked]="p.estado"
+              (change)="cambiarEstado(p)"
+              [ngClass]="{
+                'toggle-activo': p.estado,
+                'toggle-inactivo': !p.estado
+              }">
+            </mat-slide-toggle>
+          </div>
         </div>
 
       </div>
@@ -187,7 +198,8 @@
 
     <!-- EMPTY -->
     <div *ngIf="dataSource.data.length === 0" class="no-data">
-      No hay productos registrados
+      <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #cbd5e1; margin-bottom: 1rem;">inventory</mat-icon>
+      <p>No hay productos registrados o no coinciden con la búsqueda.</p>
     </div>
 
     <!-- PAGINADOR -->

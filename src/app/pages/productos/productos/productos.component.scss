@@ -65,14 +65,23 @@ mat-card.card {
   width: 100%;
 
   .filter-input {
-    flex: 1;
-    min-width: 250px;
+    flex: 1 1 100%;
+    min-width: 200px;
+    
+    @media (min-width: 600px) {
+      flex: 1;
+    }
   }
 }
 
 .btn-limpiar {
   height: 54px;
   border-radius: 8px;
+  width: 100%;
+  
+  @media (min-width: 600px) {
+    width: auto;
+  }
 }
 
 /* =======================
@@ -88,31 +97,32 @@ mat-card.card {
 
 table {
   width: 100%;
-  min-width: 800px; /* Reducido para evitar scroll en pantallas normales */
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: auto;
 }
 
 th.mat-header-cell {
   background: #f8fafc;
   color: #4a5568;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 16px;
+  padding: 12px 8px;
 }
 
 td.mat-cell {
-  padding: 12px 16px;
+  padding: 10px 8px;
   color: #2d3748;
   vertical-align: middle;
   border-bottom: 1px solid #edf2f7;
+  word-wrap: break-word;
 }
 
 /* IMAGEN */
 .mat-column-imagen {
-  width: 70px;
+  width: 60px;
   text-align: center;
 }
 
@@ -246,24 +256,25 @@ td.mat-cell {
 
 .card-header-mobile {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
 }
 
 .img-mobile {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
   object-fit: cover;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 4px;
 }
 
 .card-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -271,9 +282,9 @@ td.mat-cell {
   font-weight: 700;
   font-size: 1.1rem;
   color: #1a202c;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.3;
   margin: 0;
 }
 
@@ -281,19 +292,23 @@ td.mat-cell {
   font-size: 0.85rem;
   color: #718096;
   margin: 0;
+  word-wrap: break-word;
 }
 
 .card-price-stock {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #4a5568;
+  margin-top: 4px;
+  word-wrap: break-word;
 }
 
 .price-tag {
   color: #16a34a;
+  font-size: 1.05rem;
 }
 
 .card-actions-mobile {
@@ -323,7 +338,7 @@ td.mat-cell {
    RESPONSIVE
 ======================= */
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   .container {
     padding: 1rem;
   }

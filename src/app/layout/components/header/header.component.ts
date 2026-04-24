@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
     });
 
     // Suscribirse al avatar
-    this.authService.avatarUrl$.subscribe((url) => {
+    this.authService.fotoPerfil$.subscribe((url) => {
       this.fotoPerfilUrl = url || 'assets/img/default-avatar.png';
     });
 
@@ -37,8 +37,14 @@ export class HeaderComponent implements OnInit {
       const formData = new FormData();
       formData.append('foto', file);
 
-      this.authService.actualizarPerfil(formData).subscribe({
-        next: () => this.authService.refrescarUsuario(),
+      if (!this.usuario?._id && !this.usuario?.id) return;
+      const userId = this.usuario._id || this.usuario.id;
+
+      this.authService.subirFotoPerfil(userId, formData).subscribe({
+        next: (resp) => {
+          this.authService.actualizarFoto(resp.foto);
+          this.authService.refrescarUsuario();
+        },
         error: (err) => console.error('Error al actualizar la foto:', err)
       });
     }

@@ -1,6 +1,23 @@
 <h2 mat-dialog-title>{{ titulo }}</h2>
 
 <mat-dialog-content [formGroup]="usuarioForm">
+  <!-- ================= FOTO DE PERFIL ================= -->
+  <div class="image-upload-container">
+    <div class="image-preview" *ngIf="fotoPreview; else noImage">
+      <img [src]="fotoPreview" alt="Vista previa">
+      <button mat-icon-button color="warn" type="button" class="btn-remove" (click)="removerFoto()" matTooltip="Remover foto">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    <ng-template #noImage>
+      <div class="image-placeholder" (click)="fileInput.click()">
+        <mat-icon>add_a_photo</mat-icon>
+        <span>Añadir foto</span>
+      </div>
+    </ng-template>
+    <input type="file" #fileInput style="display: none" accept="image/*" (change)="onFileSelected($event)">
+  </div>
+
   <!-- Datos básicos -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Nombre -->

@@ -14,7 +14,7 @@ import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.componen
   styleUrls: ['./usuarios.component.scss'],
 })
 export class UsuariosComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['id', 'nombre', 'correo', 'rol', 'estado', 'acciones'];
+  displayedColumns: string[] = ['foto', 'id', 'nombre', 'correo', 'rol', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;

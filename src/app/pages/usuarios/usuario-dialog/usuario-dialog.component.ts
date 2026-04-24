@@ -10,6 +10,8 @@ import { telefonoValido, passwordsIguales } from 'src/app/shared/validators/vali
 import { passwordSegura } from 'src/app/shared/validators/password-segura.validator';
 import { emailExisteValidator } from 'src/app/shared/validators/email-existe.validator';
 import { AuthService } from 'src/app/auth/auth.service';
+import { finalize, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -33,6 +35,9 @@ export class UsuarioDialogComponent implements OnInit {
 
   hidePassword = true;
   hideConfirmPassword = true;
+
+  archivoFoto: File | null = null;
+  fotoPreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -169,6 +174,10 @@ export class UsuarioDialogComponent implements OnInit {
           sede: detalles.sede?._id || detalles.sede,
         });
 
+        if (usuarioCompleto.foto) {
+          this.fotoPreview = usuarioCompleto.foto;
+        }
+
         this.usuarioForm.get('correo')?.clearAsyncValidators();
         this.usuarioForm.get('correo')?.updateValueAndValidity();
         this.toggleCamposExtendidos(rol);
@@ -250,10 +259,41 @@ export class UsuarioDialogComponent implements OnInit {
       ? this.usuarioService.crearUsuario(datos)
       : this.usuarioService.actualizarUsuario(this.data.usuarioId, datos);
 
-    accion.subscribe({
+    accion.pipe(
+      switchMap((resp: any) => {
+        const userId = this.modo === 'crear' ? (resp.usuario?._id || resp._id) : this.data.usuarioId;
+        
+        if (this.archivoFoto && userId) {
+          const formData = new FormData();
+          formData.append('foto', this.archivoFoto);
+          return this.usuarioService.actualizarFoto(userId, formData);
+        }
+        return of(resp);
+      })
+    ).subscribe({
       next: () => this.dialogRef.close(true),
       error: (err) => console.error(`❌ Error al ${this.modo === 'crear' ? 'crear' : 'actualizar'} usuario:`, err)
     });
+  }
+
+  // =========================
+  // 📷 Foto
+  // =========================
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.archivoFoto = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.fotoPreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removerFoto() {
+    this.archivoFoto = null;
+    this.fotoPreview = null;
   }
 
   cerrar(): void {

@@ -48,6 +48,9 @@ export interface DashboardResumen {
         nombre: string;
         total: number;
     }[];
+
+    // 🔥 NUEVO KPI: INGRESOS PRODUCTOS HOY
+    ingresosProductosHoy: number;
 }
 
 @Injectable({

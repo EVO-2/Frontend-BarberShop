@@ -122,6 +122,10 @@ export class DashboardComponent implements OnInit {
     return this.resumen?.productosTop || [];
   }
 
+  get ingresosProductosHoy(): number {
+    return this.resumen?.ingresosProductosHoy || 0;
+  }
+
   /* ================================
      CARGAR DASHBOARD
   ================================ */

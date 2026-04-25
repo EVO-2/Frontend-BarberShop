@@ -283,6 +283,25 @@
 
             </div>
 
+            <!-- KPI INGRESOS PRODUCTOS -->
+            <div class="product-kpi-container" style="margin-top: 1.5rem;" *ngIf="ingresosProductosHoy > 0">
+                <mat-card class="kpi-card warning" style="max-width: 350px; margin: 0 auto; background: linear-gradient(135deg, #1f2937 0%, #111827 100%);">
+                    <div class="kpi-header">
+                        <div class="kpi-icon">
+                            <mat-icon>request_quote</mat-icon>
+                        </div>
+                        <span class="kpi-title">Ingreso Diario (Productos)</span>
+                    </div>
+
+                    <div class="kpi-body">
+                        <div class="kpi-value" style="color: #facc15;">
+                            ${{ ingresosProductosHoy | number }}
+                        </div>
+                        <div class="kpi-subvalue">Ventas de hoy</div>
+                    </div>
+                </mat-card>
+            </div>
+
         </div>
 
         <!-- ================= TABLA ================= -->

@@ -123,6 +123,8 @@ td.mat-cell {
 .mat-column-imagen {
     width: 60px;
     text-align: center;
+    overflow: visible !important;
+    /* Permite que el zoom salga de la celda */
 }
 
 .img-producto {
@@ -141,12 +143,12 @@ td.mat-cell {
 
 /* Efecto de zoom masivo en desktop al hacer hover */
 .img-producto:hover {
-    transform: scale(2.5);
+    transform: scale(3) translateY(-5px);
     border-radius: 12px;
     /* Pasa de círculo a cuadrado redondeado para ver el producto completo */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 50;
-    /* Para que quede por encima del texto de la tabla */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    /* Para que quede por encima de absolutamente todo en la tabla */
 }
 
 /* =======================

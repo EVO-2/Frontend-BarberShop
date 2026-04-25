@@ -154,40 +154,43 @@
 
       <div class="card-producto" *ngFor="let p of dataSource.data">
 
-        <!-- Fila superior: Imagen e info básica -->
-        <div class="card-header-mobile">
-          <img [src]="p.imagen || imagenFallback" (error)="p.imagen = imagenFallback" class="img-mobile" />
-
-          <div class="card-info">
-            <h3 class="card-title">{{ p.nombre }}</h3>
-            <p class="card-subtitle">{{ p.categoria?.nombre || 'Sin categoría' }}</p>
-
-            <div class="card-price-stock">
-              <span>Stock: {{ p.cantidad }}</span>
-              <span class="price-tag">{{ p.precio | currency:'COP':'symbol' }}</span>
-            </div>
-          </div>
+        <!-- 🖼️ IMAGEN FULL WIDTH TOP -->
+        <div class="card-img-wrapper">
+          <img [src]="p.imagen || imagenFallback" (error)="p.imagen = imagenFallback" class="img-mobile-full" />
         </div>
 
-        <!-- Fila inferior: Estado y Acciones -->
-        <div class="card-actions-mobile">
-          <span class="estado" [class.activo]="p.estado" [class.inactivo]="!p.estado">
-            <mat-icon class="estado-icon">
-              {{ p.estado ? 'check_circle' : 'cancel' }}
-            </mat-icon>
-            {{ p.estado ? 'Activo' : 'Inactivo' }}
-          </span>
-
-          <div class="acciones" *ngIf="tienePermiso('editar_producto')">
-            <button mat-icon-button color="primary" (click)="editarProducto(p)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <mat-slide-toggle class="toggle-estado" [checked]="p.estado" (change)="cambiarEstado(p)" [ngClass]="{
-                'toggle-activo': p.estado,
-                'toggle-inactivo': !p.estado
-              }">
-            </mat-slide-toggle>
+        <!-- 📝 CONTENIDO DE LA TARJETA -->
+        <div class="card-content-mobile">
+          
+          <div class="card-header-info">
+            <h3 class="card-title">{{ p.nombre }}</h3>
+            <span class="price-tag">{{ p.precio | currency:'COP':'symbol' }}</span>
           </div>
+
+          <p class="card-subtitle">{{ p.categoria?.nombre || 'Sin categoría' }}</p>
+          <p class="card-stock">📦 Stock disponible: {{ p.cantidad }} unid.</p>
+
+          <!-- ⚙️ ESTADO Y ACCIONES -->
+          <div class="card-actions-mobile">
+            <span class="estado" [class.activo]="p.estado" [class.inactivo]="!p.estado">
+              <mat-icon class="estado-icon">
+                {{ p.estado ? 'check_circle' : 'cancel' }}
+              </mat-icon>
+              {{ p.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+
+            <div class="acciones" *ngIf="tienePermiso('editar_producto')">
+              <button mat-icon-button color="primary" (click)="editarProducto(p)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <mat-slide-toggle class="toggle-estado" [checked]="p.estado" (change)="cambiarEstado(p)" [ngClass]="{
+                  'toggle-activo': p.estado,
+                  'toggle-inactivo': !p.estado
+                }">
+              </mat-slide-toggle>
+            </div>
+          </div>
+
         </div>
 
       </div>

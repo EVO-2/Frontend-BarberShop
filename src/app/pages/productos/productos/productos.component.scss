@@ -90,10 +90,10 @@ mat-card.card {
 
 table {
     width: 100%;
+    min-width: 1200px; /* Fuerza el scroll horizontal en pantallas medianas/pequeñas */
     border-collapse: separate;
     border-spacing: 0;
-    table-layout: fixed;
-    /* Forzar ajuste al contenedor */
+    table-layout: auto;
 }
 
 th.mat-header-cell {
@@ -103,20 +103,16 @@ th.mat-header-cell {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 12px 8px;
-    white-space: normal;
+    padding: 12px 16px; /* Más espacio lateral */
+    white-space: nowrap; /* Evita que el título se divida en dos líneas */
 }
 
 td.mat-cell {
-    padding: 10px 8px;
+    padding: 10px 16px;
     color: #2d3748;
     vertical-align: middle;
     border-bottom: 1px solid #edf2f7;
-    word-wrap: break-word;
-    white-space: normal;
-    /* Evita que Angular Material fuerce nowrap */
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap; /* Evita que el contenido haga saltos de línea */
 }
 
 /* IMAGEN */

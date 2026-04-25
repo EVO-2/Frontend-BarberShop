@@ -1,0 +1,128 @@
+<div class="contenedor">
+
+  <div class="header-ventas">
+    <h2 class="titulo">Tienda de Productos</h2>
+
+    <button mat-fab extended color="primary" class="btn-carrito" (click)="mostrarCarrito = !mostrarCarrito" *ngIf="carrito.length > 0">
+      <mat-icon>shopping_cart</mat-icon>
+      <span class="badge" *ngIf="cantidadItemsCarrito > 0">{{ cantidadItemsCarrito }}</span>
+      Ver Carrito ({{ totalCarrito | currency:'COP':'symbol':'1.0-0' }})
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="filter-input">
+      <mat-label>Buscar producto</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ej. Cera, Gel, Shampoo..." [value]="textoBusqueda" />
+    </mat-form-field>
+  </div>
+
+  <!-- 🔄 Loader -->
+  <div *ngIf="cargando" class="estado">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- ❌ Error -->
+  <div *ngIf="error" class="estado error">
+    {{ error }}
+  </div>
+
+  <!-- 📦 Lista de Productos -->
+  <div class="grid" *ngIf="!cargando && productosFiltrados.length > 0">
+
+    <div class="card-producto" *ngFor="let p of productosFiltrados" [class.sin-stock]="p.cantidad === 0">
+
+      <!-- 🖼 Imagen principal -->
+      <div class="imagen-container">
+        <img [src]="p.imagen || imagenFallback" [alt]="p.nombre" loading="lazy" (error)="p.imagen = imagenFallback">
+        <div class="badge-stock" *ngIf="p.cantidad === 0">Agotado</div>
+      </div>
+
+      <!-- 📄 Contenido -->
+      <div class="contenido">
+        
+        <div class="info-top">
+          <h3 class="nombre">{{ p.nombre }}</h3>
+          <p class="categoria">{{ p.categoria?.nombre || 'General' }}</p>
+        </div>
+
+        <div class="info-bottom">
+          <div class="precio-stock">
+            <span class="precio">{{ p.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="stock" [class.texto-rojo]="p.cantidad < 5">Stock: {{ p.cantidad }} disponibles</span>
+          </div>
+
+          <button mat-mini-fab color="primary" class="btn-add" [disabled]="p.cantidad === 0" (click)="agregarAlCarrito(p)">
+            <mat-icon>add_shopping_cart</mat-icon>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 📭 Sin productos -->
+  <div *ngIf="!cargando && productosFiltrados.length === 0" class="estado-vacio">
+    <mat-icon>inventory_2</mat-icon>
+    <p>No hay productos disponibles en este momento.</p>
+  </div>
+
+</div>
+
+<!-- 🛒 Carrito Overlay Sidebar -->
+<div class="carrito-overlay" [class.abierto]="mostrarCarrito" (click)="mostrarCarrito = false"></div>
+<div class="carrito-sidebar" [class.abierto]="mostrarCarrito">
+  
+  <div class="carrito-header">
+    <h3>Mi Carrito</h3>
+    <button mat-icon-button (click)="mostrarCarrito = false">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="carrito-items" *ngIf="carrito.length > 0">
+    <div class="carrito-item" *ngFor="let item of carrito">
+      
+      <img [src]="item.producto.imagen || imagenFallback" class="item-img" (error)="item.producto.imagen = imagenFallback">
+      
+      <div class="item-info">
+        <h4>{{ item.producto.nombre }}</h4>
+        <span class="item-precio">{{ item.producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+        
+        <div class="item-controles">
+          <button mat-icon-button class="btn-qty" (click)="actualizarCantidad(item, -1)">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="qty">{{ item.cantidad }}</span>
+          <button mat-icon-button class="btn-qty" (click)="actualizarCantidad(item, 1)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <button mat-icon-button color="warn" class="btn-delete" (click)="removerDelCarrito(item.producto._id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="carrito-vacio" *ngIf="carrito.length === 0">
+    <mat-icon>remove_shopping_cart</mat-icon>
+    <p>Tu carrito está vacío</p>
+  </div>
+
+  <div class="carrito-footer" *ngIf="carrito.length > 0">
+    <div class="totales">
+      <span>Total a pagar:</span>
+      <span class="total-precio">{{ totalCarrito | currency:'COP':'symbol':'1.0-0' }}</span>
+    </div>
+    <button mat-flat-button color="primary" class="btn-checkout" (click)="finalizarCompra()">
+      Proceder al pago
+    </button>
+  </div>
+
+</div>

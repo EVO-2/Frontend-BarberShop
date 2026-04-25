@@ -48,6 +48,7 @@ import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dial
 // ======= 📦 Productos =======
 import { ProductosComponent } from './pages/productos/productos/productos.component';
 import { ProductoDialogComponent } from './pages/productos/producto-dialog/producto-dialog.component'; // ✅ NUEVO
+import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
 
 @NgModule({
   declarations: [
@@ -85,7 +86,8 @@ import { ProductoDialogComponent } from './pages/productos/producto-dialog/produ
 
     // 📦 Productos
     ProductosComponent,
-    ProductoDialogComponent // ✅ AGREGADO
+    ProductoDialogComponent, // ✅ AGREGADO
+    ProductosClienteComponent
   ],
   imports: [
     BrowserModule,

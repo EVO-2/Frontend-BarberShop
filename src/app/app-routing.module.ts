@@ -25,6 +25,7 @@ import { RolesComponent } from './pages/roles/roles.component';
 
 // 🆕 Productos
 import { ProductosComponent } from './pages/productos/productos/productos.component';
+import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -87,6 +88,13 @@ const routes: Routes = [
         component: ProductosComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
+      },
+
+      {
+        path: 'tienda',
+        component: ProductosClienteComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['cliente', 'admin'] }
       },
 
       {

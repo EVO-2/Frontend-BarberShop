@@ -143,12 +143,11 @@ td.mat-cell {
 
 /* Efecto de zoom masivo en desktop al hacer hover */
 .img-producto:hover {
-    transform: scale(3) translateY(-5px);
-    border-radius: 12px;
-    /* Pasa de círculo a cuadrado redondeado para ver el producto completo */
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    transform: scale(1.8) translateY(-2px); /* Zoom más sutil y elegante */
+    border-radius: 8px; /* Cuadrado redondeado */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 999;
-    /* Para que quede por encima de absolutamente todo en la tabla */
+    background: white; /* Fondo blanco por si la imagen tiene transparencias */
 }
 
 /* =======================
@@ -274,28 +273,28 @@ td.mat-cell {
 /* 🖼️ Contenedor de Imagen Full Width */
 .card-img-wrapper {
     width: 100%;
-    height: 180px; /* Altura ligeramente reducida para no ocupar tanta pantalla */
-    background: #f8fafc; /* Fondo suave para resaltar el producto */
+    height: 160px; /* Altura más compacta */
+    background: #f1f5f9; /* Fondo gris claro más elegante */
     border-bottom: 1px solid #e2e8f0;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px; /* Espaciado interno para que la imagen sea más pequeña y respire */
+    padding: 24px; /* Mucho más espaciado para que la imagen sea pequeña */
 }
 
 .img-mobile-full {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain; /* 🔥 CLAVE: Evita que la foto se recorte, la muestra entera */
+    max-width: 120px; /* Forzamos a que sea pequeña dentro del card */
+    max-height: 120px; /* Forzamos a que sea pequeña dentro del card */
+    object-fit: contain; /* Nunca se recorta */
     display: block;
     transition: transform 0.3s ease;
-    border-radius: 8px; /* Suaviza las esquinas de la imagen misma */
+    border-radius: 6px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); /* Pequeña sombra a la imagen misma */
 }
 
 .card-producto:hover .img-mobile-full {
-    transform: scale(1.05);
-    /* Efecto zoom sutil al pasar el mouse */
+    transform: scale(1.1); /* Efecto zoom sutil al pasar el mouse */
 }
 
 /* 📝 Contenedor de Contenido */

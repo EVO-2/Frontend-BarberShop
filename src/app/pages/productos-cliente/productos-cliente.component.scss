@@ -376,6 +376,90 @@
   }
 }
 
+/* ===========================
+   PASO DE PAGO
+=========================== */
+
+.paso-pago {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+
+  .instruccion {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+}
+
+.metodos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .metodo-card {
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: #718096;
+    }
+
+    span {
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 0.9rem;
+    }
+
+    &:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    &.activo {
+      border-color: #3f51b5;
+      background: #eef2ff;
+      
+      mat-icon {
+        color: #3f51b5;
+      }
+    }
+  }
+}
+
+.instrucciones-pago {
+  background: #f8fafc;
+  padding: 1.2rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px dashed #cbd5e1;
+
+  .numero-cuenta {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0.5rem 0;
+  }
+}
+
+.whatsapp-btn {
+  background-color: #25D366 !important;
+  color: white !important;
+}
+
 @media (max-width: 600px) {
   .contenedor {
     padding: 1rem;

@@ -24,6 +24,9 @@ export class ProductosClienteComponent implements OnInit {
 
   carrito: CartItem[] = [];
   mostrarCarrito: boolean = false;
+  pasoCheckout: number = 1; // 1 = Carrito, 2 = Metodos de Pago
+  metodoSeleccionado: string = '';
+  telefonoWhatsApp: string = '573000000000'; // Puedes cambiarlo por tu número real
 
   readonly baseUrl: string = environment.baseUrl;
   imagenFallback = 'assets/img/placeholder.svg';
@@ -125,12 +128,43 @@ export class ProductosClienteComponent implements OnInit {
     return this.carrito.reduce((acc, item) => acc + item.cantidad, 0);
   }
 
-  public finalizarCompra(): void {
+  public irAMetodosDePago(): void {
     if (this.carrito.length === 0) return;
+    this.pasoCheckout = 2;
+  }
+
+  public volverAlCarrito(): void {
+    this.pasoCheckout = 1;
+    this.metodoSeleccionado = '';
+  }
+
+  public seleccionarMetodo(metodo: string): void {
+    this.metodoSeleccionado = metodo;
+  }
+
+  public confirmarPedido(): void {
+    let mensaje = `Hola, quiero realizar el siguiente pedido de productos:\n\n`;
     
-    // Aquí iría la lógica de procesar pago o crear orden
-    this.snackBar.open('¡Compra procesada! Pronto te contactaremos.', 'Cerrar', { duration: 5000 });
+    this.carrito.forEach(item => {
+      mensaje += `✅ ${item.cantidad}x ${item.producto.nombre} ($${item.producto.precio * item.cantidad})\n`;
+    });
+    
+    mensaje += `\n💰 *Total a pagar:* $${this.totalCarrito}\n`;
+    mensaje += `💳 *Método de pago elegido:* ${this.metodoSeleccionado.toUpperCase()}\n\n`;
+    
+    if (this.metodoSeleccionado === 'efectivo') {
+      mensaje += `Pasaré a recoger el pedido a la sede y pagaré en efectivo.`;
+    } else {
+      mensaje += `Adjunto mi comprobante de pago. Quedo atento.`;
+    }
+
+    const url = `https://wa.me/${this.telefonoWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+
+    this.snackBar.open('¡Pedido enviado por WhatsApp!', 'Cerrar', { duration: 5000 });
     this.carrito = [];
     this.mostrarCarrito = false;
+    this.pasoCheckout = 1;
+    this.metodoSeleccionado = '';
   }
 }

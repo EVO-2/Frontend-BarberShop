@@ -2,10 +2,13 @@
 
   <mat-card class="registro-card">
 
-    <h2 class="titulo">Crear cuenta</h2>
-    <!-- Logo -->
-    <img src="assets/sede.png" class="login-logo" alt="Logo" />
+    <!-- 🔥 HEADER FIJO -->
+    <div class="registro-header">
+      <h2 class="titulo">Crear cuenta</h2>
+      <img src="assets/sede.png" class="login-logo" alt="Logo" />
+    </div>
 
+    <!-- 🔥 FORM SCROLL -->
     <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
 
       <!-- Nombre -->

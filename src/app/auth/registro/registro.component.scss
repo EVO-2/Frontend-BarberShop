@@ -1,77 +1,156 @@
+/* =======================
+   BASE
+======================= */
+
 .registro-container {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 
   padding: 2rem 1rem;
-  min-height: 100%;
+  min-height: 100vh;
 
   background: linear-gradient(to right, #f0f8fd, #b7dfff);
+
+  overflow: hidden;
 }
 
+
+/* =======================
+   CARD
+======================= */
 
 .registro-card {
   width: 100%;
   max-width: 500px;
-  max-height: 85vh;
-  /* Limit height to viewport */
-  overflow-y: auto;
-  /* Enable internal scrolling */
+  height: 90vh;
 
-  padding: 2rem;
-  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 18px;
   background: #ffffff;
 
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.05);
+    0 15px 40px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+
+  overflow: hidden;
 }
 
 
+/* =======================
+   🔥 HEADER PRO
+======================= */
+
+.registro-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  background: linear-gradient(to bottom, #ffffff, #f9fbfd);
+
+  padding: 1.5rem 1rem 1.2rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  border-bottom: 1px solid #eef2f7;
+}
+
+
+/* =======================
+   🟢 LOGO PRO (CIRCULAR)
+======================= */
+
+.login-logo {
+  width: 95px;
+  height: 95px;
+
+  border-radius: 50%;
+  /* 🔥 circular */
+
+  object-fit: cover;
+
+  padding: 10px;
+  background: #ffffff;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px #e5e7eb;
+
+  transition: all 0.3s ease;
+}
+
+/* Hover elegante */
+.login-logo:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px #d1d5db;
+}
+
+
+/* =======================
+   🧠 TITULO PRO
+======================= */
+
+.titulo {
+  text-align: center;
+
+  font-size: 1.6rem;
+  font-weight: 700;
+
+  color: #0f172a;
+  /* gris oscuro moderno */
+
+  letter-spacing: -0.4px;
+
+  margin: 0;
+
+  position: relative;
+}
+
+/* Subrayado elegante */
+.titulo::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin: 6px auto 0;
+
+  border-radius: 10px;
+  background: linear-gradient(to right, #3b82f6, #22c55e);
+}
+
+
+/* =======================
+   FORM SCROLL
+======================= */
+
 .registro-form {
+  flex: 1;
+  overflow-y: auto;
+
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
+  padding: 1rem 2rem 2rem;
+
+  scrollbar-width: thin;
 }
 
 .full-width {
   width: 100%;
 }
 
-/* ---
-   🎨 HEADER (TITULO & LOGO)
-   --- */
 
-.titulo {
-  text-align: center;
-  margin-bottom: 0.5rem;
-  /* Menos margen abajo para acercar el logo (si va debajo) o viceversa */
-
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1a202c;
-  /* Gris oscuro elegante */
-  letter-spacing: -0.025em;
-  /* Toque moderno */
-}
-
-.login-logo {
-  display: block;
-  width: 120px;
-  /* Tamaño controlado */
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto 2rem;
-  /* Centrado y separado del formulario */
-
-  object-fit: contain;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-}
+/* =======================
+   ACCIONES
+======================= */
 
 .acciones {
   display: flex;
@@ -82,14 +161,18 @@
 
 .btn-volver {
   color: #2e7d32 !important;
-  /* Verde oscuro (Material Green 800) */
   border-color: #2e7d32 !important;
   font-weight: 500;
-
-  &:hover {
-    background-color: rgba(46, 125, 50, 0.08) !important;
-  }
 }
+
+.btn-volver:hover {
+  background-color: rgba(46, 125, 50, 0.08) !important;
+}
+
+
+/* =======================
+   ERROR
+======================= */
 
 .error-message {
   text-align: center;
@@ -98,4 +181,16 @@
   justify-content: center;
   align-items: center;
   gap: 6px;
+}
+
+
+/* =======================
+   GLOBAL FIX
+======================= */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: #f0f8fd;
 }

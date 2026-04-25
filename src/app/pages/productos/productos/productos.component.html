@@ -130,6 +130,11 @@
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let p" class="acciones">
 
+            <button mat-icon-button color="accent" *ngIf="tienePermiso('editar_producto')" (click)="registrarVenta(p)"
+              matTooltip="Registrar Venta Directa">
+              <mat-icon>point_of_sale</mat-icon>
+            </button>
+
             <button mat-icon-button color="primary" *ngIf="tienePermiso('editar_producto')" (click)="editarProducto(p)"
               matTooltip="Editar producto">
               <mat-icon>edit</mat-icon>
@@ -183,6 +188,9 @@
             </span>
 
             <div class="acciones" *ngIf="tienePermiso('editar_producto')">
+              <button mat-icon-button color="accent" (click)="registrarVenta(p)">
+                <mat-icon>point_of_sale</mat-icon>
+              </button>
               <button mat-icon-button color="primary" (click)="editarProducto(p)">
                 <mat-icon>edit</mat-icon>
               </button>

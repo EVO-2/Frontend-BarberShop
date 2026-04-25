@@ -105,6 +105,13 @@ export class ProductosService {
     }
 
     // =========================
+    // 💰 Registrar Venta
+    // =========================
+    registrarVenta(id: string, cantidadVenta: number): Observable<any> {
+        return this.http.post(`${this.apiUrl}/${id}/venta`, { cantidadVenta });
+    }
+
+    // =========================
     // 📷 Subir Imagen
     // =========================
     subirImagen(id: string, archivo: File): Observable<any> {

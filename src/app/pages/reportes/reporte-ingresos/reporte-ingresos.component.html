@@ -71,150 +71,119 @@
 
       <div *ngIf="!cargando && (citas?.length ?? 0) > 0; else sinCitas">
 
-        <mat-card class="tabla-card">
-
-          <div class="table-wrapper">
-
-            <table mat-table [dataSource]="citas || []">
-
-              <ng-container matColumnDef="fecha">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-icon>event</mat-icon> Fecha
-                </th>
-                <td mat-cell *matCellDef="let c">
-                  {{ c.fecha | date }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="sede">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-icon>business</mat-icon> Sede
-                </th>
-                <td mat-cell *matCellDef="let c">
-                  {{ c.sede }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="cliente">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-icon>person</mat-icon> Cliente
-                </th>
-                <td mat-cell *matCellDef="let c">
-                  {{ c.cliente }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="peluquero">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-icon>content_cut</mat-icon> Barbero
-                </th>
-                <td mat-cell *matCellDef="let c">
-                  {{ c.peluquero }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="servicios">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-icon>design_services</mat-icon> Servicios
-                </th>
-                <td mat-cell *matCellDef="let c">
-                  {{ c.serviciosStr }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="subtotal">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-icon>payments</mat-icon> Subtotal
-                </th>
-                <td mat-cell *matCellDef="let c">
-                  {{ c.subtotal | currency:'COP':'symbol':'1.0-0' }}
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal'];">
-              </tr>
-
-            </table>
-
-          </div>
-
-        </mat-card>
-
-
         <!-- KPI -->
         <div class="kpi-grid">
-
-          <mat-card class="kpi-card">
-
-            <mat-icon>attach_money</mat-icon>
-
-            <div>
-              <p>Ingresos totales</p>
+          <mat-card class="kpi-card premium-card primary-kpi">
+            <div class="kpi-icon-wrapper"><mat-icon>account_balance_wallet</mat-icon></div>
+            <div class="kpi-info">
+              <p>Ingresos Totales</p>
               <h3>{{ total | currency:'COP':'symbol':'1.0-0' }}</h3>
             </div>
-
           </mat-card>
 
-          <mat-card class="kpi-card">
-
-            <mat-icon>design_services</mat-icon>
-
-            <div>
-              <p>Total servicios</p>
-              <h3>{{ totalServicios }}</h3>
+          <mat-card class="kpi-card premium-card secondary-kpi">
+            <div class="kpi-icon-wrapper"><mat-icon>receipt_long</mat-icon></div>
+            <div class="kpi-info">
+              <p>Total Citas / Servicios</p>
+              <h3>{{ cantidadCitas }} / {{ totalServicios }}</h3>
             </div>
-
           </mat-card>
 
-          <mat-card class="kpi-card">
-
-            <mat-icon>analytics</mat-icon>
-
-            <div>
-              <p>Promedio por cita</p>
+          <mat-card class="kpi-card premium-card accent-kpi">
+            <div class="kpi-icon-wrapper"><mat-icon>trending_up</mat-icon></div>
+            <div class="kpi-info">
+              <p>Ticket Promedio</p>
               <h3>{{ promedio | currency:'COP':'symbol':'1.0-0' }}</h3>
             </div>
+          </mat-card>
+        </div>
 
+        <div class="dashboard-grid">
+
+          <!-- TABLA PRINCIPAL -->
+          <mat-card class="tabla-card main-table-card">
+            <div class="card-header-fancy">
+              <h3><mat-icon>list_alt</mat-icon> Detalle de Transacciones</h3>
+            </div>
+            <div class="table-wrapper">
+
+              <table mat-table [dataSource]="citas || []">
+
+                <ng-container matColumnDef="fecha">
+                  <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                  <td mat-cell *matCellDef="let c">{{ c.fecha | date:'mediumDate' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="sede">
+                  <th mat-header-cell *matHeaderCellDef>Sede</th>
+                  <td mat-cell *matCellDef="let c">
+                    <span class="badge-sede">{{ c.sede }}</span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="cliente">
+                  <th mat-header-cell *matHeaderCellDef>Cliente</th>
+                  <td mat-cell *matCellDef="let c">{{ c.cliente }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="peluquero">
+                  <th mat-header-cell *matHeaderCellDef>Barbero</th>
+                  <td mat-cell *matCellDef="let c">{{ c.peluquero }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="servicios">
+                  <th mat-header-cell *matHeaderCellDef>Servicios</th>
+                  <td mat-cell *matCellDef="let c">{{ c.serviciosStr }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="subtotal">
+                  <th mat-header-cell *matHeaderCellDef>Total</th>
+                  <td mat-cell *matCellDef="let c" class="text-success fw-bold">
+                    {{ c.subtotal | currency:'COP':'symbol':'1.0-0' }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal'];"></tr>
+
+              </table>
+
+            </div>
+          </mat-card>
+
+
+          <!-- INGRESOS POR SEDE -->
+          <mat-card *ngIf="ingresosPorSede | keyvalue as sedes" class="tabla-card side-table-card">
+            <div class="card-header-fancy secondary-header">
+              <h3><mat-icon>pie_chart</mat-icon> Distribución Sede</h3>
+            </div>
+            <div class="table-wrapper">
+
+              <table mat-table [dataSource]="sedes">
+
+                <ng-container matColumnDef="sede">
+                  <th mat-header-cell *matHeaderCellDef>Sede</th>
+                  <td mat-cell *matCellDef="let s" class="fw-bold text-dark">
+                    {{ s.key }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="ingresos">
+                  <th mat-header-cell *matHeaderCellDef>Ingresos</th>
+                  <td mat-cell *matCellDef="let s" class="text-success">
+                    {{ s.value | currency:'COP':'symbol':'1.0-0' }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['sede','ingresos']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['sede','ingresos'];"></tr>
+
+              </table>
+
+            </div>
           </mat-card>
 
         </div>
-
-
-        <!-- INGRESOS POR SEDE -->
-        <mat-card *ngIf="ingresosPorSede | keyvalue as sedes" class="tabla-card">
-
-          <h3 class="card-title">
-            <mat-icon>business</mat-icon>
-            Ingresos por sede
-          </h3>
-
-          <div class="table-wrapper">
-
-            <table mat-table [dataSource]="sedes">
-
-              <ng-container matColumnDef="sede">
-                <th mat-header-cell *matHeaderCellDef>Sede</th>
-                <td mat-cell *matCellDef="let s">
-                  {{ s.key }}
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="ingresos">
-                <th mat-header-cell *matHeaderCellDef>Ingresos</th>
-                <td mat-cell *matCellDef="let s">
-                  {{ s.value | currency:'COP':'symbol':'1.0-0' }}
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="['sede','ingresos']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['sede','ingresos'];"></tr>
-
-            </table>
-
-          </div>
-
-        </mat-card>
 
       </div>
 
@@ -232,7 +201,9 @@
     <mat-tab label="Citas por Barbero">
 
       <mat-card class="tabla-card" *ngIf="reportesBarberos?.length">
-
+        <div class="card-header-fancy">
+          <h3><mat-icon>content_cut</mat-icon> Rendimiento por Barbero</h3>
+        </div>
         <div class="table-wrapper">
 
           <table mat-table [dataSource]="reportesBarberos || []">
@@ -268,7 +239,9 @@
     <mat-tab label="Clientes Frecuentes">
 
       <mat-card class="tabla-card" *ngIf="reportesClientes?.length">
-
+        <div class="card-header-fancy">
+          <h3><mat-icon>groups</mat-icon> Top Clientes Frecuentes</h3>
+        </div>
         <div class="table-wrapper">
 
           <table mat-table [dataSource]="reportesClientes || []">
@@ -304,7 +277,9 @@
     <mat-tab label="Inventario">
 
       <mat-card class="tabla-card" *ngIf="reportesInventario?.length">
-
+        <div class="card-header-fancy">
+          <h3><mat-icon>inventory_2</mat-icon> Existencias de Equipos</h3>
+        </div>
         <div class="table-wrapper">
 
           <table mat-table [dataSource]="reportesInventario || []">
@@ -331,6 +306,49 @@
 
             <tr mat-header-row *matHeaderRowDef="['sede','tipo','cantidad','totalSede']"></tr>
             <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede'];"></tr>
+
+          </table>
+
+        </div>
+
+      </mat-card>
+
+    </mat-tab>
+
+
+    <!-- PRODUCTOS -->
+    <mat-tab label="Productos (Inventario)">
+
+      <mat-card class="tabla-card" *ngIf="reportesProductos?.length">
+        <div class="card-header-fancy">
+          <h3><mat-icon>inventory</mat-icon> Inventario de Productos</h3>
+        </div>
+        <div class="table-wrapper">
+
+          <table mat-table [dataSource]="reportesProductos || []">
+
+            <ng-container matColumnDef="sede">
+              <th mat-header-cell *matHeaderCellDef>Sede</th>
+              <td mat-cell *matCellDef="let p">{{ p.sede }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="categoria">
+              <th mat-header-cell *matHeaderCellDef>Categoría</th>
+              <td mat-cell *matCellDef="let p">{{ p.categoria }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+              <td mat-cell *matCellDef="let p">{{ p.cantidad }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="totalSede">
+              <th mat-header-cell *matHeaderCellDef>Total Sede</th>
+              <td mat-cell *matCellDef="let p">{{ p.totalSede }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['sede','categoria','cantidad','totalSede']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','categoria','cantidad','totalSede'];"></tr>
 
           </table>
 

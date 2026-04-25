@@ -115,6 +115,14 @@ export class DashboardComponent implements OnInit {
   }
 
   /* ================================
+     🔥 KPI: PRODUCTOS TOP
+  ================================ */
+
+  get productosTop(): any[] {
+    return this.resumen?.productosTop || [];
+  }
+
+  /* ================================
      CARGAR DASHBOARD
   ================================ */
 
@@ -322,6 +330,24 @@ export class DashboardComponent implements OnInit {
 
     return max > 0
       ? Math.round((totalServicio / max) * 100)
+      : 0;
+
+  }
+
+  /* ================================
+     🏆 PRODUCTOS TOP
+  ================================ */
+
+  calcularPorcentajeProducto(totalProducto: number): number {
+
+    if (!this.resumen?.productosTop?.length) return 0;
+
+    const max = Math.max(
+      ...this.resumen.productosTop.map((p: any) => p.total)
+    );
+
+    return max > 0
+      ? Math.round((totalProducto / max) * 100)
       : 0;
 
   }

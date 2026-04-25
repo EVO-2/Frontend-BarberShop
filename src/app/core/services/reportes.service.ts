@@ -144,4 +144,18 @@ export class ReportesService {
       );
   }
 
+  /**
+   * ===================================================
+   * 🛒 Reporte de Productos
+   * ===================================================
+   */
+  obtenerReporteProductos(): Observable<any[]> {
+
+    return this.http
+      .get<any>(`${this.apiUrl}/reportes/productos`)
+      .pipe(
+        map((res: any) => this.normalizarArray(res))
+      );
+  }
+
 }

@@ -42,6 +42,12 @@ export interface DashboardResumen {
         nombre: string;
         totalServicios: number;
     } | null;
+
+    // 🔥 NUEVO KPI: PRODUCTOS TOP
+    productosTop: {
+        nombre: string;
+        total: number;
+    }[];
 }
 
 @Injectable({

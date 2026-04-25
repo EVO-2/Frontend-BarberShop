@@ -240,6 +240,51 @@
 
         </div>
 
+        <!-- ================= PRODUCTOS ================= -->
+
+        <div class="services-section" *ngIf="!loading">
+
+            <div class="section-header">
+                <mat-icon>inventory_2</mat-icon>
+                <h2>Productos más vendidos</h2>
+            </div>
+
+            <!-- MENSAJE VACÍO -->
+            <div class="empty-state" *ngIf="!data.productosTop?.length" style="padding: 20px; text-align: center; color: #9ca3af; background: #1f2937; border-radius: 12px; border: 1px dashed #374151;">
+                <mat-icon style="opacity: 0.5; margin-bottom: 8px;">production_quantity_limits</mat-icon>
+                <p style="margin: 0;">No se registraron ventas de productos en los últimos 7 días.</p>
+            </div>
+
+            <div class="services-grid" *ngIf="data.productosTop?.length">
+
+                <mat-card class="service-card" *ngFor="let producto of data.productosTop; let i = index">
+
+                    <div class="service-rank">
+                        #{{ i + 1 }}
+                    </div>
+
+                    <div class="service-name">
+                        {{ producto.nombre }}
+                    </div>
+
+                    <div class="service-total">
+                        {{ producto.total }} unidades
+                    </div>
+
+                    <mat-progress-bar mode="determinate" color="accent"
+                        [value]="calcularPorcentajeProducto(producto.total)">
+                    </mat-progress-bar>
+
+                    <div class="service-percent">
+                        {{ calcularPorcentajeProducto(producto.total) | number:'1.0-0' }}%
+                    </div>
+
+                </mat-card>
+
+            </div>
+
+        </div>
+
         <!-- ================= TABLA ================= -->
 
         <div class="table-section">

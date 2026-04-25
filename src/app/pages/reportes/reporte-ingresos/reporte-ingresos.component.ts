@@ -63,6 +63,9 @@ export class ReporteIngresosComponent implements OnInit {
   // === 4️⃣ Inventario ===
   reportesInventario: InventarioReporte[] = [];
 
+  // === 5️⃣ Productos ===
+  reportesProductos: any[] = [];
+
   cargando = false;
   tabSeleccionada = 0;
 
@@ -99,6 +102,9 @@ export class ReporteIngresosComponent implements OnInit {
         break;
       case 3:
         this.obtenerReporteInventario();
+        break;
+      case 4:
+        this.obtenerReporteProductos();
         break;
     }
 
@@ -156,9 +162,9 @@ export class ReporteIngresosComponent implements OnInit {
           sede: c.sede || 'N/D',
           cliente: c.cliente || 'N/D',
           peluquero: c.peluquero || 'N/D',
-          serviciosStr: (c.servicios || [])
-            .map((s: any) => `${s.nombre} ($${s.precio})`)
-            .join(', '),
+          serviciosStr: (c.servicios && c.servicios.length > 0)
+            ? c.servicios.map((s: any) => `${s.nombre} ($${s.precio})`).join(', ')
+            : 'Servicio Eliminado del Sistema',
           subtotal: c.subtotal || 0
         }));
 
@@ -199,13 +205,6 @@ export class ReporteIngresosComponent implements OnInit {
     if (!this.validarFechas()) return;
 
     const { fechaInicio, fechaFin } = this.filtroForm.value;
-
-    // 🔹 Ajustar rango completo del día
-    const inicio = new Date(fechaInicio);
-    inicio.setHours(0, 0, 0, 0);
-
-    const fin = new Date(fechaFin);
-    fin.setHours(23, 59, 59, 999);
 
     this.cargando = true;
     this.reportesBarberos = [];
@@ -359,6 +358,55 @@ export class ReporteIngresosComponent implements OnInit {
   }
 
   // =============================
+  // 5️⃣ Reporte Productos
+  // =============================
+
+  obtenerReporteProductos(): void {
+    this.cargando = true;
+    this.reportesProductos = [];
+
+    this.reportesService.obtenerReporteProductos().subscribe({
+      next: (res) => {
+        if (!res || res.length === 0) {
+          this.reportesProductos = [];
+          this.cargando = false;
+          return;
+        }
+
+        const filas: any[] = [];
+        res.forEach((sedeObj: any) => {
+          const categorias = sedeObj.categorias || [];
+          if (categorias.length > 0) {
+            categorias.forEach((cat: any) => {
+              filas.push({
+                sede: sedeObj.sede || 'N/D',
+                categoria: cat.categoria || 'N/D',
+                cantidad: cat.cantidad || 0,
+                totalSede: sedeObj.totalSede || 0
+              });
+            });
+          } else {
+            filas.push({
+              sede: sedeObj.sede || 'N/D',
+              categoria: 'Sin categorías',
+              cantidad: 0,
+              totalSede: sedeObj.totalSede || 0
+            });
+          }
+        });
+
+        this.reportesProductos = filas;
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar productos:', err);
+        this.cargando = false;
+        this.snackBar.open('Error al cargar el reporte de productos.', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  // =============================
   // 🔄 Aplicar filtro
   // =============================
 
@@ -380,6 +428,10 @@ export class ReporteIngresosComponent implements OnInit {
 
       case 3:
         this.obtenerReporteInventario();
+        break;
+
+      case 4:
+        this.obtenerReporteProductos();
         break;
 
     }
@@ -558,6 +610,30 @@ export class ReporteIngresosComponent implements OnInit {
 
         break;
 
+      // =============================
+      // PRODUCTOS
+      // =============================
+      case 4:
+
+        titulo = 'Reporte_Productos';
+        sheetName = 'Productos';
+
+        colWidths = [
+          { wch: 25 },
+          { wch: 30 },
+          { wch: 15 },
+          { wch: 20 }
+        ];
+
+        data = this.reportesProductos.map((p: any) => ({
+          Sede: p.sede ?? 'N/D',
+          Categoria: p.categoria ?? 'N/D',
+          Cantidad: p.cantidad ?? 0,
+          'Total Sede': p.totalSede ?? 0
+        }));
+
+        break;
+
     }
 
     if (!data || data.length === 0) {
@@ -726,6 +802,18 @@ export class ReporteIngresosComponent implements OnInit {
 
         break;
 
+      case 4:
+
+        title = 'Reporte de Productos (Inventario)';
+
+        headers = ['Sede', 'Categoría', 'Cantidad', 'Total Sede'];
+
+        keys = ['sede', 'categoria', 'cantidad', 'totalSede'];
+
+        data = this.reportesProductos;
+
+        break;
+
     }
 
     if (!data || data.length === 0) {
@@ -779,7 +867,7 @@ export class ReporteIngresosComponent implements OnInit {
 
     const logo = new Image();
 
-    logo.src = 'assets/logo.png';
+    logo.src = 'assets/sede.png';
 
     logo.onload = () => {
 

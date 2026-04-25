@@ -231,6 +231,16 @@ td.mat-cell {
    ACCIONES TABLA
 ======================= */
 
+.mat-column-estado {
+    width: 120px;
+    text-align: center;
+}
+
+.mat-column-acciones {
+    width: 170px;
+    text-align: center;
+}
+
 .acciones {
     display: flex;
     flex-direction: row;

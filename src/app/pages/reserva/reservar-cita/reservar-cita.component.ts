@@ -419,7 +419,7 @@ export class ReservarCitaComponent implements OnInit {
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
 
     const clienteId = this.rolUsuario === 'cliente'
-      ? this.usuarioLogueado?.clienteId
+      ? this.usuarioLogueado?.cliente?._id || this.usuarioLogueado?.clienteId
       : datos.cliente;
 
     // 🚨 VALIDACIONES BÁSICAS

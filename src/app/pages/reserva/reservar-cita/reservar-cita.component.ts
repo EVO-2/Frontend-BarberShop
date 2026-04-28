@@ -408,102 +408,79 @@ export class ReservarCitaComponent implements OnInit {
     });
   }
 
-  reservarCita(): void {
+  async reservarCita(): Promise<void> {
     const traceId = `CITA-${Date.now()}`;
 
     console.log(`🟢 [${traceId}] Inicio reservarCita`);
 
-    console.log(`📊 [${traceId}] Estado formulario`, {
-      invalid: this.reservarForm.invalid,
-      fechaHoraInvalida: this.fechaHoraInvalida,
-      loading: this.loading
-    });
-
+    // 1. Validaciones iniciales de UI
     if (this.reservarForm.invalid || this.fechaHoraInvalida || this.loading) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    const datos = this.reservarForm.value;
-    console.log(`📥 [${traceId}] Datos del formulario`, datos);
+    // 2. 🔍 EXTRACCIÓN DINÁMICA (El corazón de la solución)
+    // Obtenemos el usuario directamente del storage para evitar desfases del Observable
+    const usuarioData = this.authService.getUsuario();
+    console.log(`👤 [${traceId}] Usuario recuperado del Storage:`, usuarioData);
 
-    const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
-    console.log(`🕒 [${traceId}] Fecha base generada`, fechaBase);
-    console.log(`👤 [${traceId}] Usuario logueado`, this.usuarioLogueado);
+    let clienteId = null;
 
-    // 🔥 FIX CRÍTICO: Extracción precisa del ID de la entidad CLIENTE
-    // No podemos enviar el ID del Usuario (el que empieza por 69f0c5...) 
-    // Debemos enviar el ID del documento en la colección 'clientes'.
-    const clienteId =
-      this.usuarioLogueado?.cliente?._id ||
-      (typeof this.usuarioLogueado?.cliente === 'string' ? this.usuarioLogueado.cliente : null);
+    if (usuarioData?.cliente?._id) {
+      clienteId = usuarioData.cliente._id;
+    } else if (typeof usuarioData?.cliente === 'string') {
+      clienteId = usuarioData.cliente;
+    }
 
-    console.log(`🆔 [${traceId}] ClienteId resuelto`, { clienteId });
-
+    // 3. 🚨 VALIDACIÓN CRÍTICA
     if (!clienteId) {
-      console.error(`🚨 [${traceId}] ERROR: No se encontró el ID de Cliente. Usuario actual:`, this.usuarioLogueado);
-      this.snackBar.open('Error de perfil: No se encontró tu ID de cliente', 'Cerrar', { duration: 5000 });
+      console.error(`🚨 [${traceId}] ERROR: clienteId sigue siendo NULL`, { usuarioData });
+
+      // Intento final: Si el rol es cliente pero no hay ID de cliente, 
+      // algo falló en el mapeo o en la sesión.
+      this.snackBar.open('Sesión incompleta. Reintentando sincronizar...', 'Cerrar', { duration: 3000 });
+      this.authService.refrescarUsuario(); // Forzamos recarga del perfil
       return;
     }
 
-    if (!datos.sede || !datos.peluquero || !datos.puestoTrabajo) {
-      this.snackBar.open('Datos de sede o profesional incompletos', 'Cerrar', { duration: 3000 });
-      return;
-    }
+    console.log(`🆔 [${traceId}] ClienteId validado correctamente:`, clienteId);
 
-    if (!datos.servicios || datos.servicios.length === 0) {
-      this.snackBar.open('Debes seleccionar al menos un servicio', 'Cerrar', { duration: 3000 });
-      return;
-    }
+    const datos = this.reservarForm.value;
+    const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
 
-    if (datos.servicios.length > 1) {
-      this.snackBar.open('⚠️ No puedes seleccionar múltiples servicios en la misma cita.', 'Cerrar', {
-        duration: 5000,
-        panelClass: ['snack-error']
-      });
-      return;
-    }
-
-    // Iniciamos proceso de validación de disponibilidad
+    // 4. VALIDACIÓN DE DISPONIBILIDAD (Backend)
+    this.loading = true;
     this.reservaService.getCitasPorFechaYHora(datos.sede, fechaBase.toISOString()).subscribe({
       next: (res) => {
-        const citasArray: any[] = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+        const citasArray = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
 
-        const citasActivas = citasArray.filter((c: any) =>
-          c.estado !== 'cancelada' &&
-          this.extractId(c.peluquero) === datos.peluquero
-        );
+        // Filtrar conflictos con el peluquero seleccionado
+        const conflicto = citasArray.some((c: any) => {
+          if (c.estado === 'cancelada') return false;
+          if (this.extractId(c.peluquero) !== datos.peluquero) return false;
 
-        const duracionNueva = (datos.servicios || []).reduce((t: number, sId: string) => {
-          const s = this.servicios.find(sv => sv._id === sId);
-          return t + (s?.duracion || 30);
-        }, 0);
-
-        const inicioNueva = fechaBase;
-        const finNueva = new Date(inicioNueva.getTime() + duracionNueva * 60000);
-
-        const conflicto = citasActivas.some((c: any) => {
           const inicioExistente = new Date(c.fecha);
-          const serviciosCita = Array.isArray(c.servicios) ? c.servicios : [];
+          const duracionEx = (c.servicios || []).reduce((acc: number, s: any) => acc + (s.duracion || 30), 0);
+          const finExistente = new Date(inicioExistente.getTime() + duracionEx * 60000);
 
-          const duracionExistente = serviciosCita.reduce((t: number, s: any) => {
-            // Si el servicio viene populado usamos s.duracion, si no, lo buscamos
-            const d = s?.duracion || this.servicios.find(sv => sv._id === (s?._id || s))?.duracion || 30;
-            return t + d;
+          const duracionNueva = (datos.servicios || []).reduce((acc: number, sId: string) => {
+            const s = this.servicios.find(sv => sv._id === sId);
+            return acc + (s?.duracion || 30);
           }, 0);
+          const finNueva = new Date(fechaBase.getTime() + duracionNueva * 60000);
 
-          const finExistente = new Date(inicioExistente.getTime() + duracionExistente * 60000);
-          return inicioNueva < finExistente && finNueva > inicioExistente;
+          return fechaBase < finExistente && finNueva > inicioExistente;
         });
 
         if (conflicto) {
+          this.loading = false;
           this.snackBar.open('El profesional ya tiene una cita en ese horario.', 'Cerrar', { duration: 5000 });
           return;
         }
 
-        // ✅ PAYLOAD FINAL GARANTIZADO
+        // 5. 📤 ENVÍO DE PAYLOAD FINAL
         const citaData = {
-          cliente: clienteId, // Ahora es el ID de la colección 'clientes'
+          cliente: clienteId, // El ID de la colección 'clientes' (...6d9)
           sede: datos.sede,
           peluquero: datos.peluquero,
           puestoTrabajo: datos.puestoTrabajo,
@@ -513,27 +490,24 @@ export class ReservarCitaComponent implements OnInit {
           observacion: datos.observaciones || ''
         };
 
-        console.log(`📤 [${traceId}] Payload FINAL enviado al servidor`, citaData);
-
-        this.loading = true;
+        console.log(`📤 [${traceId}] Enviando payload final al Backend:`, citaData);
 
         this.reservaService.crearCita(citaData).subscribe({
-          next: (resp) => {
+          next: () => {
             this.loading = false;
-            this.snackBar.open('Cita creada exitosamente', 'Cerrar', { duration: 3000 });
-            this.cancelarCita(); // Resetea el formulario
+            this.snackBar.open('¡Cita reservada con éxito!', 'Cerrar', { duration: 3000 });
+            this.cancelarCita();
           },
           error: (err) => {
             this.loading = false;
-            console.error(`💥 [${traceId}] ERROR BACKEND`, err);
-            const mensaje = err.error?.mensaje || err.error?.message || 'Error al crear cita';
-            this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
+            console.error(`💥 [${traceId}] Error al crear cita:`, err);
+            this.snackBar.open(err.error?.mensaje || 'Error al procesar la reserva', 'Cerrar', { duration: 4000 });
           }
         });
       },
       error: (err) => {
-        console.error(`💥 [${traceId}] Error validando disponibilidad`, err);
-        this.snackBar.open('Error validando disponibilidad', 'Cerrar', { duration: 3000 });
+        this.loading = false;
+        console.error(`💥 [${traceId}] Error de red/servidor:`, err);
       }
     });
   }

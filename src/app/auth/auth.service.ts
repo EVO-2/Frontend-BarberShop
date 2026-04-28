@@ -41,31 +41,40 @@ export class AuthService {
   // =================== AUTENTICACIÓN ===================
 
   login(datos: { correo: string; password: string }): Observable<any> {
-
     return this.http.post<any>(`${this.apiUrl}/login`, datos).pipe(
-
       tap((resp: any) => {
-
+        // 1. Guardar el token de seguridad
         if (resp?.token) {
           localStorage.setItem('token', resp.token);
         }
 
+        // 2. Procesar y guardar la información del usuario
         if (resp?.usuario) {
+          console.log('📦 Datos recibidos del servidor:', resp.usuario);
 
-          const usuarioPlano = this.mapUsuario(resp.usuario);
+          /**
+           * 🔥 EL PASO CRÍTICO:
+           * Usamos mapUsuario para limpiar el formato "new ObjectId" del backend
+           * y estructurar correctamente las entidades (cliente/peluquero).
+           */
+          const usuarioMapeado = this.mapUsuario(resp.usuario);
 
-          localStorage.setItem('usuario', JSON.stringify(usuarioPlano));
+          console.log('✅ Usuario normalizado para la App:', usuarioMapeado);
 
-          this.usuarioSubject.next(usuarioPlano);
+          // Persistencia en LocalStorage (JSON limpio)
+          localStorage.setItem('usuario', JSON.stringify(usuarioMapeado));
 
-          const nuevaUrl = this.getFotoUrl(usuarioPlano.foto);
-          this.fotoPerfilSubject.next(nuevaUrl);
+          // Notificar a todos los componentes suscritos al Observable usuario$
+          this.usuarioSubject.next(usuarioMapeado);
 
-          this.rolUsuario = String(usuarioPlano.rol);
+          // Actualizar la foto de perfil en el Subject correspondiente
+          const fotoUrl = this.getFotoUrl(usuarioMapeado.foto);
+          this.fotoPerfilSubject.next(fotoUrl);
+
+          // Sincronizar el rol para métodos internos de validación
+          this.rolUsuario = String(usuarioMapeado.rol);
         }
-
       })
-
     );
   }
 
@@ -128,35 +137,40 @@ export class AuthService {
   // =================== USUARIO ===================
 
   getUsuario(): any {
-
     try {
-
       const data = localStorage.getItem('usuario');
 
       if (!data) return null;
 
       const usuario = JSON.parse(data);
 
-      usuario.id =
-        usuario.id ||
-        usuario._id ||
-        usuario.cliente?._id ||
-        usuario.peluquero?._id;
+      /**
+       * 🆔 NORMALIZACIÓN DE IDS
+       * Aseguramos que usuario._id siempre sea el ID de la cuenta (User Collection).
+       * No mezclamos con cliente._id aquí para evitar conflictos en el perfil.
+       */
+      const idCuenta = usuario._id || usuario.id;
+      usuario._id = idCuenta;
+      usuario.id = idCuenta;
 
-      usuario._id =
-        usuario._id ||
-        usuario.id ||
-        usuario.cliente?._id ||
-        usuario.peluquero?._id;
+      /**
+       * 🎭 NORMALIZACIÓN DE ROL
+       * Siempre devolvemos el string del nombre del rol para facilitar 
+       * las validaciones de Guards y Directivas en el HTML.
+       */
+      usuario.rol = typeof usuario.rol === 'string'
+        ? usuario.rol
+        : (usuario.rol?.nombre || '');
 
-      usuario.rol =
-        typeof usuario.rol === 'string'
-          ? usuario.rol
-          : usuario.rol?.nombre || '';
-
+      /**
+       * 🛡️ GARANTÍA DE ENTIDADES
+       * Si el objeto fue guardado correctamente por mapUsuario, 
+       * las propiedades 'cliente' o 'peluquero' ya vendrán como objetos.
+       */
       return usuario;
 
-    } catch {
+    } catch (error) {
+      console.error('❌ Error al recuperar usuario del storage:', error);
       return null;
     }
   }
@@ -288,33 +302,41 @@ export class AuthService {
     // 1. Extraemos el ID del usuario (colección 'usuarios')
     const idUsuario = usuario._id || usuario.id;
 
-    // 2. Normalización del Rol
+    // 2. Normalización del Rol (siempre en minúsculas para comparaciones seguras)
     const nombreRol = (typeof usuario.rol === 'string'
       ? usuario.rol
       : (usuario.rol?.nombre || '')).toLowerCase();
 
-    // 3. Función de limpieza interna para detectar strings mal formados (Fix Railway)
+    /**
+     * 🧹 Función de limpieza interna (Anti-basura Railway/Mongo)
+     * Detecta si el ID viene como "new ObjectId('...')", como string simple, 
+     * o como objeto populado, y devuelve siempre un objeto { _id, usuario }.
+     */
     const normalizarEntidad = (data: any) => {
       if (!data) return undefined;
 
-      // Si el backend envió un string que parece un objeto (error de serialización)
+      let idExtraido: string | null = null;
+
+      // Caso A: El backend envió un string de inspección de Node/Mongo (Fix Railway)
       if (typeof data === 'string' && (data.includes('_id') || data.includes('ObjectId'))) {
         console.warn("⚠️ Normalizando string de inspección detectado en la entidad");
-        const match = data.match(/ObjectId\(['"](.+?)['"]\)/) || data.match(/_id:\s*['"](.+?)['"]/);
-        if (match) return { _id: match[1], usuario: idUsuario };
+        const match = data.match(/[0-9a-fA-F]{24}/); // Busca cualquier cadena hexadecimal de 24 chars
+        if (match) idExtraido = match[0];
+      }
+      // Caso B: Es un string simple de 24 caracteres (ID estándar)
+      else if (typeof data === 'string') {
+        idExtraido = data;
+      }
+      // Caso C: Es un objeto real (populado o no)
+      else if (typeof data === 'object') {
+        idExtraido = data._id || data.id;
       }
 
-      // Si es un string simple (solo el ID)
-      if (typeof data === 'string') {
-        return { _id: data, usuario: idUsuario };
-      }
-
-      // Si es un objeto real de JS
-      return {
-        ...data,
-        _id: data._id || data.id,
-        usuario: idUsuario
-      };
+      return idExtraido ? {
+        _id: idExtraido,
+        usuario: idUsuario,
+        ...(typeof data === 'object' ? data : {}) // Si era objeto, mantenemos sus otras propiedades
+      } : undefined;
     };
 
     return {
@@ -329,7 +351,7 @@ export class AuthService {
 
       /**
        * 👤 CLIENTE: 
-       * Aplicamos la normalización para limpiar el string sucio visto en logs de Railway
+       * Se normaliza para asegurar que el ID de la colección 'clientes' sea accesible.
        */
       cliente: (nombreRol === 'cliente')
         ? normalizarEntidad(usuario.cliente)
@@ -337,7 +359,7 @@ export class AuthService {
 
       /**
        * ✂️ PELUQUERO / PROFESIONAL:
-       * Buscamos en 'peluquero', 'manicurista' o 'barbero' según el rol
+       * Busca en las posibles claves según el rol detectado.
        */
       peluquero: (nombreRol === 'barbero' || nombreRol === 'manicurista')
         ? normalizarEntidad(usuario.peluquero || usuario.manicurista || usuario.barbero)
@@ -345,7 +367,7 @@ export class AuthService {
 
       /**
        * 💅 MANICURISTA: 
-       * Mantenemos por compatibilidad específica si el componente lo requiere por separado
+       * Mantenimiento por compatibilidad si algún componente lo requiere por separado.
        */
       manicurista: (nombreRol === 'manicurista')
         ? normalizarEntidad(usuario.manicurista)

@@ -409,7 +409,6 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   reservarCita(): void {
-
     const traceId = `CITA-${Date.now()}`;
 
     console.log(`🟢 [${traceId}] Inicio reservarCita`);
@@ -426,30 +425,24 @@ export class ReservarCitaComponent implements OnInit {
     }
 
     const datos = this.reservarForm.value;
-
     console.log(`📥 [${traceId}] Datos del formulario`, datos);
 
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
-
     console.log(`🕒 [${traceId}] Fecha base generada`, fechaBase);
-
     console.log(`👤 [${traceId}] Usuario logueado`, this.usuarioLogueado);
 
-    // 🔥 FIX PRINCIPAL: clienteId robusto
+    // 🔥 FIX CRÍTICO: Extracción precisa del ID de la entidad CLIENTE
+    // No podemos enviar el ID del Usuario (el que empieza por 69f0c5...) 
+    // Debemos enviar el ID del documento en la colección 'clientes'.
     const clienteId =
-      this.usuarioLogueado?.cliente ||
       this.usuarioLogueado?.cliente?._id ||
-      this.usuarioLogueado?.clienteId ||
-      this.usuarioLogueado?._id ||
-      this.usuarioLogueado?.id;
+      (typeof this.usuarioLogueado?.cliente === 'string' ? this.usuarioLogueado.cliente : null);
 
-    console.log(`🆔 [${traceId}] ClienteId resuelto`, {
-      clienteId
-    });
+    console.log(`🆔 [${traceId}] ClienteId resuelto`, { clienteId });
 
     if (!clienteId) {
-      console.error(`🚨 [${traceId}] ERROR: clienteId es NULL o undefined`);
-      this.snackBar.open('Cliente no válido', 'Cerrar', { duration: 3000 });
+      console.error(`🚨 [${traceId}] ERROR: No se encontró el ID de Cliente. Usuario actual:`, this.usuarioLogueado);
+      this.snackBar.open('Error de perfil: No se encontró tu ID de cliente', 'Cerrar', { duration: 5000 });
       return;
     }
 
@@ -471,11 +464,10 @@ export class ReservarCitaComponent implements OnInit {
       return;
     }
 
+    // Iniciamos proceso de validación de disponibilidad
     this.reservaService.getCitasPorFechaYHora(datos.sede, fechaBase.toISOString()).subscribe({
-
       next: (res) => {
-
-        const citasArray: any[] = Array.isArray(res.data) ? res.data : res;
+        const citasArray: any[] = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
 
         const citasActivas = citasArray.filter((c: any) =>
           c.estado !== 'cancelada' &&
@@ -491,16 +483,16 @@ export class ReservarCitaComponent implements OnInit {
         const finNueva = new Date(inicioNueva.getTime() + duracionNueva * 60000);
 
         const conflicto = citasActivas.some((c: any) => {
-
           const inicioExistente = new Date(c.fecha);
+          const serviciosCita = Array.isArray(c.servicios) ? c.servicios : [];
 
-          const duracionExistente = (c.servicios || []).reduce((t: number, sId: string) => {
-            const s = this.servicios.find(sv => sv._id === sId);
-            return t + (s?.duracion || 30);
+          const duracionExistente = serviciosCita.reduce((t: number, s: any) => {
+            // Si el servicio viene populado usamos s.duracion, si no, lo buscamos
+            const d = s?.duracion || this.servicios.find(sv => sv._id === (s?._id || s))?.duracion || 30;
+            return t + d;
           }, 0);
 
           const finExistente = new Date(inicioExistente.getTime() + duracionExistente * 60000);
-
           return inicioNueva < finExistente && finNueva > inicioExistente;
         });
 
@@ -509,9 +501,9 @@ export class ReservarCitaComponent implements OnInit {
           return;
         }
 
-        // 🔥 PAYLOAD FINAL CORREGIDO
+        // ✅ PAYLOAD FINAL GARANTIZADO
         const citaData = {
-          cliente: clienteId,
+          cliente: clienteId, // Ahora es el ID de la colección 'clientes'
           sede: datos.sede,
           peluquero: datos.peluquero,
           puestoTrabajo: datos.puestoTrabajo,
@@ -521,40 +513,28 @@ export class ReservarCitaComponent implements OnInit {
           observacion: datos.observaciones || ''
         };
 
-        console.log(`📤 [${traceId}] Payload FINAL`, citaData);
+        console.log(`📤 [${traceId}] Payload FINAL enviado al servidor`, citaData);
 
         this.loading = true;
 
         this.reservaService.crearCita(citaData).subscribe({
-
           next: (resp) => {
             this.loading = false;
             this.snackBar.open('Cita creada exitosamente', 'Cerrar', { duration: 3000 });
-            this.cancelarCita();
+            this.cancelarCita(); // Resetea el formulario
           },
-
           error: (err) => {
             this.loading = false;
-
             console.error(`💥 [${traceId}] ERROR BACKEND`, err);
-
-            const mensaje =
-              err.error?.mensaje ||
-              err.error?.message ||
-              'Error al crear cita';
-
+            const mensaje = err.error?.mensaje || err.error?.message || 'Error al crear cita';
             this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
           }
-
         });
-
       },
-
       error: (err) => {
         console.error(`💥 [${traceId}] Error validando disponibilidad`, err);
         this.snackBar.open('Error validando disponibilidad', 'Cerrar', { duration: 3000 });
       }
-
     });
   }
   cancelarCita(): void {

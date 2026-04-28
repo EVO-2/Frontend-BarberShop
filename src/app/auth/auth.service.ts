@@ -285,41 +285,70 @@ export class AuthService {
   private mapUsuario(usuario: any): Usuario {
     console.log('🧪 mapUsuario input:', usuario);
 
+    // 1. Extraemos el ID del usuario (colección 'usuarios')
     const idUsuario = usuario._id || usuario.id;
+
+    // 2. Normalización del Rol
+    const nombreRol = (typeof usuario.rol === 'string'
+      ? usuario.rol
+      : (usuario.rol?.nombre || '')).toLowerCase();
+
+    // 3. Función de limpieza interna para detectar strings mal formados (Fix Railway)
+    const normalizarEntidad = (data: any) => {
+      if (!data) return undefined;
+
+      // Si el backend envió un string que parece un objeto (error de serialización)
+      if (typeof data === 'string' && (data.includes('_id') || data.includes('ObjectId'))) {
+        console.warn("⚠️ Normalizando string de inspección detectado en la entidad");
+        const match = data.match(/ObjectId\(['"](.+?)['"]\)/) || data.match(/_id:\s*['"](.+?)['"]/);
+        if (match) return { _id: match[1], usuario: idUsuario };
+      }
+
+      // Si es un string simple (solo el ID)
+      if (typeof data === 'string') {
+        return { _id: data, usuario: idUsuario };
+      }
+
+      // Si es un objeto real de JS
+      return {
+        ...data,
+        _id: data._id || data.id,
+        usuario: idUsuario
+      };
+    };
 
     return {
       _id: idUsuario,
       nombre: usuario.nombre,
       correo: usuario.correo,
-
-      rol: typeof usuario.rol === 'string'
-        ? usuario.rol
-        : usuario.rol?.nombre || '',
-
+      rol: nombreRol,
       foto: usuario.foto || undefined,
 
-      // 🔐 Permisos (CLAVE para tu problema anterior)
-      permisos: usuario.permisos || [],
+      // 🔐 Permisos: Intentamos obtenerlos de la raíz o del objeto rol populado
+      permisos: usuario.permisos || (usuario.rol?.permisos?.map((p: any) => p.nombre) || []),
 
-      // 👤 Cliente
-      cliente: usuario.cliente
-        ? (typeof usuario.cliente === 'string'
-          ? { _id: usuario.cliente, usuario: idUsuario }
-          : { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario })
+      /**
+       * 👤 CLIENTE: 
+       * Aplicamos la normalización para limpiar el string sucio visto en logs de Railway
+       */
+      cliente: (nombreRol === 'cliente')
+        ? normalizarEntidad(usuario.cliente)
         : undefined,
 
-      // 💇 Peluquero
-      peluquero: usuario.peluquero
-        ? (typeof usuario.peluquero === 'string'
-          ? { _id: usuario.peluquero, usuario: idUsuario }
-          : { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario })
+      /**
+       * ✂️ PELUQUERO / PROFESIONAL:
+       * Buscamos en 'peluquero', 'manicurista' o 'barbero' según el rol
+       */
+      peluquero: (nombreRol === 'barbero' || nombreRol === 'manicurista')
+        ? normalizarEntidad(usuario.peluquero || usuario.manicurista || usuario.barbero)
         : undefined,
 
-      // 💅 Manicurista (🔥 NUEVO)
-      manicurista: usuario.manicurista
-        ? (typeof usuario.manicurista === 'string'
-          ? { _id: usuario.manicurista, usuario: idUsuario }
-          : { ...usuario.manicurista, _id: usuario.manicurista._id, usuario: idUsuario })
+      /**
+       * 💅 MANICURISTA: 
+       * Mantenemos por compatibilidad específica si el componente lo requiere por separado
+       */
+      manicurista: (nombreRol === 'manicurista')
+        ? normalizarEntidad(usuario.manicurista)
         : undefined
     };
   }

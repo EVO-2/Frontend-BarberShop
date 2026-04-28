@@ -104,6 +104,7 @@ export class AuthService {
   }
 
   guardarDatos(token: string, usuario?: any): void {
+    console.log('💾 Guardando usuario:', usuario);
 
     if (token) {
       localStorage.setItem('token', token);
@@ -282,6 +283,7 @@ export class AuthService {
   // =================== NORMALIZACIÓN ===================
 
   private mapUsuario(usuario: any): Usuario {
+    console.log('🧪 mapUsuario input:', usuario);
 
     const idUsuario = usuario._id || usuario.id;
 
@@ -301,17 +303,23 @@ export class AuthService {
 
       // 👤 Cliente
       cliente: usuario.cliente
-        ? { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario }
+        ? (typeof usuario.cliente === 'string'
+          ? { _id: usuario.cliente, usuario: idUsuario }
+          : { ...usuario.cliente, _id: usuario.cliente._id, usuario: idUsuario })
         : undefined,
 
       // 💇 Peluquero
       peluquero: usuario.peluquero
-        ? { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario }
+        ? (typeof usuario.peluquero === 'string'
+          ? { _id: usuario.peluquero, usuario: idUsuario }
+          : { ...usuario.peluquero, _id: usuario.peluquero._id, usuario: idUsuario })
         : undefined,
 
       // 💅 Manicurista (🔥 NUEVO)
       manicurista: usuario.manicurista
-        ? { ...usuario.manicurista, _id: usuario.manicurista._id, usuario: idUsuario }
+        ? (typeof usuario.manicurista === 'string'
+          ? { _id: usuario.manicurista, usuario: idUsuario }
+          : { ...usuario.manicurista, _id: usuario.manicurista._id, usuario: idUsuario })
         : undefined
     };
   }

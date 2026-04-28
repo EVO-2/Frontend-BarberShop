@@ -410,20 +410,45 @@ export class ReservarCitaComponent implements OnInit {
 
   reservarCita(): void {
 
+    const traceId = `CITA-${Date.now()}`;
+
+    console.log(`🟢 [${traceId}] Inicio reservarCita`);
+
+    console.log(`📊 [${traceId}] Estado formulario`, {
+      invalid: this.reservarForm.invalid,
+      fechaHoraInvalida: this.fechaHoraInvalida,
+      loading: this.loading
+    });
+
     if (this.reservarForm.invalid || this.fechaHoraInvalida || this.loading) {
       this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
       return;
     }
 
     const datos = this.reservarForm.value;
+
+    console.log(`📥 [${traceId}] Datos del formulario`, datos);
+
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
 
-    const clienteId = this.rolUsuario === 'cliente'
-      ? this.usuarioLogueado?.cliente?._id || this.usuarioLogueado?.clienteId
-      : datos.cliente;
+    console.log(`🕒 [${traceId}] Fecha base generada`, fechaBase);
 
-    // 🚨 VALIDACIONES BÁSICAS
+    console.log(`👤 [${traceId}] Usuario logueado`, this.usuarioLogueado);
+
+    // 🔥 FIX PRINCIPAL: clienteId robusto
+    const clienteId =
+      this.usuarioLogueado?.cliente ||
+      this.usuarioLogueado?.cliente?._id ||
+      this.usuarioLogueado?.clienteId ||
+      this.usuarioLogueado?._id ||
+      this.usuarioLogueado?.id;
+
+    console.log(`🆔 [${traceId}] ClienteId resuelto`, {
+      clienteId
+    });
+
     if (!clienteId) {
+      console.error(`🚨 [${traceId}] ERROR: clienteId es NULL o undefined`);
       this.snackBar.open('Cliente no válido', 'Cerrar', { duration: 3000 });
       return;
     }
@@ -438,17 +463,14 @@ export class ReservarCitaComponent implements OnInit {
       return;
     }
 
-    // 🔴 VALIDACIÓN CRÍTICA: SOLO UN SERVICIO POR CITA
     if (datos.servicios.length > 1) {
-      this.snackBar.open(
-        '⚠️ No puedes seleccionar múltiples servicios en la misma cita. Cada servicio debe reservarse por separado.',
-        'Cerrar',
-        { duration: 5000, panelClass: ['snack-error'] }
-      );
+      this.snackBar.open('⚠️ No puedes seleccionar múltiples servicios en la misma cita.', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['snack-error']
+      });
       return;
     }
 
-    // 🔥 VALIDACIÓN PRO: evitar conflictos de horario con el mismo profesional
     this.reservaService.getCitasPorFechaYHora(datos.sede, fechaBase.toISOString()).subscribe({
 
       next: (res) => {
@@ -460,7 +482,6 @@ export class ReservarCitaComponent implements OnInit {
           this.extractId(c.peluquero) === datos.peluquero
         );
 
-        // 🔥 duración total de la nueva cita
         const duracionNueva = (datos.servicios || []).reduce((t: number, sId: string) => {
           const s = this.servicios.find(sv => sv._id === sId);
           return t + (s?.duracion || 30);
@@ -469,7 +490,6 @@ export class ReservarCitaComponent implements OnInit {
         const inicioNueva = fechaBase;
         const finNueva = new Date(inicioNueva.getTime() + duracionNueva * 60000);
 
-        // 🔥 detectar conflicto
         const conflicto = citasActivas.some((c: any) => {
 
           const inicioExistente = new Date(c.fecha);
@@ -481,21 +501,15 @@ export class ReservarCitaComponent implements OnInit {
 
           const finExistente = new Date(inicioExistente.getTime() + duracionExistente * 60000);
 
-          // 🔴 SOLAPAMIENTO
           return inicioNueva < finExistente && finNueva > inicioExistente;
         });
 
         if (conflicto) {
-          this.snackBar.open(
-            '⚠️ El profesional ya tiene un servicio asignado en ese horario. No puede tener múltiples servicios simultáneamente.',
-            'Cerrar',
-            { duration: 5000, panelClass: ['snack-error'] }
-          );
+          this.snackBar.open('El profesional ya tiene una cita en ese horario.', 'Cerrar', { duration: 5000 });
           return;
         }
 
-        // 🔥 SI TODO OK → CREAR CITA
-
+        // 🔥 PAYLOAD FINAL CORREGIDO
         const citaData = {
           cliente: clienteId,
           sede: datos.sede,
@@ -507,33 +521,27 @@ export class ReservarCitaComponent implements OnInit {
           observacion: datos.observaciones || ''
         };
 
-        console.log('📤 Payload cita:', citaData);
+        console.log(`📤 [${traceId}] Payload FINAL`, citaData);
 
         this.loading = true;
 
         this.reservaService.crearCita(citaData).subscribe({
 
-          next: () => {
-
+          next: (resp) => {
             this.loading = false;
-
             this.snackBar.open('Cita creada exitosamente', 'Cerrar', { duration: 3000 });
-
-            this.validarFechaHoraYActualizarOcupacion();
-
             this.cancelarCita();
           },
 
           error: (err) => {
-
             this.loading = false;
 
-            console.error('❌ Error completo:', err);
-            console.error('📩 Backend dice:', err.error);
+            console.error(`💥 [${traceId}] ERROR BACKEND`, err);
 
-            const mensaje = err.error?.mensaje?.includes('duplicate key')
-              ? 'El peluquero ya tiene una cita en esa fecha y hora.'
-              : err.error?.mensaje || 'Error al crear cita';
+            const mensaje =
+              err.error?.mensaje ||
+              err.error?.message ||
+              'Error al crear cita';
 
             this.snackBar.open(mensaje, 'Cerrar', { duration: 4000 });
           }
@@ -542,12 +550,12 @@ export class ReservarCitaComponent implements OnInit {
 
       },
 
-      error: () => {
+      error: (err) => {
+        console.error(`💥 [${traceId}] Error validando disponibilidad`, err);
         this.snackBar.open('Error validando disponibilidad', 'Cerrar', { duration: 3000 });
       }
 
     });
-
   }
   cancelarCita(): void {
     this.reservarForm.reset();

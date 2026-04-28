@@ -94,6 +94,7 @@ export class LoginComponent {
     this.authService.login({ correo, password }).subscribe({
 
       next: async (res) => {
+        console.log('🔥 LOGIN RESPONSE FRONT:', res);
 
         // 🔐 Guardar datos
         this.authService.guardarDatos(res.token, res.usuario);

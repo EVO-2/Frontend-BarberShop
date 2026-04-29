@@ -409,9 +409,6 @@ export class ReservarCitaComponent implements OnInit {
   }
 
   async reservarCita(): Promise<void> {
-    const traceId = `CITA-${Date.now()}`;
-
-    console.log(`🟢 [${traceId}] Inicio reservarCita`);
 
     // 1. Validaciones iniciales de UI
     if (this.reservarForm.invalid || this.fechaHoraInvalida || this.loading) {
@@ -419,42 +416,41 @@ export class ReservarCitaComponent implements OnInit {
       return;
     }
 
-    // 2. 🔍 EXTRACCIÓN DINÁMICA (El corazón de la solución)
-    // Obtenemos el usuario directamente del storage para evitar desfases del Observable
+    // 2. 🔍 EXTRACCIÓN DINÁMICA
     const usuarioData = this.authService.getUsuario();
-    console.log(`👤 [${traceId}] Usuario recuperado del Storage:`, usuarioData);
 
+    // ✅ NUEVA LÓGICA ROBUSTA
     let clienteId = null;
+    const datos = this.reservarForm.value;
 
-    if (usuarioData?.cliente?._id) {
-      clienteId = usuarioData.cliente._id;
-    } else if (typeof usuarioData?.cliente === 'string') {
-      clienteId = usuarioData.cliente;
+    if (this.esAdmin) {
+      clienteId = datos.cliente;
+    } else {
+      const idUsuario = usuarioData?._id || usuarioData?.id;
+      const posibleClienteId = usuarioData?.cliente?._id || usuarioData?.cliente;
+      
+      // Si el id en cliente es diferente al idUsuario, es el ID real del Cliente.
+      // Si es igual, es el fallback del AuthService y no debemos enviarlo, 
+      // dejamos que el backend lo busque por el token.
+      if (posibleClienteId && posibleClienteId !== idUsuario) {
+        clienteId = posibleClienteId;
+      }
     }
 
-    // 3. 🚨 VALIDACIÓN CRÍTICA
-    if (!clienteId) {
-      console.error(`🚨 [${traceId}] ERROR: clienteId sigue siendo NULL`, { usuarioData });
-
-      // Intento final: Si el rol es cliente pero no hay ID de cliente, 
-      // algo falló en el mapeo o en la sesión.
-      this.snackBar.open('Sesión incompleta. Reintentando sincronizar...', 'Cerrar', { duration: 3000 });
-      this.authService.refrescarUsuario(); // Forzamos recarga del perfil
+    if (this.esAdmin && !clienteId) {
+      this.snackBar.open('Debes seleccionar un cliente.', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    console.log(`🆔 [${traceId}] ClienteId validado correctamente:`, clienteId);
-
-    const datos = this.reservarForm.value;
     const fechaBase = this.combinarFechaHora(datos.fecha, datos.hora);
 
-    // 4. VALIDACIÓN DE DISPONIBILIDAD (Backend)
+    // 4. VALIDACIÓN DE DISPONIBILIDAD
     this.loading = true;
+
     this.reservaService.getCitasPorFechaYHora(datos.sede, fechaBase.toISOString()).subscribe({
       next: (res) => {
         const citasArray = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
 
-        // Filtrar conflictos con el peluquero seleccionado
         const conflicto = citasArray.some((c: any) => {
           if (c.estado === 'cancelada') return false;
           if (this.extractId(c.peluquero) !== datos.peluquero) return false;
@@ -467,6 +463,7 @@ export class ReservarCitaComponent implements OnInit {
             const s = this.servicios.find(sv => sv._id === sId);
             return acc + (s?.duracion || 30);
           }, 0);
+
           const finNueva = new Date(fechaBase.getTime() + duracionNueva * 60000);
 
           return fechaBase < finExistente && finNueva > inicioExistente;
@@ -478,9 +475,8 @@ export class ReservarCitaComponent implements OnInit {
           return;
         }
 
-        // 5. 📤 ENVÍO DE PAYLOAD FINAL
-        const citaData = {
-          cliente: clienteId, // El ID de la colección 'clientes' (...6d9)
+        // 5. 📤 PAYLOAD FINAL
+        const citaData: any = {
           sede: datos.sede,
           peluquero: datos.peluquero,
           puestoTrabajo: datos.puestoTrabajo,
@@ -490,7 +486,9 @@ export class ReservarCitaComponent implements OnInit {
           observacion: datos.observaciones || ''
         };
 
-        console.log(`📤 [${traceId}] Enviando payload final al Backend:`, citaData);
+        if (clienteId) {
+          citaData.cliente = clienteId;
+        }
 
         this.reservaService.crearCita(citaData).subscribe({
           next: () => {
@@ -500,14 +498,14 @@ export class ReservarCitaComponent implements OnInit {
           },
           error: (err) => {
             this.loading = false;
-            console.error(`💥 [${traceId}] Error al crear cita:`, err);
+            console.error('Error al crear cita:', err);
             this.snackBar.open(err.error?.mensaje || 'Error al procesar la reserva', 'Cerrar', { duration: 4000 });
           }
         });
       },
       error: (err) => {
         this.loading = false;
-        console.error(`💥 [${traceId}] Error de red/servidor:`, err);
+        console.error('Error de red/servidor:', err);
       }
     });
   }

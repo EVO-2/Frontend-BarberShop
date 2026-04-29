@@ -50,16 +50,12 @@ export class AuthService {
 
         // 2. Procesar y guardar la información del usuario
         if (resp?.usuario) {
-          console.log('📦 Datos recibidos del servidor:', resp.usuario);
-
           /**
            * 🔥 EL PASO CRÍTICO:
            * Usamos mapUsuario para limpiar el formato "new ObjectId" del backend
            * y estructurar correctamente las entidades (cliente/peluquero).
            */
           const usuarioMapeado = this.mapUsuario(resp.usuario);
-
-          console.log('✅ Usuario normalizado para la App:', usuarioMapeado);
 
           // Persistencia en LocalStorage (JSON limpio)
           localStorage.setItem('usuario', JSON.stringify(usuarioMapeado));
@@ -113,8 +109,6 @@ export class AuthService {
   }
 
   guardarDatos(token: string, usuario?: any): void {
-    console.log('💾 Guardando usuario:', usuario);
-
     if (token) {
       localStorage.setItem('token', token);
     }
@@ -297,37 +291,33 @@ export class AuthService {
   // =================== NORMALIZACIÓN ===================
 
   private mapUsuario(usuario: any): Usuario {
-    console.log('🧪 mapUsuario input:', usuario);
-
     // 1. Extraemos el ID del usuario (colección 'usuarios')
     const idUsuario = usuario._id || usuario.id;
 
-    // 2. Normalización del Rol (siempre en minúsculas para comparaciones seguras)
+    // 2. Normalización del Rol
     const nombreRol = (typeof usuario.rol === 'string'
       ? usuario.rol
       : (usuario.rol?.nombre || '')).toLowerCase();
 
     /**
      * 🧹 Función de limpieza interna (Anti-basura Railway/Mongo)
-     * Detecta si el ID viene como "new ObjectId('...')", como string simple, 
-     * o como objeto populado, y devuelve siempre un objeto { _id, usuario }.
      */
     const normalizarEntidad = (data: any) => {
       if (!data) return undefined;
 
       let idExtraido: string | null = null;
 
-      // Caso A: El backend envió un string de inspección de Node/Mongo (Fix Railway)
+      // Caso A: string tipo "new ObjectId(...)"
       if (typeof data === 'string' && (data.includes('_id') || data.includes('ObjectId'))) {
         console.warn("⚠️ Normalizando string de inspección detectado en la entidad");
-        const match = data.match(/[0-9a-fA-F]{24}/); // Busca cualquier cadena hexadecimal de 24 chars
+        const match = data.match(/[0-9a-fA-F]{24}/);
         if (match) idExtraido = match[0];
       }
-      // Caso B: Es un string simple de 24 caracteres (ID estándar)
+      // Caso B: string simple
       else if (typeof data === 'string') {
         idExtraido = data;
       }
-      // Caso C: Es un objeto real (populado o no)
+      // Caso C: objeto
       else if (typeof data === 'object') {
         idExtraido = data._id || data.id;
       }
@@ -335,44 +325,58 @@ export class AuthService {
       return idExtraido ? {
         _id: idExtraido,
         usuario: idUsuario,
-        ...(typeof data === 'object' ? data : {}) // Si era objeto, mantenemos sus otras propiedades
+        ...(typeof data === 'object' ? data : {})
       } : undefined;
     };
 
-    return {
+    // 🔥 NORMALIZACIONES CLAVE (aquí está la corrección real)
+    const clienteNormalizado = normalizarEntidad(usuario.cliente);
+    const peluqueroNormalizado = normalizarEntidad(
+      usuario.peluquero || usuario.manicurista || usuario.barbero
+    );
+    const manicuristaNormalizado = normalizarEntidad(usuario.manicurista);
+
+    const usuarioNormalizado: Usuario = {
       _id: idUsuario,
       nombre: usuario.nombre,
       correo: usuario.correo,
       rol: nombreRol,
       foto: usuario.foto || undefined,
 
-      // 🔐 Permisos: Intentamos obtenerlos de la raíz o del objeto rol populado
+      // 🔐 Permisos
       permisos: usuario.permisos || (usuario.rol?.permisos?.map((p: any) => p.nombre) || []),
 
       /**
-       * 👤 CLIENTE: 
-       * Se normaliza para asegurar que el ID de la colección 'clientes' sea accesible.
+       * 👤 CLIENTE (FIX CRÍTICO)
+       * - SI viene en backend → usarlo SIEMPRE
+       * - SOLO fallback a usuario._id si no existe (casos legacy)
        */
-      cliente: (nombreRol === 'cliente')
-        ? normalizarEntidad(usuario.cliente)
-        : undefined,
+      cliente: clienteNormalizado
+        ? clienteNormalizado
+        : (nombreRol === 'cliente'
+          ? { _id: idUsuario, usuario: idUsuario }
+          : undefined),
 
       /**
-       * ✂️ PELUQUERO / PROFESIONAL:
-       * Busca en las posibles claves según el rol detectado.
+       * ✂️ PELUQUERO
        */
-      peluquero: (nombreRol === 'barbero' || nombreRol === 'manicurista')
-        ? normalizarEntidad(usuario.peluquero || usuario.manicurista || usuario.barbero)
-        : undefined,
+      peluquero: peluqueroNormalizado
+        ? peluqueroNormalizado
+        : (nombreRol === 'barbero'
+          ? { _id: idUsuario, usuario: idUsuario }
+          : undefined),
 
       /**
-       * 💅 MANICURISTA: 
-       * Mantenimiento por compatibilidad si algún componente lo requiere por separado.
+       * 💅 MANICURISTA
        */
-      manicurista: (nombreRol === 'manicurista')
-        ? normalizarEntidad(usuario.manicurista)
-        : undefined
+      manicurista: manicuristaNormalizado
+        ? manicuristaNormalizado
+        : (nombreRol === 'manicurista'
+          ? { _id: idUsuario, usuario: idUsuario }
+          : undefined)
     };
+
+    return usuarioNormalizado;
   }
 
 }

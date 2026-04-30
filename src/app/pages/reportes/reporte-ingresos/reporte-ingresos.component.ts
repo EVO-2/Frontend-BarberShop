@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ReportesService } from 'src/app/core/services/reportes.service';
+import { SedeService, Sede } from 'src/app/core/services/sede.service';
 import * as xlsx from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -66,19 +67,35 @@ export class ReporteIngresosComponent implements OnInit {
   // === 5️⃣ Productos ===
   reportesProductos: any[] = [];
 
+  sedes: Sede[] = [];
+
   cargando = false;
   tabSeleccionada = 0;
 
   constructor(
     private fb: FormBuilder,
     private reportesService: ReportesService,
+    private sedeService: SedeService,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     this.filtroForm = this.fb.group({
       fechaInicio: [''],
-      fechaFin: ['']
+      fechaFin: [''],
+      sede: ['']
+    });
+    this.obtenerSedes();
+  }
+
+  obtenerSedes(): void {
+    this.sedeService.obtenerSedes().subscribe({
+      next: (sedes) => {
+        this.sedes = sedes;
+      },
+      error: (err) => {
+        console.error('Error al cargar sedes:', err);
+      }
     });
   }
 
@@ -135,7 +152,7 @@ export class ReporteIngresosComponent implements OnInit {
 
     if (!this.validarFechas()) return;
 
-    const { fechaInicio, fechaFin } = this.filtroForm.value;
+    const { fechaInicio, fechaFin, sede } = this.filtroForm.value;
 
     this.cargando = true;
 
@@ -146,7 +163,7 @@ export class ReporteIngresosComponent implements OnInit {
     this.totalServicios = 0;
     this.ingresosPorSede = {};
 
-    this.reportesService.obtenerIngresos(fechaInicio, fechaFin).subscribe({
+    this.reportesService.obtenerIngresos(fechaInicio, fechaFin, sede).subscribe({
 
       next: (res: any) => {
 
@@ -204,12 +221,12 @@ export class ReporteIngresosComponent implements OnInit {
 
     if (!this.validarFechas()) return;
 
-    const { fechaInicio, fechaFin } = this.filtroForm.value;
+    const { fechaInicio, fechaFin, sede } = this.filtroForm.value;
 
     this.cargando = true;
     this.reportesBarberos = [];
 
-    this.reportesService.obtenerCitasPorBarbero(fechaInicio, fechaFin).subscribe({
+    this.reportesService.obtenerCitasPorBarbero(fechaInicio, fechaFin, sede).subscribe({
 
       next: (res: any) => {
 
@@ -250,7 +267,7 @@ export class ReporteIngresosComponent implements OnInit {
 
     if (!this.validarFechas()) return;
 
-    const { fechaInicio, fechaFin } = this.filtroForm.value;
+    const { fechaInicio, fechaFin, sede } = this.filtroForm.value;
 
     // 🔹 Ajustar rango completo del día
     const inicio = new Date(fechaInicio);
@@ -262,7 +279,7 @@ export class ReporteIngresosComponent implements OnInit {
     this.cargando = true;
     this.reportesClientes = [];
 
-    this.reportesService.obtenerClientesFrecuentes(fechaInicio, fechaFin).subscribe({
+    this.reportesService.obtenerClientesFrecuentes(fechaInicio, fechaFin, sede).subscribe({
 
       next: (res: any) => {
 
@@ -301,10 +318,12 @@ export class ReporteIngresosComponent implements OnInit {
 
   obtenerReporteInventario(): void {
 
+    const { sede } = this.filtroForm.value;
+
     this.cargando = true;
     this.reportesInventario = [];
 
-    this.reportesService.obtenerReporteInventario().subscribe({
+    this.reportesService.obtenerReporteInventario(sede).subscribe({
 
       next: (res) => {
 
@@ -362,10 +381,13 @@ export class ReporteIngresosComponent implements OnInit {
   // =============================
 
   obtenerReporteProductos(): void {
+
+    const { sede } = this.filtroForm.value;
+
     this.cargando = true;
     this.reportesProductos = [];
 
-    this.reportesService.obtenerReporteProductos().subscribe({
+    this.reportesService.obtenerReporteProductos(sede).subscribe({
       next: (res) => {
         if (!res || res.length === 0) {
           this.reportesProductos = [];

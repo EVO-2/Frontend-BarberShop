@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { emailExisteValidator } from 'src/app/shared/validators/email-existe.validator';
 import { passwordsIguales, telefonoValido } from 'src/app/shared/validators/validators';
+import { MatDialog } from '@angular/material/dialog';
+import { TerminosDialogComponent } from 'src/app/shared/components/terminos-dialog/terminos-dialog.component';
 
 
 @Component({
@@ -29,7 +31,8 @@ export class RegistroComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {
     this.registroForm = this.fb.group({
       nombre: ['', [
@@ -50,7 +53,8 @@ export class RegistroComponent {
       telefono: ['', [Validators.required, telefonoValido()]],
       direccion: ['', Validators.required],
       genero: ['', Validators.required],
-      fecha_nacimiento: ['', Validators.required]
+      fecha_nacimiento: ['', Validators.required],
+      terminos: [false, Validators.requiredTrue]
     }, {
       validators: passwordsIguales('password', 'confirmarPassword')
     });
@@ -107,6 +111,16 @@ export class RegistroComponent {
     this.router.navigate(['/login']);
   }
 
+  abrirModalTerminos(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+    this.dialog.open(TerminosDialogComponent, {
+      width: '500px',
+      autoFocus: false
+    });
+  }
+
   // Getters para el template
   get nombre() { return this.registroForm.get('nombre'); }
   get correo() { return this.registroForm.get('correo'); }
@@ -116,6 +130,7 @@ export class RegistroComponent {
   get direccion() { return this.registroForm.get('direccion'); }
   get genero() { return this.registroForm.get('genero'); }
   get fecha_nacimiento() { return this.registroForm.get('fecha_nacimiento'); }
+  get terminos() { return this.registroForm.get('terminos'); }
 
   get noCoinciden() {
     return this.registroForm.errors?.['noCoinciden'] && this.confirmarPassword?.touched;

@@ -49,6 +49,7 @@ import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dial
 import { ProductosComponent } from './pages/productos/productos/productos.component';
 import { ProductoDialogComponent } from './pages/productos/producto-dialog/producto-dialog.component'; // ✅ NUEVO
 import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
+import { TerminosDialogComponent } from './shared/components/terminos-dialog/terminos-dialog.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { ProductosClienteComponent } from './pages/productos-cliente/productos-c
     // 📦 Productos
     ProductosComponent,
     ProductoDialogComponent, // ✅ AGREGADO
-    ProductosClienteComponent
+    ProductosClienteComponent,
+    TerminosDialogComponent
   ],
   imports: [
     BrowserModule,

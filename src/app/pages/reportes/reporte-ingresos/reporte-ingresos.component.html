@@ -21,6 +21,16 @@
     <form [formGroup]="filtroForm" class="filtros-form">
 
       <mat-form-field appearance="outline">
+        <mat-label>Sede (Opcional)</mat-label>
+        <mat-select formControlName="sede">
+          <mat-option value="">Todas las sedes</mat-option>
+          <mat-option *ngFor="let s of sedes" [value]="s._id">
+            {{ s.nombre }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>Fecha inicio</mat-label>
         <input matInput type="date" formControlName="fechaInicio">
       </mat-form-field>

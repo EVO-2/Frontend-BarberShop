@@ -135,10 +135,15 @@ export class ReportesService {
    * 📦 Reporte de inventario
    * ===================================================
    */
-  obtenerReporteInventario(): Observable<any[]> {
+  obtenerReporteInventario(sede?: string): Observable<any[]> {
+
+    let params = new HttpParams();
+    if (sede) {
+      params = params.set('sede', sede);
+    }
 
     return this.http
-      .get<any>(`${this.apiUrl}/reportes/inventario`)
+      .get<any>(`${this.apiUrl}/reportes/inventario`, { params })
       .pipe(
         map((res: any) => this.normalizarArray(res))
       );
@@ -149,10 +154,15 @@ export class ReportesService {
    * 🛒 Reporte de Productos
    * ===================================================
    */
-  obtenerReporteProductos(): Observable<any[]> {
+  obtenerReporteProductos(sede?: string): Observable<any[]> {
+
+    let params = new HttpParams();
+    if (sede) {
+      params = params.set('sede', sede);
+    }
 
     return this.http
-      .get<any>(`${this.apiUrl}/reportes/productos`)
+      .get<any>(`${this.apiUrl}/reportes/productos`, { params })
       .pipe(
         map((res: any) => this.normalizarArray(res))
       );

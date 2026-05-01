@@ -15,8 +15,8 @@ export class PusherService {
     private toastr: ToastrService,
     private authService: AuthService
   ) {
-    // Inicializar Pusher con tu KEY PÚBLICA (No pongas el Secret aquí por seguridad)
-    this.pusher = new Pusher('049a4f7e2524a1dc1cf2', { // Actualizado con tu KEY
+    // Inicializar Pusher con la KEY PÚBLICA que coincide con el Backend
+    this.pusher = new Pusher('049a3980d2403117231d', { 
       cluster: 'us2'
     });
 

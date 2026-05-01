@@ -77,7 +77,8 @@
               "html2canvas",
               "jspdf",
               "raf",
-              "rgbcolor"
+              "rgbcolor",
+              "pusher-js"
             ]
           },
           "configurations": {

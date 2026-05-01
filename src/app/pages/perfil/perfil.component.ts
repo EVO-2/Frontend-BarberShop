@@ -225,6 +225,12 @@ export class PerfilComponent implements OnInit {
   }
 
   cancelarCambios(): void {
-    this.router.navigate(['/dashboard']);
+    const rol = this.authService.obtenerRol()?.toLowerCase();
+    let homeUrl = '/login';
+    if (rol === 'admin') homeUrl = '/dashboard';
+    else if (rol === 'barbero' || rol === 'manicurista' || rol === 'peluquero') homeUrl = '/gestionar-citas';
+    else if (rol === 'cliente') homeUrl = '/servicios';
+
+    this.router.navigate([homeUrl]);
   }
 }

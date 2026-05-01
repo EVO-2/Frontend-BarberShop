@@ -40,7 +40,12 @@ const routes: Routes = [
     component: LayoutComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: DashboardComponent },
+      { 
+        path: 'dashboard', 
+        component: DashboardComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] } 
+      },
       { path: 'perfil', component: PerfilComponent },
 
       {

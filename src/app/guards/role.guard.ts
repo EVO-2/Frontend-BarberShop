@@ -23,7 +23,13 @@ export class RoleGuard implements CanActivate {
     }
 
     // 🚫 Usuario con rol no permitido
+    const rol = usuario.rol?.toLowerCase() || '';
+    let homeUrl = '/login';
+    if (rol === 'admin') homeUrl = '/dashboard';
+    else if (rol === 'barbero' || rol === 'manicurista' || rol === 'peluquero') homeUrl = '/gestionar-citas';
+    else if (rol === 'cliente') homeUrl = '/servicios';
+
     alert('No tienes permisos para acceder a esta página');
-    return this.router.parseUrl('/dashboard');
+    return this.router.parseUrl(homeUrl);
   }
 }

@@ -182,7 +182,6 @@ export class PerfilComponent implements OnInit {
     // 🔹 Llamada a backend con snackbar
     this.usuarioService.actualizarPerfil(payload).subscribe({
       next: (resp) => {
-        console.log("[PerfilComponent] ✅ Perfil actualizado:", resp);
         this.snackBar.open('Perfil actualizado correctamente', 'Cerrar', {
           duration: 3000,
           panelClass: ['snackbar-success']
@@ -191,7 +190,6 @@ export class PerfilComponent implements OnInit {
         this.authService.setUsuarioActual(resp.usuario);
       },
       error: (err) => {
-        console.error("[PerfilComponent] ❌ Error actualizando perfil:", err);
         this.snackBar.open('Error al actualizar perfil', 'Cerrar', {
           duration: 3000,
           panelClass: ['snackbar-error']
@@ -209,8 +207,16 @@ export class PerfilComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error cambiando contraseña:', err);
-          this.snackBar.open('Error al cambiar contraseña', 'Cerrar', {
-            duration: 3000,
+          
+          let mensajeError = 'Error al cambiar contraseña';
+          if (err.error?.errors && err.error.errors.length > 0) {
+            mensajeError = err.error.errors[0].msg; // Error de express-validator
+          } else if (err.error?.mensaje) {
+            mensajeError = err.error.mensaje; // Error del controlador
+          }
+
+          this.snackBar.open(mensajeError, 'Cerrar', {
+            duration: 5000,
             panelClass: ['snackbar-error']
           });
         }

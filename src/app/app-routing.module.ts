@@ -94,7 +94,7 @@ const routes: Routes = [
         path: 'tienda',
         component: ProductosClienteComponent,
         canActivate: [RoleGuard],
-        data: { roles: ['cliente', 'admin'] }
+        data: { roles: ['cliente', 'barbero', 'manicurista', 'admin'] }
       },
 
       {

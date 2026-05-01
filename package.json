@@ -28,6 +28,7 @@
     "jspdf-autotable": "^5.0.7",
     "material-design-icons": "^3.0.1",
     "ngx-toastr": "^19.0.0",
+    "pusher-js": "^8.5.0",
     "rxjs": "~7.8.1",
     "sweetalert2": "^11.10.0",
     "tslib": "^2.6.2",

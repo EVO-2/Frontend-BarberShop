@@ -1,0 +1,55 @@
+import { Injectable } from '@angular/core';
+import Pusher from 'pusher-js';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PusherService {
+  private pusher: Pusher;
+  private channel: any;
+
+  constructor(private toastr: ToastrService) {
+    // Inicializar Pusher con tu KEY PÚBLICA (No pongas el Secret aquí por seguridad)
+    this.pusher = new Pusher('049a4f7e2524a1dc1cf2', { // Actualizado con tu KEY
+      cluster: 'us2'
+    });
+
+    // Suscribirnos al canal que creamos en el backend
+    this.channel = this.pusher.subscribe('barberia-channel');
+
+    // Escuchar el evento 'nueva-cita'
+    this.escucharNuevasCitas();
+  }
+
+  private escucharNuevasCitas() {
+    this.channel.bind('nueva-cita', (data: any) => {
+      
+      // 1. Mostrar una alerta bonita en la esquina de la pantalla
+      this.toastr.success(`Hora: ${data.hora}`, data.mensaje, {
+        timeOut: 8000,
+        progressBar: true,
+        positionClass: 'toast-top-right' // O la esquina que prefieras
+      });
+
+      // 2. Opcional: Mostrar un PopUp grande con el botón de WhatsApp
+      if (data.linkWhatsAppCliente) {
+        Swal.fire({
+          title: '¡Nueva Cita!',
+          text: `${data.mensaje} - ${data.fecha} a las ${data.hora}`,
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Confirmar por WhatsApp',
+          cancelButtonText: 'Cerrar',
+          confirmButtonColor: '#25D366' // Color de WhatsApp
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Abrir el link de WhatsApp en una pestaña nueva
+            window.open(data.linkWhatsAppCliente, '_blank');
+          }
+        });
+      }
+    });
+  }
+}

@@ -470,7 +470,7 @@ export class ReporteIngresosComponent implements OnInit {
     let sheetName = 'Datos';
     let colWidths: any[] = [];
 
-    const barberiaNombre = document.title || 'Sistema de Gestión';
+    const barberiaNombre = 'Cristian barberShop';
 
     const fechaColombia = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',
@@ -726,7 +726,7 @@ export class ReporteIngresosComponent implements OnInit {
     let headers: string[] = [];
     let keys: string[] = [];
 
-    const barberiaNombre = document.title || 'Sistema de Gestión';
+    const barberiaNombre = 'Cristian barberShop';
 
     const fechaColombia = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',
@@ -895,16 +895,25 @@ export class ReporteIngresosComponent implements OnInit {
 
       doc.addImage(logo, 'PNG', 14, 10, 30, 15);
 
-      doc.setFontSize(14);
-      doc.text(barberiaNombre, 105, 15, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.setTextColor(44, 62, 80);
+      doc.text(barberiaNombre, 105, 18, { align: 'center' });
 
-      doc.setFontSize(18);
-      doc.text(title, 105, 25, { align: 'center' });
+      doc.setFontSize(14);
+      doc.setTextColor(127, 140, 141);
+      doc.text(title.toUpperCase(), 105, 26, { align: 'center' });
 
       doc.setFontSize(10);
+      doc.setTextColor(149, 165, 166);
       doc.text(`Generado: ${fechaColombia}`, 105, 32, { align: 'center' });
 
-      let startY = 40;
+      // Línea divisoria
+      doc.setDrawColor(189, 195, 199);
+      doc.setLineWidth(0.5);
+      doc.line(14, 36, 196, 36);
+
+      let startY = 42;
 
       // =============================
       // DASHBOARD FINANCIERO
@@ -915,24 +924,27 @@ export class ReporteIngresosComponent implements OnInit {
         const totalCitas = data.length;
         const promedio = totalIngresos / (totalCitas || 1);
 
-        doc.setFillColor(240, 240, 240);
+        doc.setDrawColor(220, 220, 220);
+        doc.setFillColor(248, 249, 250);
 
-        doc.rect(14, startY, 60, 18, 'F');
-        doc.rect(80, startY, 60, 18, 'F');
-        doc.rect(146, startY, 50, 18, 'F');
+        doc.roundedRect(14, startY, 55, 20, 3, 3, 'FD');
+        doc.roundedRect(75, startY, 55, 20, 3, 3, 'FD');
+        doc.roundedRect(136, startY, 60, 20, 3, 3, 'FD');
 
-        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(127, 140, 141);
+        doc.text('TOTAL INGRESOS', 41.5, startY + 7, { align: 'center' });
+        doc.text('TOTAL CITAS', 102.5, startY + 7, { align: 'center' });
+        doc.text('PROMEDIO POR CITA', 166, startY + 7, { align: 'center' });
 
-        doc.text('Total Ingresos', 18, startY + 6);
-        doc.text(`$${totalIngresos.toLocaleString('es-CO')}`, 18, startY + 12);
+        doc.setFontSize(14);
+        doc.setTextColor(41, 128, 185);
+        doc.text(`$${totalIngresos.toLocaleString('es-CO')}`, 41.5, startY + 15, { align: 'center' });
+        doc.text(`${totalCitas}`, 102.5, startY + 15, { align: 'center' });
+        doc.text(`$${Math.round(promedio).toLocaleString('es-CO')}`, 166, startY + 15, { align: 'center' });
 
-        doc.text('Total Citas', 84, startY + 6);
-        doc.text(`${totalCitas}`, 84, startY + 12);
-
-        doc.text('Promedio', 150, startY + 6);
-        doc.text(`$${Math.round(promedio).toLocaleString('es-CO')}`, 150, startY + 12);
-
-        startY += 26;
+        startY += 28;
 
         // TOP BARBEROS
         const ranking: any = {};
@@ -945,14 +957,20 @@ export class ReporteIngresosComponent implements OnInit {
           .sort((a: any, b: any) => b[1] - a[1])
           .slice(0, 5);
 
-        doc.setFontSize(11);
+        doc.setFontSize(12);
+        doc.setTextColor(44, 62, 80);
+        doc.setFont('helvetica', 'bold');
         doc.text('Top 5 Barberos', 14, startY);
 
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(80, 80, 80);
+
         topBarberos.forEach((b: any, i: number) => {
-          doc.text(`${i + 1}. ${b[0]} - ${b[1]} citas`, 14, startY + 6 + (i * 5));
+          doc.text(`${i + 1}. ${b[0]} - ${b[1]} citas`, 14, startY + 6 + (i * 6));
         });
 
-        startY += 35;
+        startY += 40;
 
         // =============================
         // NUEVA SECCION: INGRESOS POR SEDE
@@ -967,20 +985,24 @@ export class ReporteIngresosComponent implements OnInit {
         const rankingSedes = Object.entries(ingresosPorSede)
           .sort((a: any, b: any) => b[1] - a[1]);
 
-        doc.setFontSize(11);
+        doc.setFontSize(12);
+        doc.setTextColor(44, 62, 80);
+        doc.setFont('helvetica', 'bold');
         doc.text('Ingresos por sede', 14, startY);
 
-        rankingSedes.forEach((s: any, i: number) => {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(80, 80, 80);
 
+        rankingSedes.forEach((s: any, i: number) => {
           doc.text(
             `${s[0]}   $${s[1].toLocaleString('es-CO')} COP`,
             14,
-            startY + 6 + (i * 5)
+            startY + 6 + (i * 6)
           );
-
         });
 
-        startY += 10 + rankingSedes.length * 5;
+        startY += 10 + rankingSedes.length * 6;
 
       }
 
@@ -1019,19 +1041,15 @@ export class ReporteIngresosComponent implements OnInit {
       // TABLA
       // =============================
       autoTable(doc, {
-
         head: [headers],
-
         body: bodyData,
-
         startY: startY,
-
-        theme: 'grid',
-
-        headStyles: { fillColor: [30, 30, 30] },
-
-        styles: { fontSize: 9 }
-
+        theme: 'striped',
+        headStyles: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold', halign: 'center' },
+        bodyStyles: { textColor: [50, 50, 50], halign: 'center' },
+        alternateRowStyles: { fillColor: [245, 247, 250] },
+        styles: { fontSize: 9, font: 'helvetica', cellPadding: 4, lineColor: [220, 220, 220], lineWidth: 0.1 },
+        margin: { top: 40, left: 14, right: 14 }
       });
 
       // =============================
@@ -1043,13 +1061,16 @@ export class ReporteIngresosComponent implements OnInit {
         const totalCitas = data.length;
         const promedio = totalIngresos / (totalCitas || 1);
 
-        const finalY = (doc as any).lastAutoTable.finalY + 10;
+        const finalY = (doc as any).lastAutoTable.finalY + 12;
 
         doc.setFontSize(11);
-
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(44, 62, 80);
+        
         doc.text(`Total Ingresos: $${totalIngresos.toLocaleString('es-CO')}`, 14, finalY);
         doc.text(`Total Citas: ${totalCitas}`, 14, finalY + 6);
         doc.text(`Promedio por cita: $${Math.round(promedio).toLocaleString('es-CO')}`, 14, finalY + 12);
+
 
       }
 

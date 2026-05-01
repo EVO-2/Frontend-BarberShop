@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { IonicModule } from '@ionic/angular';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
@@ -100,7 +101,12 @@ import { TerminosDialogComponent } from './shared/components/terminos-dialog/ter
     HttpClientModule,
     IonicModule.forRoot({}),
     MaterialModule,
-    LayoutModule
+    LayoutModule,
+    ToastrModule.forRoot({
+      timeOut: 8000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    })
   ],
   providers: [
     {

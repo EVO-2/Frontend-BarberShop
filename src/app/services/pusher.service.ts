@@ -32,11 +32,9 @@ export class PusherService {
 
   private escucharNuevasCitas() {
     this.channel.bind('nueva-cita', (data: any) => {
-      console.log('🔥 [PusherService] Evento nueva-cita recibido:', data);
       
       const rol = this.authService.obtenerRol();
-      console.log('🕵️ [PusherService] Rol detectado para nueva cita:', rol);
-
+      
       // Las alertas de nueva cita y recordatorios son EXCLUSIVAS para el personal
       if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
         return;
@@ -71,13 +69,9 @@ export class PusherService {
 
   private escucharRecordatoriosCitas() {
     this.channel.bind('recordatorio-cita', (data: any) => {
-      console.log('🔥 [PusherService] Evento recordatorio-cita recibido:', data);
       
       const rol = this.authService.obtenerRol();
-      console.log('🕵️ [PusherService] Rol detectado para mostrar alerta:', rol);
-
       if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
-        console.log('🚫 [PusherService] Alerta bloqueada porque el rol no tiene permisos');
         return;
       }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import Pusher from 'pusher-js';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,10 @@ export class PusherService {
   private pusher: Pusher;
   private channel: any;
 
-  constructor(private toastr: ToastrService) {
+  constructor(
+    private toastr: ToastrService,
+    private authService: AuthService
+  ) {
     // Inicializar Pusher con tu KEY PÚBLICA (No pongas el Secret aquí por seguridad)
     this.pusher = new Pusher('049a4f7e2524a1dc1cf2', { // Actualizado con tu KEY
       cluster: 'us2'
@@ -28,6 +32,12 @@ export class PusherService {
 
   private escucharNuevasCitas() {
     this.channel.bind('nueva-cita', (data: any) => {
+      
+      const rol = this.authService.obtenerRol();
+      // Las alertas de nueva cita y recordatorios son EXCLUSIVAS para el personal
+      if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
+        return;
+      }
       
       // 1. Mostrar una alerta bonita en la esquina de la pantalla
       this.toastr.success(`Hora: ${data.hora}`, data.mensaje, {
@@ -59,6 +69,11 @@ export class PusherService {
   private escucharRecordatoriosCitas() {
     this.channel.bind('recordatorio-cita', (data: any) => {
       
+      const rol = this.authService.obtenerRol();
+      if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
+        return;
+      }
+
       // 1. Mostrar una alerta bonita en la esquina de la pantalla
       this.toastr.warning(`Hora: ${data.hora}`, data.mensaje, {
         timeOut: 10000,

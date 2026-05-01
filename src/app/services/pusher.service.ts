@@ -21,6 +21,9 @@ export class PusherService {
 
     // Escuchar el evento 'nueva-cita'
     this.escucharNuevasCitas();
+
+    // Escuchar el evento 'recordatorio-cita'
+    this.escucharRecordatoriosCitas();
   }
 
   private escucharNuevasCitas() {
@@ -41,6 +44,36 @@ export class PusherService {
           icon: 'info',
           showCancelButton: true,
           confirmButtonText: 'Confirmar por WhatsApp',
+          cancelButtonText: 'Cerrar',
+          confirmButtonColor: '#25D366' // Color de WhatsApp
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Abrir el link de WhatsApp en una pestaña nueva
+            window.open(data.linkWhatsAppCliente, '_blank');
+          }
+        });
+      }
+    });
+  }
+
+  private escucharRecordatoriosCitas() {
+    this.channel.bind('recordatorio-cita', (data: any) => {
+      
+      // 1. Mostrar una alerta bonita en la esquina de la pantalla
+      this.toastr.warning(`Hora: ${data.hora}`, data.mensaje, {
+        timeOut: 10000,
+        progressBar: true,
+        positionClass: 'toast-top-right'
+      });
+
+      // 2. Mostrar un PopUp grande con el botón de WhatsApp
+      if (data.linkWhatsAppCliente) {
+        Swal.fire({
+          title: '⏰ ¡Recordatorio Inminente!',
+          text: `${data.mensaje} - Cita a las ${data.hora}`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Enviar Recordatorio (WhatsApp)',
           cancelButtonText: 'Cerrar',
           confirmButtonColor: '#25D366' // Color de WhatsApp
         }).then((result) => {

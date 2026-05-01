@@ -5,11 +5,11 @@
 
     <div class="header-content">
 
-      <mat-icon class="icono-pago">payments</mat-icon>
+      <mat-icon class="icono-pago">{{ data.userRole === 'cliente' ? 'receipt' : 'payments' }}</mat-icon>
 
       <div class="header-text">
 
-        <mat-card-title>Pagar Cita</mat-card-title>
+        <mat-card-title>{{ data.userRole === 'cliente' ? 'Reportar Pago' : 'Pagar Cita' }}</mat-card-title>
 
         <mat-card-subtitle>
           {{ data.cita.peluquero.usuario.nombre }} -
@@ -38,9 +38,17 @@
 
     </div>
 
+    <!-- ESTADO REPORTADO -->
+    <div *ngIf="data.cita.pago?.estado === 'reportado' && data.userRole === 'cliente'" class="estado-pagada" style="background-color: #e3f2fd; color: #1976d2;">
+      <mat-icon>hourglass_empty</mat-icon>
+      <div>
+        <strong>Pago en verificación</strong>
+        <p>Tu reporte de pago ha sido enviado y está siendo verificado por el barbero.</p>
+      </div>
+    </div>
 
     <!-- FORMULARIO -->
-    <form [formGroup]="pagoForm" *ngIf="data.cita.estado !== 'pagada'" class="pago-form">
+    <form [formGroup]="pagoForm" *ngIf="data.cita.estado !== 'pagada' && !(data.cita.pago?.estado === 'reportado' && data.userRole === 'cliente')" class="pago-form">
 
       <!-- MONTO -->
       <mat-form-field appearance="outline" class="full-width">
@@ -73,12 +81,20 @@
             💵 Efectivo
           </mat-option>
 
+          <mat-option value="nequi">
+            📱 Nequi
+          </mat-option>
+
+          <mat-option value="daviplata">
+            📱 DaviPlata
+          </mat-option>
+
           <mat-option value="tarjeta">
             💳 Tarjeta
           </mat-option>
 
           <mat-option value="transferencia">
-            🔄 Transferencia
+            🔄 Transferencia Bancaria
           </mat-option>
 
         </mat-select>
@@ -93,9 +109,9 @@
       <!-- OBSERVACIONES -->
       <mat-form-field appearance="outline" class="full-width">
 
-        <mat-label>Observaciones</mat-label>
+        <mat-label>{{ data.userRole === 'cliente' ? 'Número de comprobante / Observaciones' : 'Observaciones' }}</mat-label>
 
-        <textarea matInput formControlName="observaciones" rows="3" placeholder="Notas del pago (opcional)">
+        <textarea matInput formControlName="observaciones" rows="3" [placeholder]="data.userRole === 'cliente' ? 'Escribe aquí tu número de referencia (ej. Nequi) o si pagarás en efectivo' : 'Notas del pago (opcional)'">
         </textarea>
 
       </mat-form-field>
@@ -114,10 +130,10 @@
 
     </button>
 
-    <button mat-raised-button color="primary" class="btn-pagar" *ngIf="data.cita.estado !== 'pagada'"
+    <button mat-raised-button color="primary" class="btn-pagar" *ngIf="data.cita.estado !== 'pagada' && !(data.cita.pago?.estado === 'reportado' && data.userRole === 'cliente')"
       [disabled]="pagoForm.invalid || loading" (click)="pagar()">
 
-      <span *ngIf="!loading">Pagar</span>
+      <span *ngIf="!loading">{{ data.userRole === 'cliente' ? 'Enviar Reporte' : (data.cita.pago?.estado === 'reportado' ? 'Confirmar Pago' : 'Pagar') }}</span>
 
       <span *ngIf="loading">Procesando...</span>
 

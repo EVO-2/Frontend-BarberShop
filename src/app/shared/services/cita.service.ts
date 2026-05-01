@@ -231,6 +231,19 @@ export class CitaService {
   }
 
   // ==================================================
+  // 🔥 Reportar pago (Cliente)
+  // ==================================================
+  reportarPago(
+    citaId: string | number,
+    metodo: string,
+    observaciones: string
+  ): Observable<any> {
+    return this.http
+      .put<any>(`${this.apiUrl}/${citaId}/reportar-pago`, { metodo, observaciones })
+      .pipe(catchError(err => throwError(() => err)));
+  }
+
+  // ==================================================
   // Obtener pago asociado a una cita
   // ==================================================
   obtenerPagoDeCita(citaId: number | string): Observable<any> {

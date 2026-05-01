@@ -106,14 +106,17 @@ export class MisCitasComponent implements OnInit {
       return;
     }
 
-    const dialogRef = this.dialog.open(PagoDialogComponent, { width: '400px', data: { cita } });
+    const dialogRef = this.dialog.open(PagoDialogComponent, { width: '400px', data: { cita, userRole: this.userRole } });
     dialogRef.afterClosed().subscribe(resultado => {
-      if (resultado?.pagado) {
+      if (resultado?.pagado || resultado?.reportado) {
         const index = this.citas.findIndex(c => c._id === cita._id);
         if (index >= 0) {
-          this.citas[index].pago = resultado.pago;
-          this.citas[index].estado = 'pagado';
-          this.citas[index].fechaFormateada = this.formatFechaHora(this.citas[index].fechaInicio || this.citas[index].fecha);
+          if (resultado.cita) {
+            this.citas[index] = { ...this.citas[index], ...resultado.cita, fechaFormateada: this.formatFechaHora(resultado.cita.fechaInicio || resultado.cita.fecha) };
+          } else {
+            this.citas[index].pago = resultado.pago;
+            if (resultado.pagado) this.citas[index].estado = 'pagada';
+          }
         }
         this.citasFiltradas = [...this.citas].sort((a, b) =>
           new Date(b.fechaInicio || b.fecha).getTime() - new Date(a.fechaInicio || a.fecha).getTime()

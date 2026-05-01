@@ -124,8 +124,8 @@
             <mat-icon>edit</mat-icon>
           </button>
 
-          <button *ngIf="userRole !== 'cliente'" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" matTooltip="Confirmar Pago">
-            <mat-icon>payment</mat-icon>
+          <button *ngIf="userRole !== 'cliente' || cita.estado === 'finalizada'" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" [matTooltip]="userRole === 'cliente' ? 'Reportar Pago' : 'Confirmar Pago'">
+            <mat-icon>{{ userRole === 'cliente' ? 'receipt' : 'payment' }}</mat-icon>
           </button>
         </td>
       </ng-container>
@@ -185,8 +185,8 @@
           Editar
         </button>
 
-        <button *ngIf="userRole !== 'cliente'" mat-button color="accent" (click)="abrirPagoDialog(cita)">
-          Cobrar
+        <button *ngIf="userRole !== 'cliente' || cita.estado === 'finalizada'" mat-button color="accent" (click)="abrirPagoDialog(cita)">
+          {{ userRole === 'cliente' ? 'Reportar Pago' : 'Cobrar' }}
         </button>
 
       </div>

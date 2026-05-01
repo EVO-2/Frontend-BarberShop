@@ -31,6 +31,10 @@ export class PagoDialogComponent {
       metodo: ['efectivo', Validators.required],
       observaciones: ['']
     });
+
+    if (this.data.userRole === 'cliente') {
+      this.pagoForm.get('monto')?.disable();
+    }
   }
 
   pagar(): void {
@@ -53,23 +57,41 @@ export class PagoDialogComponent {
 
     this.loading = true;
 
-    const { monto, metodo } = this.pagoForm.value;
+    const { monto, metodo, observaciones } = this.pagoForm.getRawValue();
 
-    this.citaService.pagarCita(cita._id, monto, metodo)
-      .subscribe({
-        next: (citaActualizada) => {
-          this.loading = false;
-          this.dialogRef.close({
-            pagado: true,
-            cita: citaActualizada
-          });
-        },
-        error: (err) => {
-          this.loading = false;
-          console.error('Error al pagar:', err);
-          alert(err?.error?.message || 'Error al procesar el pago');
-        }
-      });
+    if (this.data.userRole === 'cliente') {
+      this.citaService.reportarPago(cita._id, metodo, observaciones)
+        .subscribe({
+          next: (citaActualizada) => {
+            this.loading = false;
+            this.dialogRef.close({
+              reportado: true,
+              cita: citaActualizada
+            });
+          },
+          error: (err) => {
+            this.loading = false;
+            console.error('Error al reportar el pago:', err);
+            alert(err?.error?.message || 'Error al reportar el pago');
+          }
+        });
+    } else {
+      this.citaService.pagarCita(cita._id, monto, metodo)
+        .subscribe({
+          next: (citaActualizada) => {
+            this.loading = false;
+            this.dialogRef.close({
+              pagado: true,
+              cita: citaActualizada
+            });
+          },
+          error: (err) => {
+            this.loading = false;
+            console.error('Error al pagar:', err);
+            alert(err?.error?.message || 'Error al procesar el pago');
+          }
+        });
+    }
   }
 
   cancelar(): void {

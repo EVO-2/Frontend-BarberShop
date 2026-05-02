@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CitaService } from 'src/app/shared/services/cita.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CitaUpdateDialogComponent } from 'src/app/pages/citas/cita-update-dialog/cita-update-dialog.component';
@@ -7,13 +7,17 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/auth/auth.service';
+import { PusherService } from 'src/app/services/pusher.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mis-citas',
   templateUrl: './mis-citas.component.html',
   styleUrls: ['./mis-citas.component.scss']
 })
-export class MisCitasComponent implements OnInit {
+export class MisCitasComponent implements OnInit, OnDestroy {
+
+  private pusherSub!: Subscription;
 
   cargando: boolean = true;
 
@@ -44,12 +48,24 @@ export class MisCitasComponent implements OnInit {
     private citaService: CitaService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private authService: AuthService
+    private authService: AuthService,
+    private pusherService: PusherService
   ) { }
 
   ngOnInit(): void {
     this.userRole = this.authService.obtenerRol();
     this.cargarCitas();
+
+    // Escuchar pagos en tiempo real
+    this.pusherSub = this.pusherService.pagoReportado$.subscribe(() => {
+      this.cargarCitas(); // Recargar la tabla si alguien reporta un pago
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.pusherSub) {
+      this.pusherSub.unsubscribe();
+    }
   }
 
   formatFechaHora(fechaStr: string | Date): string {

@@ -3,6 +3,7 @@ import Pusher from 'pusher-js';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { AuthService } from '../auth/auth.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,9 @@ import { AuthService } from '../auth/auth.service';
 export class PusherService {
   private pusher: Pusher;
   private channel: any;
+
+  // Emisor de eventos para que los componentes se suscriban
+  public pagoReportado$ = new Subject<any>();
 
   constructor(
     private toastr: ToastrService,
@@ -28,6 +32,9 @@ export class PusherService {
 
     // Escuchar el evento 'recordatorio-cita'
     this.escucharRecordatoriosCitas();
+
+    // Escuchar pagos reportados
+    this.escucharPagosReportados();
   }
 
   private escucharNuevasCitas() {
@@ -118,6 +125,36 @@ export class PusherService {
           }
         });
       }
+    });
+  }
+
+  private escucharPagosReportados() {
+    this.channel.bind('pago-reportado', (data: any) => {
+      
+      const rol = this.authService.obtenerRol();
+      const miUsuario = this.authService.getUsuarioActual();
+
+      if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
+        return;
+      }
+
+      // Si no es admin, validar que la cita le pertenezca a él
+      if (rol !== 'admin') {
+        const miPeluqueroId = miUsuario?.peluquero?._id || miUsuario?.peluquero || miUsuario?._id;
+        if (data.peluqueroId && String(miPeluqueroId) !== String(data.peluqueroId)) {
+          return; // La cita es de otro barbero, no mostrar
+        }
+      }
+
+      // 1. Notificar visualmente
+      this.toastr.info(`Ref: ${data.observaciones}`, data.mensaje, {
+        timeOut: 8000,
+        progressBar: true,
+        positionClass: 'toast-top-right'
+      });
+
+      // 2. Emitir el evento para que MisCitas recargue
+      this.pagoReportado$.next(data);
     });
   }
 }

@@ -1,18 +1,20 @@
 /* ================================ 
-   CONTENEDOR GENERAL (igual estilo form)
+   CONTENEDOR GENERAL (PREMIUM)
 ================================ */
 .mis-citas-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  font-family: 'Roboto', sans-serif;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', 'Roboto', sans-serif;
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
+  border: 1px solid rgba(255,255,255,0.4);
 }
 
 /* ================================
@@ -84,27 +86,30 @@
 
 /* 🔥 HEADERS */
 .tabla-citas th.mat-header-cell {
-  background: #f5f5f5;
-  font-weight: 600;
-  font-size: 0.75rem;
-  color: #555;
-  padding: 12px;
-  vertical-align: middle;
+  background: linear-gradient(145deg, #f8f9fa, #f1f3f5);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #495057;
+  padding: 16px;
+  border-bottom: 2px solid #e9ecef;
 }
 
 /* 🔥 CELDAS */
 .tabla-citas td.mat-cell {
-  padding: 12px;
-  font-size: 0.9rem;
-  color: #333;
+  padding: 16px;
+  font-size: 0.95rem;
+  color: #343a40;
   vertical-align: middle;
+  border-bottom: 1px solid #f1f3f5;
 }
 
 /* 🔥 CONTENEDOR INTERNO PARA ALINEAR */
 .cell-content {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
 /* ICONOS */
@@ -115,10 +120,14 @@
 
 /* HOVER FILAS */
 .tabla-citas tr.mat-row {
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover {
-    background: #e3f2fd;
+    background: #f8fbff;
+    transform: scale(1.002);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    z-index: 10;
+    position: relative;
   }
 }
 
@@ -165,10 +174,28 @@
 /* ================================
    ACCIONES
 ================================ */
+/* Para centrar la cabecera de la columna acciones */
+.tabla-citas th.mat-column-acciones .cell-content {
+  justify-content: center;
+}
+
 .acciones-cell {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 10px;
+
+  button {
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #e3f2fd;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    }
+  }
 }
 
 /* ================================

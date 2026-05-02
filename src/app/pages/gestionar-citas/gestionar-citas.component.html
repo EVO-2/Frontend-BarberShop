@@ -101,23 +101,23 @@
         <th mat-header-cell *matHeaderCellDef>
           <mat-icon class="icon-header">build</mat-icon> Acciones
         </th>
-        <td mat-cell *matCellDef="let element" class="acciones">
+        <td mat-cell *matCellDef="let element">
+          <div class="acciones">
+            <button mat-mini-fab color="primary" (click)="iniciarCita(element)"
+              [disabled]="!(element.estado === 'pendiente' || element.estado === 'confirmada')">
+              <mat-icon>play_arrow</mat-icon>
+            </button>
 
-          <button mat-mini-fab color="primary" (click)="iniciarCita(element)"
-            [disabled]="!(element.estado === 'pendiente' || element.estado === 'confirmada')">
-            <mat-icon>play_arrow</mat-icon>
-          </button>
+            <button mat-mini-fab class="finalizar-btn" (click)="finalizarCita(element)"
+              [disabled]="element.estado !== 'en_proceso'">
+              <mat-icon>check</mat-icon>
+            </button>
 
-          <button mat-mini-fab class="finalizar-btn" (click)="finalizarCita(element)"
-            [disabled]="element.estado !== 'en_proceso'">
-            <mat-icon>check</mat-icon>
-          </button>
-
-          <button mat-mini-fab color="warn" (click)="cancelarCita(element)"
-            [disabled]="element.estado === 'finalizada' || element.estado === 'cancelado'">
-            <mat-icon>close</mat-icon>
-          </button>
-
+            <button mat-mini-fab color="warn" (click)="cancelarCita(element)"
+              [disabled]="element.estado === 'finalizada' || element.estado === 'cancelado'">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 

@@ -130,31 +130,32 @@ export class PusherService {
 
   private escucharPagosReportados() {
     this.channel.bind('pago-reportado', (data: any) => {
+      console.log('📢 [Pusher] pago-reportado recibido:', data);
       
       const rol = this.authService.obtenerRol();
       const miUsuario = this.authService.getUsuarioActual();
+
+      // Siempre emitimos el evento para que las tablas se refresquen si están abiertas
+      this.pagoReportado$.next(data);
 
       if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
         return;
       }
 
-      // Si no es admin, validar que la cita le pertenezca a él
+      // Si no es admin, validar que la cita le pertenezca a él para mostrar la alerta
       if (rol !== 'admin') {
         const miPeluqueroId = miUsuario?.peluquero?._id || miUsuario?.peluquero || miUsuario?._id;
         if (data.peluqueroId && String(miPeluqueroId) !== String(data.peluqueroId)) {
-          return; // La cita es de otro barbero, no mostrar
+          return; // La cita es de otro barbero, no mostrar Toastr
         }
       }
 
       // 1. Notificar visualmente
-      this.toastr.info(`Ref: ${data.observaciones}`, data.mensaje, {
+      this.toastr.info(`Ref: ${data.observaciones || 'Sin referencia'}`, data.mensaje, {
         timeOut: 8000,
         progressBar: true,
         positionClass: 'toast-top-right'
       });
-
-      // 2. Emitir el evento para que MisCitas recargue
-      this.pagoReportado$.next(data);
     });
   }
 }

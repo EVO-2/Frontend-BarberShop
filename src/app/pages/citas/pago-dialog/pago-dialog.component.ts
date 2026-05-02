@@ -26,10 +26,18 @@ export class PagoDialogComponent {
         0
       ) || 0;
 
+    const metodoInicial = data.cita?.pago?.metodo || 'efectivo';
+    let observacionesInicial = '';
+    
+    // Si el pago ya fue reportado, cargar las observaciones que dejó el cliente
+    if (data.cita?.pago?.observaciones) {
+      observacionesInicial = data.cita.pago.observaciones.replace('[Reporte Cliente]: ', '');
+    }
+
     this.pagoForm = this.fb.group({
       monto: [totalServicios, [Validators.required, Validators.min(1)]],
-      metodo: ['efectivo', Validators.required],
-      observaciones: ['']
+      metodo: [metodoInicial, Validators.required],
+      observaciones: [observacionesInicial]
     });
 
     if (this.data.userRole === 'cliente') {
@@ -44,6 +52,12 @@ export class PagoDialogComponent {
     // 🚫 No permitir pagar cancelada
     if (cita.estado === 'cancelada') {
       alert('No se puede pagar una cita cancelada');
+      return;
+    }
+
+    // 🚫 No permitir pagar no finalizadas
+    if (cita.estado === 'pendiente' || cita.estado === 'en_proceso' || cita.estado === 'confirmada') {
+      alert('La cita debe estar finalizada para procesar o reportar el pago');
       return;
     }
 

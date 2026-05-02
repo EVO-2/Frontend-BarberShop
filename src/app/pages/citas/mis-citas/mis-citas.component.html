@@ -124,8 +124,8 @@
             <mat-icon>edit</mat-icon>
           </button>
 
-          <button *ngIf="userRole !== 'cliente' || cita.estado === 'finalizada'" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" [matTooltip]="userRole === 'cliente' ? 'Reportar Pago' : 'Confirmar Pago'">
-            <mat-icon>{{ userRole === 'cliente' ? 'receipt' : 'payment' }}</mat-icon>
+          <button *ngIf="cita.estado === 'finalizada'" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" [matTooltip]="userRole === 'cliente' ? 'Reportar Pago' : 'Confirmar Pago'">
+            <mat-icon>{{ userRole === 'cliente' ? 'receipt' : (cita.pago?.estado === 'reportado' ? 'fact_check' : 'payment') }}</mat-icon>
           </button>
         </td>
       </ng-container>
@@ -185,8 +185,9 @@
           Editar
         </button>
 
-        <button *ngIf="userRole !== 'cliente' || cita.estado === 'finalizada'" mat-button color="accent" (click)="abrirPagoDialog(cita)">
-          {{ userRole === 'cliente' ? 'Reportar Pago' : 'Cobrar' }}
+        <button *ngIf="cita.estado === 'finalizada'" mat-button color="accent" (click)="abrirPagoDialog(cita)">
+          <mat-icon *ngIf="userRole !== 'cliente' && cita.pago?.estado === 'reportado'">fact_check</mat-icon>
+          {{ userRole === 'cliente' ? 'Reportar Pago' : (cita.pago?.estado === 'reportado' ? 'Confirmar Pago' : 'Cobrar') }}
         </button>
 
       </div>

@@ -34,10 +34,19 @@ export class PusherService {
     this.channel.bind('nueva-cita', (data: any) => {
       
       const rol = this.authService.obtenerRol();
+      const miUsuario = this.authService.getUsuarioActual();
       
       // Las alertas de nueva cita y recordatorios son EXCLUSIVAS para el personal
       if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
         return;
+      }
+      
+      // Si no es admin, validar que la cita le pertenezca a él
+      if (rol !== 'admin') {
+        const miPeluqueroId = miUsuario?.peluquero?._id || miUsuario?.peluquero || miUsuario?._id;
+        if (data.peluqueroId && String(miPeluqueroId) !== String(data.peluqueroId)) {
+          return; // La cita es de otro barbero, no mostrar
+        }
       }
       
       // 1. Mostrar una alerta bonita en la esquina de la pantalla
@@ -71,8 +80,18 @@ export class PusherService {
     this.channel.bind('recordatorio-cita', (data: any) => {
       
       const rol = this.authService.obtenerRol();
+      const miUsuario = this.authService.getUsuarioActual();
+
       if (rol !== 'admin' && rol !== 'barbero' && rol !== 'peluquero' && rol !== 'manicurista') {
         return;
+      }
+
+      // Si no es admin, validar que la cita le pertenezca a él
+      if (rol !== 'admin') {
+        const miPeluqueroId = miUsuario?.peluquero?._id || miUsuario?.peluquero || miUsuario?._id;
+        if (data.peluqueroId && String(miPeluqueroId) !== String(data.peluqueroId)) {
+          return; // La cita es de otro barbero, no mostrar
+        }
       }
 
       // 1. Mostrar una alerta bonita en la esquina de la pantalla

@@ -236,10 +236,18 @@ export class CitaService {
   reportarPago(
     citaId: string | number,
     metodo: string,
-    observaciones: string
+    observaciones: string,
+    archivo?: File
   ): Observable<any> {
+    const formData = new FormData();
+    formData.append('metodo', metodo);
+    formData.append('observaciones', observaciones);
+    if (archivo) {
+      formData.append('comprobante', archivo);
+    }
+
     return this.http
-      .put<any>(`${this.apiUrl}/${citaId}/reportar-pago`, { metodo, observaciones })
+      .put<any>(`${this.apiUrl}/${citaId}/reportar-pago`, formData)
       .pipe(catchError(err => throwError(() => err)));
   }
 

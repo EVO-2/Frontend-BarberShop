@@ -12,6 +12,14 @@ export class PagoDialogComponent {
 
   pagoForm: FormGroup;
   loading = false;
+  archivoComprobante: File | null = null;
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.archivoComprobante = file;
+    }
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -74,7 +82,7 @@ export class PagoDialogComponent {
     const { monto, metodo, observaciones } = this.pagoForm.getRawValue();
 
     if (this.data.userRole === 'cliente') {
-      this.citaService.reportarPago(cita._id, metodo, observaciones)
+      this.citaService.reportarPago(cita._id, metodo, observaciones, this.archivoComprobante || undefined)
         .subscribe({
           next: (citaActualizada) => {
             this.loading = false;

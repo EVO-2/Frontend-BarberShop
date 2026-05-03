@@ -44,6 +44,23 @@
       <div>
         <strong>Pago en verificación</strong>
         <p>Tu reporte de pago ha sido enviado y está siendo verificado por el barbero.</p>
+        <a *ngIf="data.cita.pago?.urlComprobante" [href]="data.cita.pago.urlComprobante" target="_blank" style="display: inline-block; margin-top: 5px; font-size: 12px; color: #1976d2; font-weight: bold; text-decoration: underline;">
+          Ver comprobante subido
+        </a>
+      </div>
+    </div>
+
+    <!-- MOSTRAR COMPROBANTE AL BARBERO/ADMIN -->
+    <div *ngIf="data.userRole !== 'cliente' && data.cita.pago?.estado === 'reportado' && data.cita.pago?.urlComprobante" style="margin-bottom: 20px; padding: 15px; border: 1px dashed #ccc; border-radius: 8px; background-color: #f5f5f5;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <strong style="display: block; color: #333;">Comprobante adjuntado</strong>
+          <span style="font-size: 12px; color: #666;">El cliente subió una foto del pago</span>
+        </div>
+        <a mat-stroked-button color="primary" [href]="data.cita.pago.urlComprobante" target="_blank">
+          <mat-icon>receipt_long</mat-icon>
+          Ver Ticket
+        </a>
       </div>
     </div>
 
@@ -115,6 +132,12 @@
         </textarea>
 
       </mat-form-field>
+
+      <!-- SUBIDA DE COMPROBANTE (Solo cliente) -->
+      <div *ngIf="data.userRole === 'cliente'" class="file-upload-container" style="margin-bottom: 15px; width: 100%;">
+        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: rgba(0, 0, 0, 0.6);">Subir foto del comprobante (opcional):</label>
+        <input type="file" (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/jpg, image/webp" style="width: 100%; padding: 10px; border: 1px dashed #ccc; border-radius: 4px; background: #f9f9f9; cursor: pointer;">
+      </div>
 
     </form>
 

@@ -155,11 +155,24 @@ export class PusherService {
       }
 
       // 1. Notificar visualmente
-      this.toastr.info(`Ref: ${data.observaciones || 'Sin referencia'}`, data.mensaje, {
+      this.toastr.info(`Ref: ${data.observaciones || 'Sin referencia'}`, data.mensaje || 'Pago Reportado', {
         timeOut: 8000,
         progressBar: true,
         positionClass: 'toast-top-right'
       });
+
+      // 2. Mostrar Popup grande si hay un comprobante
+      if (data.urlComprobante) {
+        Swal.fire({
+          title: '¡Comprobante de Pago!',
+          text: `El cliente ha subido su comprobante de pago por ${data.metodo || 'transferencia'}.`,
+          imageUrl: data.urlComprobante,
+          imageWidth: 400,
+          imageAlt: 'Comprobante de Pago',
+          confirmButtonText: 'Cerrar',
+          confirmButtonColor: '#3085d6'
+        });
+      }
     });
   }
 }

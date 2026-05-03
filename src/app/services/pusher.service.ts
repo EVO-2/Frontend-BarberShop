@@ -56,6 +56,10 @@ export class PusherService {
         }
       }
       
+      // Reproducir sonido de notificación
+      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+      audio.play().catch(e => console.warn('El navegador bloqueó el sonido (autoplay):', e));
+
       // 1. Mostrar una alerta bonita en la esquina de la pantalla
       this.toastr.success(`Hora: ${data.hora}`, data.mensaje, {
         timeOut: 8000,

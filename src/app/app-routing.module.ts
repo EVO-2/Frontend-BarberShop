@@ -27,6 +27,9 @@ import { RolesComponent } from './pages/roles/roles.component';
 import { ProductosComponent } from './pages/productos/productos/productos.component';
 import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
 
+// 🕵️ Auditoría
+import { HistorialComponent } from './pages/historial/historial.component';
+
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -130,6 +133,12 @@ const routes: Routes = [
       {
         path: 'reportes/ingresos',
         component: ReporteIngresosComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      },
+      {
+        path: 'auditoria',
+        component: HistorialComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
       }

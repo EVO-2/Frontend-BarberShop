@@ -1,50 +1,203 @@
-.app-footer {
-  ion-toolbar {
-    --background: #ffffff;
-    --color: #1a1a1a;
-    padding-top: env(safe-area-inset-bottom);
+.modern-footer {
+  background: #ffffff;
+  color: #475569;
+  font-family: 'Inter', -apple-system, sans-serif;
+  border-top: 1px solid #edf2f7;
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 0 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.2rem;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 40px;
+      height: 3px;
+      background: #3b82f6;
+      border-radius: 4px;
+    }
   }
 
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+
+      mat-icon {
+        color: #64748b;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+      }
+    }
+  }
+}
+
+.brand-section {
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    
+    .brand-icon {
+      color: #3b82f6;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.5px;
+    }
+  }
+
+  .slogan {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    
+    mat-icon {
+      color: #3b82f6;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &.emails a {
+    word-break: break-all;
+    font-size: 0.85rem;
+  }
+
+  a {
+    color: #475569;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: 500;
+
+    &:hover {
+      color: #3b82f6;
+    }
+  }
+}
+
+.schedule-list {
+  li {
+    justify-content: space-between;
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 8px;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+
+    span:last-child {
+      font-weight: 600;
+      color: #1e293b;
+    }
+  }
+}
+
+.footer-bottom {
+  background: #f8fafc;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+  
   p {
     margin: 0;
-    font-size: 13px;
-    line-height: 1.4;
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
   }
 
-  strong {
-    font-size: 15px;
-  }
-
-  .version {
-    font-size: 12px;
-    opacity: 0.7;
-  }
-
-  .footer-left,
-  .footer-center,
-  .footer-right {
-    padding: 6px 0;
-  }
-
-  .footer-right {
+  .footer-legal {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 1.5rem;
+    
+    a {
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
 
-    ion-button {
-      --color: #1d1d1d;
-      font-size: 12px;
-      text-transform: none;
+      &:hover {
+        color: #3b82f6;
+      }
     }
   }
+}
 
-  /* Desktop / tablets */
-  @media (min-width: 768px) {
-    .footer-right {
-      justify-content: flex-end;
-    }
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
 
-    .footer-center {
-      text-align: center;
-    }
+@media (max-width: 600px) {
+  .footer-container {
+    padding: 0 1.5rem 2rem;
+    gap: 2rem;
   }
 }

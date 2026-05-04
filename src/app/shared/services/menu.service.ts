@@ -27,7 +27,8 @@ export class MenuService {
         { label: 'Servicios', ruta: '/servicios-admin', icono: 'build' },
         { label: 'Equipos', ruta: '/equipos', icono: 'inventory_2' },
         { label: 'Productos', ruta: '/productos', icono: 'inventory' },
-        { label: 'Roles', ruta: '/roles', icono: 'admin_panel_settings' }
+        { label: 'Roles', ruta: '/roles', icono: 'admin_panel_settings' },
+        { label: 'Auditoría', ruta: '/auditoria', icono: 'security' }
       ]
     }
 

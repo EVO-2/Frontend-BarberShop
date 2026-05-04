@@ -36,10 +36,10 @@
     </ng-container>
   </mat-nav-list>
   <!-- BOTÓN PERFIL -->
-  <div class="sidebar-profile mb-4">
-    <button mat-button [matMenuTriggerFor]="menu" class="profile-button w-full justify-start">
+  <div class="sidebar-profile">
+    <button mat-button [matMenuTriggerFor]="menu" class="profile-button">
       <mat-icon>account_circle</mat-icon>
-      <span class="ml-2">{{ usuario?.nombre || 'Usuario' }}</span>
+      <span>{{ usuario?.nombre || 'Usuario' }}</span>
       <mat-icon class="ml-auto">keyboard_arrow_down</mat-icon>
     </button>
 

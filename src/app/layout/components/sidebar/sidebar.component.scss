@@ -1,192 +1,194 @@
 .sidebar-container {
-  width: 240px;
+  width: 260px;
   height: 100%;
-  /* Ocupa todo el alto disponible del mat-sidenav */
-  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  transition: background-color 0.3s ease;
+  background: #ffffff;
+  border-right: 1px solid #edf2f7;
+  font-family: 'Inter', -apple-system, sans-serif;
   overflow: hidden;
-  /* Evita doble scroll */
 
-  /* LOGO FIJO */
+  /* LOGO */
   .sidebar-logo {
-    flex-shrink: 0;
-    /* No se encoge */
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
+    padding: 1.5rem 1.5rem 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    background-color: #fafafa;
-    overflow: hidden;
-    position: relative;
-    /* Asegura stacking context */
+    background: transparent;
+    border-bottom: none;
     z-index: 2;
-    /* Sobre el contenido scrollable si fuera necesario */
-
+    
     img {
-      width: 60%;
-      height: auto;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s ease;
-      border-radius: 15px;
-      background-color: transparent;
-    }
-
-    img:hover {
-      transform: scale(1.05);
+      width: 75%;
+      border-radius: 12px;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      
+      &:hover {
+        transform: scale(1.04) translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      }
     }
   }
 
-  /* LISTA SCROLLABLE */
   mat-nav-list {
     flex: 1;
-    /* Ocupa el espacio restante */
     overflow-y: auto;
-    /* Scroll aquí */
-    padding-top: 10px;
-
-    /* Scrollbar fino */
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 4px;
-    }
+    padding: 1rem 0;
+    
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
   }
 
+  /* ENLACES PRINCIPALES */
   .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 2px 16px;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+    margin: 4px 16px;
+    border-radius: 12px;
+    color: #64748b;
+    transition: all 0.3s ease;
+    height: 48px;
+    
+    ::ng-deep .mdc-list-item__content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
 
     &:hover {
-      background-color: #f3f4f6;
-      color: #111827;
-      box-shadow: inset 3px 0 0 #3b82f6;
+      background-color: #f8fafc;
+      color: #0f172a;
+      transform: translateX(4px);
     }
 
     &.active-link {
-      background-color: #e0e7ff;
-      color: #1e3a8a;
-      box-shadow: inset 3px 0 0 #3b82f6;
+      background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+      color: #2563eb;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+
+      .sidebar-icon, .sidebar-label {
+        color: #2563eb;
+        font-weight: 600;
+      }
     }
   }
 
   .sidebar-icon {
-    font-size: 20px;
-    color: #4b5563;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    line-height: 1;
-    position: relative;
-    top: 1px;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    margin-right: 12px;
+    color: inherit;
     transition: color 0.3s ease;
+    flex-shrink: 0;
   }
 
   .sidebar-label {
-    font-size: 17px;
+    font-size: 0.95rem;
     font-weight: 500;
-    color: #1f2937;
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-    position: relative;
-    top: 1px;
-    transition: color 0.3s ease;
+    flex: 1;
+    white-space: normal;
+    word-wrap: break-word;
   }
 
-  /* Submenú refinado */
+  /* SUBMENÚS */
   .sidebar-parent {
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
   }
 
   .expand-icon {
     margin-left: auto;
-    font-size: 18px;
-    color: #6b7280;
+    color: inherit;
     transition: transform 0.3s ease;
   }
 
-  /* Animación de rotación cuando está expandido */
   .sidebar-parent button[aria-expanded='true'] .expand-icon {
     transform: rotate(180deg);
   }
 
   .submenu {
+    margin: 4px 16px 8px 38px;
+    border-left: 2px solid #e2e8f0;
+    padding-left: 8px;
     display: flex;
     flex-direction: column;
-    margin-left: 1.5rem;
-    border-left: 2px solid #e5e7eb;
-    padding-left: 0.5rem;
-    background-color: #fafafa;
-    border-radius: 4px;
-    transition: all 0.3s ease-in-out;
+    gap: 4px;
+    overflow: hidden;
   }
 
   .submenu-link {
-    padding-left: 1rem;
-    font-size: 0.9rem;
-    opacity: 0.9;
-    color: #374151;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-
+    margin: 0;
+    border-radius: 8px;
+    height: 40px;
+    color: #64748b;
+    
     &:hover {
-      background-color: #f0f9ff;
-      color: #1d4ed8;
+      background-color: #f8fafc;
+      color: #0f172a;
+      transform: translateX(3px);
+    }
+    
+    &.active-link {
+      background: transparent;
+      color: #2563eb;
+      font-weight: 600;
+      
+      .sidebar-icon.small { color: #2563eb; }
+    }
+
+    .sidebar-icon.small {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+    }
+    
+    .sidebar-label.small {
+      font-size: 0.85rem;
     }
   }
 
-  .small {
-    font-size: 18px !important;
-  }
-
-  /* ✅ Asegurar que el texto se ajuste y no se oculte por flex */
-  .sidebar-link,
-  .submenu-link {
-    display: flex;
-    align-items: flex-start;
-    /* Permite que varias líneas se acomoden */
-    flex-wrap: wrap;
-    /* Permite que el texto baje a otra línea */
-    width: 100%;
-    /* Evita que el contenedor recorte el texto */
-  }
-
-  /* ✅ Asegurar que los textos ocupen todo el espacio disponible */
-  .sidebar-label {
-    flex: 1 1 auto;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-    word-wrap: break-word;
-  }
-
-  /* ✅ Si algún contenedor padre limita el ancho */
-  .submenu {
-    width: 100%;
-  }
-
-  /* ✅ Para íconos con textos largos: que no se colapse el espacio */
-  .sidebar-icon {
-    flex-shrink: 0;
+  /* PERFIL INFERIOR */
+  .sidebar-profile {
+    padding: 1.2rem;
+    border-top: 1px solid #f1f5f9;
+    background: #ffffff;
+    
+    .profile-button {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      
+      ::ng-deep .mdc-button__label {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        text-transform: none;
+      }
+      
+      &:hover {
+        background: #ffffff;
+        border-color: #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+      }
+      
+      .mat-icon {
+        color: #64748b;
+        margin-right: 10px;
+      }
+      span {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.9rem;
+      }
+      .ml-auto {
+        margin-left: auto;
+        margin-right: 0;
+      }
+    }
   }
 }

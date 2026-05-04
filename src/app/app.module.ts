@@ -52,6 +52,9 @@ import { ProductoDialogComponent } from './pages/productos/producto-dialog/produ
 import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
 import { TerminosDialogComponent } from './shared/components/terminos-dialog/terminos-dialog.component';
 
+// ======= 🕵️ Auditoría =======
+import { HistorialComponent } from './pages/historial/historial.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -90,7 +93,10 @@ import { TerminosDialogComponent } from './shared/components/terminos-dialog/ter
     ProductosComponent,
     ProductoDialogComponent, // ✅ AGREGADO
     ProductosClienteComponent,
-    TerminosDialogComponent
+    TerminosDialogComponent,
+
+    // 🕵️ Auditoría
+    HistorialComponent
   ],
   imports: [
     BrowserModule,

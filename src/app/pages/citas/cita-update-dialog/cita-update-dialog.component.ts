@@ -301,9 +301,27 @@ export class CitaUpdateDialogComponent implements OnInit {
       fecha.getMonth() === hoy.getMonth() &&
       fecha.getDate() === hoy.getDate();
 
+    const diaSemana = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+    let apertura = 9;
+    let cierre = 19; // Genera hasta 18:30 (6:30 PM)
+
+    if (diaSemana >= 1 && diaSemana <= 4) {
+      // Lunes a Jueves: 9:00 AM a 6:30 PM
+      apertura = 9;
+      cierre = 19; 
+    } else if (diaSemana === 5 || diaSemana === 6) {
+      // Viernes y Sábado: 9:00 AM a 8:00 PM
+      apertura = 9;
+      cierre = 20; // Genera hasta 19:30
+    } else if (diaSemana === 0) {
+      // Domingos: 10:00 AM a 2:00 PM
+      apertura = 10;
+      cierre = 14; // Genera hasta 13:30
+    }
+
     const horas: string[] = [];
 
-    for (let h = this.horaApertura; h < this.horaCierre; h++) {
+    for (let h = apertura; h < cierre; h++) {
       for (let m = 0; m < 60; m += this.intervaloMinutos) {
         const horaStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 

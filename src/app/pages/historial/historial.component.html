@@ -1,0 +1,163 @@
+<div class="historial-container">
+    <div class="header-section fade-in">
+        <h1 class="page-title">
+            <mat-icon>security</mat-icon>
+            Auditoría de Sistema
+        </h1>
+        <p class="page-subtitle">Historial de accesos y modificaciones en la plataforma</p>
+    </div>
+
+    <!-- Filtros -->
+    <mat-card class="filtros-card shadow-sm fade-in">
+        <mat-card-content>
+            <div class="filtros-grid">
+                <mat-form-field appearance="outline">
+                    <mat-label>Módulo</mat-label>
+                    <mat-select [(ngModel)]="filtros.modulo">
+                        <mat-option value="">Todos</mat-option>
+                        <mat-option *ngFor="let m of modulos" [value]="m">{{m}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Acción</mat-label>
+                    <mat-select [(ngModel)]="filtros.accion">
+                        <mat-option value="">Todas</mat-option>
+                        <mat-option *ngFor="let a of acciones" [value]="a">{{a}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha Inicio</mat-label>
+                    <input matInput type="date" [(ngModel)]="filtros.fechaInicio">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha Fin</mat-label>
+                    <input matInput type="date" [(ngModel)]="filtros.fechaFin">
+                </mat-form-field>
+
+                <div class="filtros-actions">
+                    <button mat-raised-button color="primary" (click)="aplicarFiltros()">
+                        <mat-icon>search</mat-icon> Filtrar
+                    </button>
+                    <button mat-button (click)="limpiarFiltros()">
+                        <mat-icon>clear</mat-icon> Limpiar
+                    </button>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando registros...</p>
+    </div>
+
+    <!-- Tabla -->
+    <mat-card class="table-card shadow-sm fade-in" *ngIf="!isLoading">
+        <div class="table-responsive">
+            <table mat-table [dataSource]="historial" multiTemplateDataRows class="historial-table">
+
+                <ng-container matColumnDef="fecha">
+                    <th mat-header-cell *matHeaderCellDef> Fecha / Hora </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="fecha-cell">
+                            <span class="date">{{ element.fecha | date:'mediumDate' }}</span>
+                            <span class="time">{{ element.fecha | date:'shortTime' }}</span>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef> Usuario </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="user-info" *ngIf="element.usuario; else sysUser">
+                            <mat-icon class="user-icon">account_circle</mat-icon>
+                            <div class="user-details">
+                                <span class="name">{{ element.usuario.nombre }} {{ element.usuario.apellido || ''}}</span>
+                                <span class="role">{{ element.usuario.rol?.nombre || 'Cliente' | titlecase }}</span>
+                            </div>
+                        </div>
+                        <ng-template #sysUser>
+                            <span class="sys-user"><mat-icon>desktop_windows</mat-icon> Sistema</span>
+                        </ng-template>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="modulo">
+                    <th mat-header-cell *matHeaderCellDef> Módulo </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        <span class="modulo-tag">{{ element.modulo }}</span> 
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="accion">
+                    <th mat-header-cell *matHeaderCellDef> Acción </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span class="badge" [ngClass]="getBadgeColor(element.accion)">
+                            {{ element.accion }}
+                        </span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="descripcion">
+                    <th mat-header-cell *matHeaderCellDef> Descripción </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.descripcion }} </td>
+                </ng-container>
+
+                <!-- Fila expandible con detalles adicionales -->
+                <ng-container matColumnDef="expandedDetail">
+                    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+                        <div class="element-detail" [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
+                            <div class="detail-content">
+                                <div class="detail-item">
+                                    <mat-icon>devices</mat-icon>
+                                    <strong>Dispositivo:</strong> {{ element.dispositivo || 'Desconocido' }}
+                                </div>
+                                <div class="detail-item">
+                                    <mat-icon>router</mat-icon>
+                                    <strong>IP:</strong> {{ element.ip || 'No registrada' }}
+                                </div>
+                                <div class="detail-item" *ngIf="element.entidadId">
+                                    <mat-icon>fingerprint</mat-icon>
+                                    <strong>ID Entidad:</strong> <code>{{ element.entidadId }}</code>
+                                </div>
+                                <div class="detail-item" *ngIf="element.detalles">
+                                    <mat-icon>data_object</mat-icon>
+                                    <strong>Detalles:</strong> <pre>{{ element.detalles | json }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let element; columns: displayedColumns;"
+                    class="element-row"
+                    [class.expanded-row]="expandedElement === element"
+                    (click)="expandedElement = expandedElement === element ? null : element">
+                </tr>
+                <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+
+                <!-- No Data -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell empty-state" colspan="5">
+                        <mat-icon>find_in_page</mat-icon>
+                        <p>No se encontraron registros que coincidan con los filtros.</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <mat-paginator 
+            [length]="totalRegistros"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[10, 25, 50, 100]"
+            [pageIndex]="pageIndex"
+            (page)="onPageChange($event)"
+            showFirstLastButtons>
+        </mat-paginator>
+    </mat-card>
+</div>

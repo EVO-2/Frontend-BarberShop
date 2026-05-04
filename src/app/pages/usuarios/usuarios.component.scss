@@ -217,16 +217,32 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: .8rem;
+  gap: 10px;
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+  }
 
   .card-title {
     font-weight: 600;
     font-size: .95rem;
     color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .card-subtitle {
     font-size: .78rem;
     color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rol-chip {
+    flex-shrink: 0;
   }
 }
 

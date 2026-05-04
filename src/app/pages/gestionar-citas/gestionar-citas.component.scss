@@ -151,23 +151,68 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
+.acciones button.mat-mdc-mini-fab,
 .acciones button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 38px;
-  min-width: 38px;
-  border-radius: 10px;
-  background: #f8f9fa;
-  transition: all 0.2s ease;
+  height: 40px;
+  width: 40px;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  border: none !important;
   
-  &:hover {
-    background: #e3f2fd;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  .mat-icon {
+    font-size: 22px;
+    height: 22px;
+    width: 22px;
+    line-height: 22px;
+  }
+  
+  &:disabled {
+    background: #e9ecef !important;
+    color: #adb5bd !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: not-allowed;
+  }
+}
+
+/* 🔵 Iniciar */
+.acciones button[color="primary"] {
+  background: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%) !important;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 15px rgba(58, 123, 213, 0.4) !important;
+    background: linear-gradient(135deg, #4489eb 0%, #46768f 100%) !important;
+  }
+}
+
+/* 🟢 Finalizar */
+.acciones button.finalizar-btn {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 15px rgba(56, 239, 125, 0.4) !important;
+    background: linear-gradient(135deg, #13ab9e 0%, #3dfc86 100%) !important;
+  }
+}
+
+/* 🔴 Cancelar */
+.acciones button[color="warn"] {
+  background: linear-gradient(135deg, #ed213a 0%, #93291e 100%) !important;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 15px rgba(237, 33, 58, 0.4) !important;
+    background: linear-gradient(135deg, #ff2642 0%, #a82e22 100%) !important;
   }
 }
 
@@ -200,17 +245,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+
+  > div:first-child {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 /* INFO */
 .card-title {
   font-weight: 600;
   font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-subtitle {
   font-size: 0.8rem;
   color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* BODY */
@@ -242,6 +299,50 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.card-actions button {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+  border: none !important;
+  color: white !important;
+  transition: all 0.3s ease !important;
+  padding: 0 16px !important;
+  
+  &:disabled {
+    background: #e9ecef !important;
+    color: #adb5bd !important;
+    box-shadow: none !important;
+  }
+}
+
+.card-actions button[color="primary"] {
+  background: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%) !important;
+  box-shadow: 0 4px 10px rgba(58, 123, 213, 0.2) !important;
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4489eb 0%, #46768f 100%) !important;
+    box-shadow: 0 4px 12px rgba(58, 123, 213, 0.4) !important;
+  }
+}
+
+.card-actions button[color="accent"] {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  box-shadow: 0 4px 10px rgba(56, 239, 125, 0.2) !important;
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #13ab9e 0%, #3dfc86 100%) !important;
+    box-shadow: 0 4px 12px rgba(56, 239, 125, 0.4) !important;
+  }
+}
+
+.card-actions button[color="warn"] {
+  background: linear-gradient(135deg, #ed213a 0%, #93291e 100%) !important;
+  box-shadow: 0 4px 10px rgba(237, 33, 58, 0.2) !important;
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff2642 0%, #a82e22 100%) !important;
+    box-shadow: 0 4px 12px rgba(237, 33, 58, 0.4) !important;
+  }
 }
 
 /* ===================================================== */

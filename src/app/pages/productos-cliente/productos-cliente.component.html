@@ -3,7 +3,8 @@
   <div class="header-ventas">
     <h2 class="titulo">Tienda de Productos</h2>
 
-    <button mat-fab extended color="primary" class="btn-carrito" (click)="mostrarCarrito = !mostrarCarrito" *ngIf="carrito.length > 0">
+    <button mat-fab extended color="primary" class="btn-carrito" (click)="mostrarCarrito = !mostrarCarrito"
+      *ngIf="carrito.length > 0">
       <mat-icon>shopping_cart</mat-icon>
       <span class="badge" *ngIf="cantidadItemsCarrito > 0">{{ cantidadItemsCarrito }}</span>
       Ver Carrito ({{ totalCarrito | currency:'COP':'symbol':'1.0-0' }})
@@ -41,7 +42,7 @@
 
       <!-- 📄 Contenido -->
       <div class="contenido">
-        
+
         <div class="info-top">
           <h3 class="nombre">{{ p.nombre }}</h3>
           <p class="categoria">{{ p.categoria?.nombre || 'General' }}</p>
@@ -53,7 +54,8 @@
             <span class="stock" [class.texto-rojo]="p.cantidad < 5">Stock: {{ p.cantidad }} disponibles</span>
           </div>
 
-          <button mat-mini-fab color="primary" class="btn-add" [disabled]="p.cantidad === 0" (click)="agregarAlCarrito(p)">
+          <button mat-mini-fab color="primary" class="btn-add" [disabled]="p.cantidad === 0"
+            (click)="agregarAlCarrito(p)">
             <mat-icon>add_shopping_cart</mat-icon>
           </button>
         </div>
@@ -75,7 +77,7 @@
 <!-- 🛒 Carrito Overlay Sidebar -->
 <div class="carrito-overlay" [class.abierto]="mostrarCarrito" (click)="mostrarCarrito = false; pasoCheckout = 1"></div>
 <div class="carrito-sidebar" [class.abierto]="mostrarCarrito">
-  
+
   <div class="carrito-header">
     <h3>{{ pasoCheckout === 1 ? 'Mi Carrito' : 'Método de Pago' }}</h3>
     <button mat-icon-button (click)="mostrarCarrito = false; pasoCheckout = 1">
@@ -87,13 +89,14 @@
   <ng-container *ngIf="pasoCheckout === 1">
     <div class="carrito-items" *ngIf="carrito.length > 0">
       <div class="carrito-item" *ngFor="let item of carrito">
-        
-        <img [src]="item.producto.imagen || imagenFallback" class="item-img" (error)="item.producto.imagen = imagenFallback">
-        
+
+        <img [src]="item.producto.imagen || imagenFallback" class="item-img"
+          (error)="item.producto.imagen = imagenFallback">
+
         <div class="item-info">
           <h4>{{ item.producto.nombre }}</h4>
           <span class="item-precio">{{ item.producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
-          
+
           <div class="item-controles">
             <button mat-icon-button class="btn-qty" (click)="actualizarCantidad(item, -1)">
               <mat-icon>remove</mat-icon>
@@ -130,24 +133,27 @@
 
   <!-- PASO 2: SELECCIÓN DE PAGO -->
   <ng-container *ngIf="pasoCheckout === 2">
-    
+
     <div class="paso-pago">
       <p class="instruccion">¿Cómo deseas pagar tus productos?</p>
-      
+
       <div class="metodos-grid">
         <div class="metodo-card" [class.activo]="metodoSeleccionado === 'nequi'" (click)="seleccionarMetodo('nequi')">
           <mat-icon>smartphone</mat-icon>
           <span>Nequi</span>
         </div>
-        <div class="metodo-card" [class.activo]="metodoSeleccionado === 'daviplata'" (click)="seleccionarMetodo('daviplata')">
+        <div class="metodo-card" [class.activo]="metodoSeleccionado === 'daviplata'"
+          (click)="seleccionarMetodo('daviplata')">
           <mat-icon>phone_android</mat-icon>
           <span>Daviplata</span>
         </div>
-        <div class="metodo-card" [class.activo]="metodoSeleccionado === 'transferencia'" (click)="seleccionarMetodo('transferencia')">
+        <div class="metodo-card" [class.activo]="metodoSeleccionado === 'transferencia'"
+          (click)="seleccionarMetodo('transferencia')">
           <mat-icon>account_balance</mat-icon>
           <span>Transferencia</span>
         </div>
-        <div class="metodo-card" [class.activo]="metodoSeleccionado === 'efectivo'" (click)="seleccionarMetodo('efectivo')">
+        <div class="metodo-card" [class.activo]="metodoSeleccionado === 'efectivo'"
+          (click)="seleccionarMetodo('efectivo')">
           <mat-icon>payments</mat-icon>
           <span>Efectivo (Sede)</span>
         </div>
@@ -157,22 +163,23 @@
         <ng-container [ngSwitch]="metodoSeleccionado">
           <div *ngSwitchCase="'nequi'">
             <strong>Transfiere a Nequi:</strong>
-            <p class="numero-cuenta">300 000 0000</p>
+            <p class="numero-cuenta">3136355136</p>
             <p>Se enviará tu pedido por WhatsApp para adjuntar el comprobante.</p>
           </div>
           <div *ngSwitchCase="'daviplata'">
             <strong>Transfiere a Daviplata:</strong>
-            <p class="numero-cuenta">300 000 0000</p>
+            <p class="numero-cuenta">3136355136</p>
             <p>Se enviará tu pedido por WhatsApp para adjuntar el comprobante.</p>
           </div>
           <div *ngSwitchCase="'transferencia'">
             <strong>Cuenta Bancolombia:</strong>
-            <p class="numero-cuenta">Ahorros: 123-456789-00</p>
+            <p class="numero-cuenta">Ahorros: xxxx-xxxx-xx</p>
             <p>Se enviará tu pedido por WhatsApp para adjuntar el comprobante.</p>
           </div>
           <div *ngSwitchCase="'efectivo'">
             <strong>Pago en Efectivo:</strong>
-            <p style="margin-top: 10px;">Enviaremos el detalle de tu reserva por WhatsApp. Deberás pagar el monto total al momento de reclamar los productos en la barbería.</p>
+            <p style="margin-top: 10px;">Enviaremos el detalle de tu reserva por WhatsApp. Deberás pagar el monto total
+              al momento de reclamar los productos en la barbería.</p>
           </div>
         </ng-container>
       </div>
@@ -183,7 +190,8 @@
       <button mat-stroked-button (click)="volverAlCarrito()" style="margin-bottom: 12px; width: 100%">
         <mat-icon>arrow_back</mat-icon> Volver al carrito
       </button>
-      <button mat-flat-button class="btn-checkout whatsapp-btn" [disabled]="!metodoSeleccionado" (click)="confirmarPedido()">
+      <button mat-flat-button class="btn-checkout whatsapp-btn" [disabled]="!metodoSeleccionado"
+        (click)="confirmarPedido()">
         <mat-icon style="margin-right: 8px;">whatsapp</mat-icon> Enviar Pedido a WhatsApp
       </button>
     </div>

@@ -183,17 +183,56 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
 
+  button.mat-mdc-icon-button,
   button {
-    background: #f8f9fa;
-    border-radius: 12px;
-    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    border-radius: 12px !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+
+    .mat-icon {
+      font-size: 22px;
+      height: 22px;
+      width: 22px;
+      line-height: 22px;
+    }
+
+    &:disabled {
+      background: #e9ecef !important;
+      color: #adb5bd !important;
+      box-shadow: none !important;
+      transform: none !important;
+      cursor: not-allowed;
+    }
+  }
+
+  /* 🔵 Editar */
+  button[color="primary"] {
+    background: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%) !important;
     
-    &:hover {
-      background: #e3f2fd;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    &:hover:not(:disabled) {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 6px 15px rgba(58, 123, 213, 0.4) !important;
+      background: linear-gradient(135deg, #4489eb 0%, #46768f 100%) !important;
+    }
+  }
+
+  /* 🟢 Pagar / Reportar */
+  button[color="accent"] {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 6px 15px rgba(56, 239, 125, 0.4) !important;
+      background: linear-gradient(135deg, #13ab9e 0%, #3dfc86 100%) !important;
     }
   }
 }
@@ -259,14 +298,40 @@
 .card-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 
   button {
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+    border: none !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+    padding: 0 16px !important;
+    
+    &:disabled {
+      background: #e9ecef !important;
+      color: #adb5bd !important;
+      box-shadow: none !important;
+    }
+  }
 
-    &:hover {
-      transform: translateY(-1px);
+  button[color="primary"] {
+    background: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%) !important;
+    box-shadow: 0 4px 10px rgba(58, 123, 213, 0.2) !important;
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #4489eb 0%, #46768f 100%) !important;
+      box-shadow: 0 4px 12px rgba(58, 123, 213, 0.4) !important;
+    }
+  }
+
+  button[color="accent"] {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    box-shadow: 0 4px 10px rgba(56, 239, 125, 0.2) !important;
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #13ab9e 0%, #3dfc86 100%) !important;
+      box-shadow: 0 4px 12px rgba(56, 239, 125, 0.4) !important;
     }
   }
 }

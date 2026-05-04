@@ -61,18 +61,24 @@ export class ProductosClienteComponent implements OnInit {
   }
 
   public aplicarFiltro(event: Event): void {
-    const valor = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.textoBusqueda = valor;
+    const rawValue = (event.target as HTMLInputElement).value;
+    this.textoBusqueda = rawValue;
+    const valorBusqueda = rawValue.trim().toLowerCase();
 
-    if (!valor) {
+    if (!valorBusqueda) {
       this.productosFiltrados = [...this.productos];
       return;
     }
 
     this.productosFiltrados = this.productos.filter(p =>
-      p.nombre.toLowerCase().includes(valor) ||
-      p.categoria?.nombre?.toLowerCase().includes(valor)
+      p.nombre.toLowerCase().includes(valorBusqueda) ||
+      p.categoria?.nombre?.toLowerCase().includes(valorBusqueda)
     );
+  }
+
+  public limpiarFiltro(): void {
+    this.textoBusqueda = '';
+    this.productosFiltrados = [...this.productos];
   }
 
   // ==========================

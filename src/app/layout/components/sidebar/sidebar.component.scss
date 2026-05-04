@@ -46,12 +46,14 @@
     border-radius: 12px;
     color: #64748b;
     transition: all 0.3s ease;
-    height: 48px;
-    
+    height: auto;
+    min-height: 48px;
+    padding: 0;
+
+    /* Para que el wrapper interno ocupe todo el ancho del mdc-list-item */
     ::ng-deep .mdc-list-item__content {
-      display: flex;
-      align-items: center;
       width: 100%;
+      display: block;
     }
 
     &:hover {
@@ -65,29 +67,41 @@
       color: #2563eb;
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
 
-      .sidebar-icon, .sidebar-label {
+      .sidebar-icon, .sidebar-label, .expand-icon {
         color: #2563eb;
         font-weight: 600;
       }
     }
   }
 
+  .custom-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    gap: 12px;
+  }
+
   .sidebar-icon {
-    font-size: 22px;
-    width: 22px;
-    height: 22px;
-    margin-right: 12px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
     color: inherit;
     transition: color 0.3s ease;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .sidebar-label {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     font-weight: 500;
     flex: 1;
     white-space: normal;
     word-wrap: break-word;
+    line-height: 1.2;
   }
 
   /* SUBMENÚS */
@@ -119,8 +133,24 @@
   .submenu-link {
     margin: 0;
     border-radius: 8px;
-    height: 40px;
+    height: auto;
+    min-height: 40px;
+    padding: 0;
     color: #64748b;
+    
+    ::ng-deep .mdc-list-item__content {
+      width: 100%;
+      display: block;
+    }
+
+    .custom-content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+      padding: 8px 12px;
+      gap: 10px;
+    }
     
     &:hover {
       background-color: #f8fafc;
@@ -133,18 +163,21 @@
       color: #2563eb;
       font-weight: 600;
       
-      .sidebar-icon.small { color: #2563eb; }
+      .sidebar-icon.small, .sidebar-label.small { color: #2563eb; }
     }
 
     .sidebar-icon.small {
       font-size: 18px;
       width: 18px;
       height: 18px;
-      margin-right: 10px;
     }
     
     .sidebar-label.small {
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      flex: 1;
+      white-space: normal;
+      word-wrap: break-word;
+      line-height: 1.2;
     }
   }
 

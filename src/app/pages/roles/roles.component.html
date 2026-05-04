@@ -20,7 +20,10 @@
       <mat-form-field appearance="outline" class="filter-input">
         <mat-label>Buscar rol</mat-label>
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Nombre del rol" />
+        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Nombre del rol" [value]="textoBusqueda" />
+        <button matSuffix mat-icon-button aria-label="Limpiar filtro" (click)="limpiarFiltro()" *ngIf="textoBusqueda || textoBusqueda === ''" [disabled]="!textoBusqueda">
+          <mat-icon>close</mat-icon>
+        </button>
       </mat-form-field>
     </div>
 

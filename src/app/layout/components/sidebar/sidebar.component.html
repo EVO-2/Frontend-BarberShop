@@ -11,25 +11,31 @@
       <!-- Item simple -->
       <a *ngIf="!item.children" mat-list-item [routerLink]="item.ruta" routerLinkActive="active-link"
         class="sidebar-link" (click)="linkClicked.emit()">
-        <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
-        <span class="sidebar-label">{{ item.label }}</span>
+        <div class="custom-content">
+          <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
+          <span class="sidebar-label">{{ item.label }}</span>
+        </div>
       </a>
 
       <!-- Item con submenú -->
       <div *ngIf="item.children" class="sidebar-parent">
         <button mat-list-item class="sidebar-link" (click)="toggleSubmenu(item.label)">
-          <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
-          <span class="sidebar-label">{{ item.label }}</span>
-          <mat-icon class="expand-icon">
-            {{ expandedItem === item.label ? 'expand_less' : 'expand_more' }}
-          </mat-icon>
+          <div class="custom-content">
+            <mat-icon class="sidebar-icon">{{ item.icono }}</mat-icon>
+            <span class="sidebar-label">{{ item.label }}</span>
+            <mat-icon class="expand-icon">
+              {{ expandedItem === item.label ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+          </div>
         </button>
 
         <div class="submenu" [@submenuToggle]="expandedItem === item.label ? 'open' : 'closed'">
           <a mat-list-item *ngFor="let child of item.children" [routerLink]="child.ruta" routerLinkActive="active-link"
             class="submenu-link" (click)="linkClicked.emit()">
-            <mat-icon class="sidebar-icon small">{{ child.icono }}</mat-icon>
-            <span class="sidebar-label small">{{ child.label }}</span>
+            <div class="custom-content">
+              <mat-icon class="sidebar-icon small">{{ child.icono }}</mat-icon>
+              <span class="sidebar-label small">{{ child.label }}</span>
+            </div>
           </a>
         </div>
       </div>

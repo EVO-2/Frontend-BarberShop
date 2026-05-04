@@ -27,6 +27,7 @@ export class RolesComponent implements OnInit, AfterViewInit {
 
   roles: Rol[] = [];
   form: FormGroup;
+  textoBusqueda: string = '';
 
   constructor(
     private rolesService: RolesService,
@@ -83,8 +84,15 @@ export class RolesComponent implements OnInit, AfterViewInit {
   // Filtro
   // =============================
   aplicarFiltro(event: any) {
-    const valor = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.dataSource.filter = valor;
+    const rawValue = (event.target as HTMLInputElement).value;
+    this.textoBusqueda = rawValue;
+    const valorBusqueda = rawValue.trim().toLowerCase();
+    this.dataSource.filter = valorBusqueda;
+  }
+
+  limpiarFiltro() {
+    this.textoBusqueda = '';
+    this.dataSource.filter = '';
   }
 
   // =============================

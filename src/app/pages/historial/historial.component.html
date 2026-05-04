@@ -1,4 +1,6 @@
 <div class="historial-container">
+
+    <!-- HEADER -->
     <div class="header-section fade-in">
         <h1 class="page-title">
             <mat-icon>security</mat-icon>
@@ -7,10 +9,11 @@
         <p class="page-subtitle">Historial de accesos y modificaciones en la plataforma</p>
     </div>
 
-    <!-- Filtros -->
+    <!-- FILTROS -->
     <mat-card class="filtros-card shadow-sm fade-in">
         <mat-card-content>
             <div class="filtros-grid">
+
                 <mat-form-field appearance="outline">
                     <mat-label>Módulo</mat-label>
                     <mat-select [(ngModel)]="filtros.modulo">
@@ -45,119 +48,144 @@
                         <mat-icon>clear</mat-icon> Limpiar
                     </button>
                 </div>
+
             </div>
         </mat-card-content>
     </mat-card>
 
-    <!-- Loading -->
+    <!-- LOADING -->
     <div *ngIf="isLoading" class="loading-state">
         <mat-spinner diameter="40"></mat-spinner>
         <p>Cargando registros...</p>
     </div>
 
-    <!-- Tabla -->
+    <!-- ================= DESKTOP TABLA ================= -->
     <mat-card class="table-card shadow-sm fade-in" *ngIf="!isLoading">
-        <div class="table-responsive">
-            <table mat-table [dataSource]="historial" multiTemplateDataRows class="historial-table">
 
+        <div class="table-responsive">
+
+            <table mat-table [dataSource]="historial" class="historial-table">
+
+                <!-- FECHA -->
                 <ng-container matColumnDef="fecha">
-                    <th mat-header-cell *matHeaderCellDef> Fecha / Hora </th>
-                    <td mat-cell *matCellDef="let element">
+                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                    <td mat-cell *matCellDef="let element" data-label="Fecha">
                         <div class="fecha-cell">
-                            <span class="date">{{ element.fecha | date:'mediumDate' }}</span>
-                            <span class="time">{{ element.fecha | date:'shortTime' }}</span>
+                            <span>{{ element.fecha | date:'short' }}</span>
                         </div>
                     </td>
                 </ng-container>
 
+                <!-- USUARIO -->
                 <ng-container matColumnDef="usuario">
                     <th mat-header-cell *matHeaderCellDef> Usuario </th>
-                    <td mat-cell *matCellDef="let element">
+                    <td mat-cell *matCellDef="let element" data-label="Usuario">
                         <div class="user-info" *ngIf="element.usuario; else sysUser">
-                            <mat-icon class="user-icon">account_circle</mat-icon>
-                            <div class="user-details">
-                                <span class="name">{{ element.usuario.nombre }} {{ element.usuario.apellido || ''}}</span>
-                                <span class="role">{{ element.usuario.rol?.nombre || 'Cliente' | titlecase }}</span>
-                            </div>
+                            <mat-icon>account_circle</mat-icon>
+                            <span>{{ element.usuario.nombre }}</span>
                         </div>
                         <ng-template #sysUser>
-                            <span class="sys-user"><mat-icon>desktop_windows</mat-icon> Sistema</span>
+                            <span class="sys-user">Sistema</span>
                         </ng-template>
                     </td>
                 </ng-container>
 
+                <!-- MODULO -->
                 <ng-container matColumnDef="modulo">
                     <th mat-header-cell *matHeaderCellDef> Módulo </th>
-                    <td mat-cell *matCellDef="let element"> 
-                        <span class="modulo-tag">{{ element.modulo }}</span> 
+                    <td mat-cell *matCellDef="let element" data-label="Módulo">
+                        <span class="modulo-tag">{{ element.modulo }}</span>
                     </td>
                 </ng-container>
 
+                <!-- ACCION -->
                 <ng-container matColumnDef="accion">
                     <th mat-header-cell *matHeaderCellDef> Acción </th>
-                    <td mat-cell *matCellDef="let element">
+                    <td mat-cell *matCellDef="let element" data-label="Acción">
                         <span class="badge" [ngClass]="getBadgeColor(element.accion)">
                             {{ element.accion }}
                         </span>
                     </td>
                 </ng-container>
 
+                <!-- DESCRIPCION -->
                 <ng-container matColumnDef="descripcion">
                     <th mat-header-cell *matHeaderCellDef> Descripción </th>
-                    <td mat-cell *matCellDef="let element"> {{ element.descripcion }} </td>
-                </ng-container>
-
-                <!-- Fila expandible con detalles adicionales -->
-                <ng-container matColumnDef="expandedDetail">
-                    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-                        <div class="element-detail" [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
-                            <div class="detail-content">
-                                <div class="detail-item">
-                                    <mat-icon>devices</mat-icon>
-                                    <strong>Dispositivo:</strong> {{ element.dispositivo || 'Desconocido' }}
-                                </div>
-                                <div class="detail-item">
-                                    <mat-icon>router</mat-icon>
-                                    <strong>IP:</strong> {{ element.ip || 'No registrada' }}
-                                </div>
-                                <div class="detail-item" *ngIf="element.entidadId">
-                                    <mat-icon>fingerprint</mat-icon>
-                                    <strong>ID Entidad:</strong> <code>{{ element.entidadId }}</code>
-                                </div>
-                                <div class="detail-item" *ngIf="element.detalles">
-                                    <mat-icon>data_object</mat-icon>
-                                    <strong>Detalles:</strong> <pre>{{ element.detalles | json }}</pre>
-                                </div>
-                            </div>
-                        </div>
+                    <td mat-cell *matCellDef="let element" data-label="Descripción">
+                        {{ element.descripcion }}
                     </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let element; columns: displayedColumns;"
-                    class="element-row"
-                    [class.expanded-row]="expandedElement === element"
-                    (click)="expandedElement = expandedElement === element ? null : element">
-                </tr>
-                <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-                <!-- No Data -->
-                <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell empty-state" colspan="5">
+                <tr *matNoDataRow>
+                    <td colspan="5" class="empty-state">
                         <mat-icon>find_in_page</mat-icon>
-                        <p>No se encontraron registros que coincidan con los filtros.</p>
+                        No hay datos
                     </td>
                 </tr>
+
             </table>
+
         </div>
 
-        <mat-paginator 
-            [length]="totalRegistros"
-            [pageSize]="pageSize"
-            [pageSizeOptions]="[10, 25, 50, 100]"
-            [pageIndex]="pageIndex"
-            (page)="onPageChange($event)"
-            showFirstLastButtons>
+        <mat-paginator [length]="totalRegistros" [pageSize]="pageSize" [pageSizeOptions]="[10, 25, 50]"
+            (page)="onPageChange($event)">
         </mat-paginator>
+
     </mat-card>
+
+    <!-- ================= MOBILE CARDS ================= -->
+    <div class="mobile-view" *ngIf="!isLoading && historial.length > 0">
+
+        <div class="card-historial" *ngFor="let h of historial">
+
+            <div class="card-header-mobile">
+
+                <div class="user-info">
+
+                    <div class="card-title">
+                        <span *ngIf="h.usuario; else sysUserMobile">
+                            {{ h.usuario.nombre }}
+                        </span>
+                        <ng-template #sysUserMobile>
+                            Sistema
+                        </ng-template>
+                    </div>
+
+                    <div class="card-subtitle">
+                        {{ h.fecha | date:'short' }}
+                    </div>
+
+                </div>
+
+                <span class="modulo-tag">
+                    {{ h.modulo }}
+                </span>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="info-row">
+                    <span>Acción</span>
+                    <strong>
+                        <span class="badge" [ngClass]="getBadgeColor(h.accion)">
+                            {{ h.accion }}
+                        </span>
+                    </strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Descripción</span>
+                    <strong>{{ h.descripcion }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

@@ -14,6 +14,7 @@
       <!-- Nombre -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Nombre</mat-label>
+        <mat-icon matIconPrefix>person</mat-icon>
         <input matInput formControlName="nombre" />
         <mat-error *ngIf="nombre?.hasError('required')">Nombre es requerido</mat-error>
         <mat-error *ngIf="nombre?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
@@ -23,6 +24,7 @@
       <!-- Correo -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Correo electrónico</mat-label>
+        <mat-icon matIconPrefix>email</mat-icon>
         <input matInput formControlName="correo" />
         <mat-error *ngIf="correo?.hasError('required')">Correo es requerido</mat-error>
         <mat-error *ngIf="correo?.hasError('email')">Formato inválido</mat-error>
@@ -32,6 +34,7 @@
       <!-- Teléfono -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Teléfono</mat-label>
+        <mat-icon matIconPrefix>phone</mat-icon>
         <input matInput formControlName="telefono" maxlength="15" />
         <mat-error *ngIf="telefono?.hasError('required')">Teléfono es requerido</mat-error>
         <mat-error *ngIf="telefono?.hasError('telefonoInvalido')">
@@ -42,6 +45,7 @@
       <!-- Dirección -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Dirección</mat-label>
+        <mat-icon matIconPrefix>location_on</mat-icon>
         <input matInput formControlName="direccion" />
         <mat-error *ngIf="direccion?.hasError('required')">Dirección es requerida</mat-error>
       </mat-form-field>
@@ -49,6 +53,7 @@
       <!-- Género -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Género</mat-label>
+        <mat-icon matIconPrefix>wc</mat-icon>
         <mat-select formControlName="genero">
           <mat-option *ngFor="let g of generos" [value]="g">{{ g }}</mat-option>
         </mat-select>
@@ -58,6 +63,7 @@
       <!-- Fecha de Nacimiento -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Fecha de nacimiento</mat-label>
+        <mat-icon matIconPrefix>cake</mat-icon>
         <input matInput [matDatepicker]="picker" formControlName="fecha_nacimiento" />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
@@ -69,6 +75,7 @@
       <!-- Contraseña -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Contraseña</mat-label>
+        <mat-icon matIconPrefix>lock</mat-icon>
         <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -83,6 +90,7 @@
       <!-- Confirmar Contraseña -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Confirmar contraseña</mat-label>
+        <mat-icon matIconPrefix>lock_outline</mat-icon>
         <input matInput [type]="hideConfirm ? 'password' : 'text'" formControlName="confirmarPassword" />
         <button mat-icon-button matSuffix (click)="hideConfirm = !hideConfirm" type="button">
           <mat-icon>{{ hideConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>

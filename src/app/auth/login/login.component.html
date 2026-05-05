@@ -10,6 +10,7 @@
       <!-- Correo -->
       <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Correo electrónico</mat-label>
+        <mat-icon matIconPrefix>email</mat-icon>
         <input matInput type="email" formControlName="correo" />
         <mat-error *ngIf="form.get('correo')?.hasError('required')">El correo es obligatorio</mat-error>
         <mat-error *ngIf="form.get('correo')?.hasError('email')">Debe ingresar un correo válido</mat-error>
@@ -18,6 +19,7 @@
       <!-- Contraseña -->
       <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Contraseña</mat-label>
+        <mat-icon matIconPrefix>lock</mat-icon>
         <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
         <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>

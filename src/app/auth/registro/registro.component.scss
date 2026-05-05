@@ -2,6 +2,12 @@
    BASE
 ======================= */
 
+@keyframes animateBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .registro-container {
   display: flex;
   justify-content: center;
@@ -10,7 +16,10 @@
   padding: 2rem 1rem;
   min-height: 100vh;
 
-  background: linear-gradient(to right, #f0f8fd, #b7dfff);
+  /* Fondo profesional y moderno: Tonos claros con animación */
+  background: linear-gradient(-45deg, #f8fafc, #e0f2fe, #bae6fd, #7dd3fc);
+  background-size: 400% 400%;
+  animation: animateBg 12s ease infinite;
 
   overflow: hidden;
 }
@@ -29,11 +38,12 @@
   flex-direction: column;
 
   border-radius: 18px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
 
   box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.08),
-    0 4px 12px rgba(0, 0, 0, 0.05);
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    0 4px 15px rgba(0, 0, 0, 0.1);
 
   overflow: hidden;
 }
@@ -141,6 +151,21 @@
   padding: 1rem 2rem 2rem;
 
   scrollbar-width: thin;
+
+  mat-form-field {
+    mat-icon {
+      &[matIconPrefix], &[matPrefix] {
+        color: #64748b;
+        margin-right: 8px;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px !important;
+        width: 24px !important;
+        height: 24px !important;
+      }
+    }
+  }
 }
 
 .full-width {
@@ -217,5 +242,5 @@ html,
 body {
   height: 100%;
   margin: 0;
-  background: #f0f8fd;
+  background: #f8fafc;
 }

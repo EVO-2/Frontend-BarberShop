@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Usuario } from '../shared/models/usuario.model';
+import { BiometricService } from '../services/biometric.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -23,7 +24,8 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private biometricService: BiometricService
   ) {
     // 🔹 Sincronización entre pestañas del navegador
     window.addEventListener('storage', (event) => {
@@ -86,6 +88,9 @@ export class AuthService {
 
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+    
+    // 🔥 Limpiar el token biométrico para evitar auto-logins con tokens expirados
+    this.biometricService.clearToken();
 
     this.usuarioSubject.next(null);
 
@@ -205,11 +210,12 @@ export class AuthService {
       },
 
       error: (error) => {
-        console.error('❌ Error al refrescar usuario:', error);
-
         // 🔥 opcional pero PRO
         if (error.status === 401) {
+          console.warn('⚠️ Sesión expirada o token inválido. Cerrando sesión...');
           this.cerrarSesion(); // token inválido o expirado
+        } else {
+          console.error('❌ Error al refrescar usuario:', error);
         }
       }
 

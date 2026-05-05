@@ -6,6 +6,9 @@ import { SedeService, Sede } from 'src/app/core/services/sede.service';
 import * as xlsx from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 
 // === Interfaces de Tipado ===
 
@@ -706,14 +709,30 @@ export class ReporteIngresosComponent implements OnInit {
 
     };
 
-    xlsx.writeFile(
+    const fileName = `${titulo}_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
-      workbook,
-
-      `${titulo}_${new Date().toISOString().slice(0, 10)}.xlsx`
-
-    );
-
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const excelBase64 = xlsx.write(workbook, { bookType: 'xlsx', type: 'base64' });
+        
+        Filesystem.writeFile({
+          path: fileName,
+          data: excelBase64,
+          directory: Directory.Cache
+        }).then(savedFile => {
+          Share.share({
+            title: fileName,
+            url: savedFile.uri,
+            dialogTitle: 'Guardar o compartir Excel'
+          });
+        });
+      } catch (err) {
+        console.error('Error nativo Excel:', err);
+        this.snackBar.open('Error al generar Excel en móvil', 'Cerrar', { duration: 3000 });
+      }
+    } else {
+      xlsx.writeFile(workbook, fileName);
+    }
   }
 
   // =============================
@@ -1094,7 +1113,30 @@ export class ReporteIngresosComponent implements OnInit {
 
       }
 
-      doc.save(`${title.replace(/ /g, '_')}_${Date.now()}.pdf`);
+      const fileName = `${title.replace(/ /g, '_')}_${Date.now()}.pdf`;
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+          Filesystem.writeFile({
+            path: fileName,
+            data: pdfBase64,
+            directory: Directory.Cache
+          }).then(savedFile => {
+            Share.share({
+              title: fileName,
+              url: savedFile.uri,
+              dialogTitle: 'Guardar o compartir PDF'
+            });
+          });
+        } catch (err) {
+          console.error('Error nativo PDF:', err);
+          this.snackBar.open('Error al generar PDF en móvil', 'Cerrar', { duration: 3000 });
+        }
+      } else {
+        doc.save(fileName);
+      }
 
     };
 

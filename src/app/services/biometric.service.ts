@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { Preferences } from '@capacitor/preferences';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,10 @@ export class BiometricService {
 
   // 🔐 Verifica si la biometría está disponible
   async isAvailable(): Promise<boolean> {
+    if (!Capacitor.isNativePlatform()) {
+      return false; // La biometría nativa no opera en la web
+    }
+
     try {
       const result = await NativeBiometric.isAvailable();
       return result.isAvailable;
@@ -31,6 +36,9 @@ export class BiometricService {
 
   // 🔐 Muestra el prompt biométrico
   async authenticate(): Promise<boolean> {
+    if (!Capacitor.isNativePlatform()) {
+      return false;
+    }
     try {
       await NativeBiometric.verifyIdentity({
         reason: 'Usa tu huella o FaceID para acceder',

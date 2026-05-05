@@ -187,11 +187,15 @@
 
   button.mat-mdc-icon-button,
   button {
-    display: flex;
+    --mdc-icon-button-state-layer-size: 40px;
+    --mdc-icon-button-icon-size: 22px;
+    
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 40px;
-    width: 40px;
+    height: 40px !important;
+    width: 40px !important;
+    padding: 0 !important;
     border-radius: 12px !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     color: white !important;
@@ -199,10 +203,14 @@
     border: none !important;
 
     .mat-icon {
-      font-size: 22px;
-      height: 22px;
-      width: 22px;
-      line-height: 22px;
+      font-size: 22px !important;
+      height: 22px !important;
+      width: 22px !important;
+      line-height: 22px !important;
+      margin: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     &:disabled {
@@ -233,6 +241,18 @@
       transform: translateY(-3px) !important;
       box-shadow: 0 6px 15px rgba(56, 239, 125, 0.4) !important;
       background: linear-gradient(135deg, #13ab9e 0%, #3dfc86 100%) !important;
+    }
+  }
+
+  /* ⭐️ Calificar */
+  button.btn-calificar {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: white !important;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4) !important;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
     }
   }
 }
@@ -332,6 +352,16 @@
     &:hover:not(:disabled) {
       background: linear-gradient(135deg, #13ab9e 0%, #3dfc86 100%) !important;
       box-shadow: 0 4px 12px rgba(56, 239, 125, 0.4) !important;
+    }
+  }
+
+  /* ⭐️ Calificar */
+  button.btn-calificar {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2) !important;
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
     }
   }
 }

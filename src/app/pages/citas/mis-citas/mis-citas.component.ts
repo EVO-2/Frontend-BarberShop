@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/auth/auth.service';
 import { PusherService } from 'src/app/services/pusher.service';
 import { Subscription } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-mis-citas',
@@ -167,6 +168,79 @@ export class MisCitasComponent implements OnInit, OnDestroy {
           duration: 4000,
           horizontalPosition: 'right',
           verticalPosition: 'top'
+        });
+      }
+    });
+  }
+
+  calificarCita(cita: any): void {
+    if (cita.calificacion) {
+      this.snackBar.open('Esta cita ya fue calificada.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    let calificacionSeleccionada = 0;
+
+    Swal.fire({
+      title: 'Califica tu servicio',
+      html: `
+        <div class="rating-container">
+          <p style="margin-bottom: 15px; color: #555;">¿Qué tal fue tu experiencia con <b>${cita.peluquero?.usuario?.nombre || 'el profesional'}</b>?</p>
+          <div class="stars" style="font-size: 45px; color: #ddd; cursor: pointer; display: flex; justify-content: center; gap: 10px;">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+          </div>
+          <textarea id="swal-comentario" class="swal2-textarea" placeholder="Déjanos un comentario (opcional)..." style="margin-top: 20px; width: 90%; font-size: 15px;"></textarea>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Enviar Calificación',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3b82f6',
+      cancelButtonColor: '#ef4444',
+      didOpen: () => {
+        const stars = document.querySelectorAll('.star');
+        stars.forEach(star => {
+          star.addEventListener('click', (e: any) => {
+            calificacionSeleccionada = parseInt(e.target.getAttribute('data-value'), 10);
+            stars.forEach((s: any, index) => {
+              if (index < calificacionSeleccionada) {
+                s.style.color = '#ffc107';
+                s.style.transform = 'scale(1.2)';
+                s.style.transition = 'all 0.2s';
+              } else {
+                s.style.color = '#ddd';
+                s.style.transform = 'scale(1)';
+              }
+            });
+            // Reset transform after animation
+            setTimeout(() => {
+              stars.forEach((s: any) => s.style.transform = 'scale(1)');
+            }, 200);
+          });
+        });
+      },
+      preConfirm: () => {
+        if (calificacionSeleccionada === 0) {
+          Swal.showValidationMessage('Por favor selecciona al menos 1 estrella.');
+          return false;
+        }
+        const comentario = (document.getElementById('swal-comentario') as HTMLTextAreaElement).value;
+        return { calificacion: calificacionSeleccionada, comentario_calificacion: comentario };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.citaService.calificarCita(cita._id, result.value.calificacion, result.value.comentario_calificacion).subscribe({
+          next: (res) => {
+            this.snackBar.open('¡Gracias por tu calificación!', 'Cerrar', { duration: 4000 });
+            this.cargarCitas();
+          },
+          error: (err) => {
+            this.snackBar.open(err.error?.mensaje || 'Error al guardar la calificación', 'Cerrar', { duration: 4000 });
+          }
         });
       }
     });

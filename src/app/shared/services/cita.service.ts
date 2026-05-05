@@ -259,4 +259,17 @@ export class CitaService {
       .get<any>(`${this.apiUrl}/${citaId}/pago`)
       .pipe(catchError(err => throwError(() => err)));
   }
+
+  // ==================================================
+  // ⭐ Calificar cita (Cliente)
+  // ==================================================
+  calificarCita(
+    citaId: string | number,
+    calificacion: number,
+    comentario_calificacion?: string
+  ): Observable<any> {
+    return this.http
+      .post<any>(`${this.apiUrl}/${citaId}/calificar`, { calificacion, comentario_calificacion })
+      .pipe(catchError(err => throwError(() => err)));
+  }
 }

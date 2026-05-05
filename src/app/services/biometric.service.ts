@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Plugins } from '@capacitor/core';
-
-declare var Fingerprint: any;
-
-const { Storage } = Plugins;
+import { NativeBiometric } from '@capgo/capacitor-native-biometric';
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -11,77 +8,47 @@ const { Storage } = Plugins;
 export class BiometricService {
 
   private storageKey = 'auth_token';
-  private storageReady = false;
 
   constructor() {
     this.init();
   }
 
-  // 🧠 Inicializa Storage de forma segura
+  // 🧠 Inicializa biometría si es necesario
   async init() {
-    try {
-      if (Storage && !this.storageReady) {
-        this.storageReady = true;
-        console.log('[BIO] Storage inicializado correctamente');
-      }
-    } catch (error) {
-      console.warn('[BIO] Error inicializando Storage', error);
-      this.storageReady = false;
-    }
+    console.log('[BIO] BiometricService inicializado');
   }
 
   // 🔐 Verifica si la biometría está disponible
-  isAvailable(): Promise<boolean> {
-    return new Promise((resolve) => {
-      if (typeof Fingerprint === 'undefined') {
-        console.warn('[BIO] Plugin Fingerprint no disponible');
-        resolve(false);
-        return;
-      }
-
-      Fingerprint.isAvailable(
-        () => resolve(true),
-        () => resolve(false)
-      );
-    });
+  async isAvailable(): Promise<boolean> {
+    try {
+      const result = await NativeBiometric.isAvailable();
+      return result.isAvailable;
+    } catch (error) {
+      console.warn('[BIO] Biometría no disponible en este dispositivo', error);
+      return false;
+    }
   }
 
   // 🔐 Muestra el prompt biométrico
-  authenticate(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (typeof Fingerprint === 'undefined') {
-        console.warn('[BIO] Fingerprint no existe');
-        reject(false);
-        return;
-      }
-
-      Fingerprint.show(
-        {
-          title: 'Autenticación biométrica',
-          subtitle: 'Acceso seguro',
-          description: 'Usa tu huella o FaceID',
-          fallbackButtonTitle: 'Usar PIN',
-          cancelButtonTitle: 'Cancelar',
-          disableBackup: false
-        },
-        () => resolve(true),
-        (err: any) => {
-          console.error('[BIO] Error biométrico', err);
-          reject(false);
-        }
-      );
-    });
+  async authenticate(): Promise<boolean> {
+    try {
+      await NativeBiometric.verifyIdentity({
+        reason: 'Usa tu huella o FaceID para acceder',
+        title: 'Autenticación biométrica',
+        subtitle: 'Acceso seguro',
+        description: 'Usa tu biometría para ingresar a la Barbería',
+      });
+      return true;
+    } catch (error) {
+      console.error('[BIO] Error biométrico o autenticación cancelada', error);
+      return false;
+    }
   }
 
-  // 🔐 Guardar token
+  // 🔐 Guardar token de manera segura
   async saveToken(token: string) {
-    if (!this.storageReady) {
-      console.warn('[BIO] Storage no disponible - saveToken cancelado');
-      return;
-    }
-
     try {
-      await Storage['set']({
+      await Preferences.set({
         key: this.storageKey,
         value: token
       });
@@ -93,14 +60,9 @@ export class BiometricService {
 
   // 🔐 Obtener token
   async getToken(): Promise<string | null> {
-    if (!this.storageReady) {
-      console.warn('[BIO] Storage no disponible - getToken cancelado');
-      return null;
-    }
-
     try {
-      const res = await Storage['get']({ key: this.storageKey });
-      return res?.value ?? null;
+      const { value } = await Preferences.get({ key: this.storageKey });
+      return value;
     } catch (error) {
       console.error('[BIO] Error obteniendo token', error);
       return null;
@@ -109,13 +71,8 @@ export class BiometricService {
 
   // 🔐 Eliminar token
   async clearToken() {
-    if (!this.storageReady) {
-      console.warn('[BIO] Storage no disponible - clearToken cancelado');
-      return;
-    }
-
     try {
-      await Storage['remove']({ key: this.storageKey });
+      await Preferences.remove({ key: this.storageKey });
       console.log('[BIO] Token eliminado');
     } catch (error) {
       console.error('[BIO] Error eliminando token', error);

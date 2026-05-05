@@ -21,6 +21,8 @@
     "@angular/platform-browser-dynamic": "~17.3.12",
     "@angular/router": "~17.3.12",
     "@capacitor/core": "~6.0.0",
+    "@capacitor/preferences": "^6.0.4",
+    "@capgo/capacitor-native-biometric": "^6.0.4",
     "@ionic/angular": "~8.7.17",
     "chart.js": "^4.5.1",
     "cordova-plugin-fingerprint-aio": "^6.0.1",

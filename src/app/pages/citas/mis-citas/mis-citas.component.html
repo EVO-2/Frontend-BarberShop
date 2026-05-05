@@ -128,6 +128,14 @@
             <button *ngIf="cita.estado === 'finalizada'" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" [matTooltip]="userRole === 'cliente' ? 'Reportar Pago' : 'Confirmar Pago'">
               <mat-icon>{{ userRole === 'cliente' ? 'receipt' : (cita.pago?.estado === 'reportado' ? 'fact_check' : 'payment') }}</mat-icon>
             </button>
+
+            <!-- ⭐️ Botón para calificar servicio (Solo cliente, si está finalizada/pagada y no tiene calificación) -->
+            <button *ngIf="(cita.estado === 'finalizada' || cita.estado === 'pagada') && userRole === 'cliente' && !cita.calificacion" mat-icon-button class="btn-calificar" (click)="calificarCita(cita)" matTooltip="Calificar Servicio">
+              <mat-icon>star</mat-icon>
+            </button>
+            <span *ngIf="cita.calificacion" class="estado-badge" style="background-color: #fef3c7; color: #d97706; margin-left: 5px;" [matTooltip]="cita.comentario_calificacion || 'Calificado'">
+              {{ cita.calificacion }} ⭐
+            </span>
           </div>
         </td>
       </ng-container>
@@ -191,6 +199,14 @@
           <mat-icon *ngIf="userRole !== 'cliente' && cita.pago?.estado === 'reportado'">fact_check</mat-icon>
           {{ userRole === 'cliente' ? 'Reportar Pago' : (cita.pago?.estado === 'reportado' ? 'Confirmar Pago' : 'Cobrar') }}
         </button>
+
+        <!-- ⭐️ Calificar (Mobile) -->
+        <button *ngIf="(cita.estado === 'finalizada' || cita.estado === 'pagada') && userRole === 'cliente' && !cita.calificacion" mat-button class="btn-calificar" (click)="calificarCita(cita)">
+          <mat-icon>star</mat-icon> Calificar
+        </button>
+        <span *ngIf="cita.calificacion" class="estado-badge" style="background-color: #fef3c7; color: #d97706; font-size: 13px; align-self: center;" [matTooltip]="cita.comentario_calificacion || 'Calificado'">
+          {{ cita.calificacion }} ⭐
+        </span>
 
       </div>
 

@@ -43,6 +43,13 @@ export class AuthInterceptor implements HttpInterceptor {
           this.authService.logout();
         }
 
+        // 🔥 CONTROL DE SUSCRIPCIÓN VENCIDA (403 SaaS)
+        if (error.status === 403 && error.error?.accionRequerida === 'pagar_suscripcion') {
+          // Si estás usando router en el constructor, redirige aquí.
+          // Para no romper inyecciones circulares, podemos usar window.location
+          window.location.href = '/suscripcion-vencida';
+        }
+
         return throwError(() => error);
       })
 

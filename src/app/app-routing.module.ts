@@ -30,12 +30,18 @@ import { ProductosClienteComponent } from './pages/productos-cliente/productos-c
 // 🕵️ Auditoría
 import { HistorialComponent } from './pages/historial/historial.component';
 
+// 🚀 SaaS Onboarding
+import { OnboardingComponent } from './pages/onboarding/onboarding.component';
+import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscripcion-vencida.component';
+
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // Rutas públicas
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
+  { path: 'onboarding', component: OnboardingComponent },
+  { path: 'suscripcion-vencida', component: SuscripcionVencidaComponent },
 
   // Rutas protegidas con layout
   {

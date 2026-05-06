@@ -1,0 +1,33 @@
+<div class="blocked-container">
+  <div class="overlay"></div>
+
+  <div class="glass-card">
+    <div class="icon-header">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+    </div>
+    
+    <h2>Suscripción Vencida</h2>
+    <p class="subtitle">
+      Hola <strong>{{ usuario?.nombre }}</strong>, el acceso a tu panel de BarberSaaS ha sido bloqueado temporalmente.
+    </p>
+
+    <div class="alert-box">
+      <ion-icon name="warning-outline"></ion-icon>
+      <div class="alert-text">
+        <span>Tu periodo de prueba o mensualidad ha expirado.</span>
+        Para seguir gestionando tus citas, ventas y clientes, por favor reactiva tu plan.
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn-primary" (click)="irAPagar()">
+        <ion-icon name="card-outline"></ion-icon>
+        Pagar Suscripción Ahora
+      </button>
+
+      <button class="btn-secondary" (click)="cerrarSesion()">
+        Cerrar Sesión
+      </button>
+    </div>
+  </div>
+</div>

@@ -55,6 +55,10 @@ import { TerminosDialogComponent } from './shared/components/terminos-dialog/ter
 // ======= 🕵️ Auditoría =======
 import { HistorialComponent } from './pages/historial/historial.component';
 
+// ======= 🚀 SaaS Onboarding =======
+import { OnboardingComponent } from './pages/onboarding/onboarding.component';
+import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscripcion-vencida.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -96,7 +100,11 @@ import { HistorialComponent } from './pages/historial/historial.component';
     TerminosDialogComponent,
 
     // 🕵️ Auditoría
-    HistorialComponent
+    HistorialComponent,
+
+    // 🚀 SaaS Onboarding
+    OnboardingComponent,
+    SuscripcionVencidaComponent
   ],
   imports: [
     BrowserModule,

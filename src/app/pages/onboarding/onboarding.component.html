@@ -1,0 +1,106 @@
+<div class="onboarding-container">
+  <div class="overlay"></div>
+  
+  <div class="glass-card">
+    <!-- Header -->
+    <div class="brand-header">
+      <div class="logo">
+        <ion-icon name="cut-outline"></ion-icon>
+      </div>
+      <h2>BarberSaaS</h2>
+      <p>Lleva tu barbería al siguiente nivel</p>
+    </div>
+
+    <!-- Progreso Visual Opcional -->
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="onboardingForm" (ngSubmit)="registrarSaaS()" class="onboarding-form">
+      
+      <!-- Sección: Datos del Negocio -->
+      <div class="section-title">
+        <ion-icon name="business-outline"></ion-icon>
+        <span>Datos de la Barbería</span>
+      </div>
+
+      <div formGroupName="empresa" class="form-group-section">
+        <div class="input-field">
+          <label>Nombre de la Barbería</label>
+          <input type="text" formControlName="nombre" placeholder="Ej. The Gentleman's Barbershop" />
+          <span class="error-msg" *ngIf="onboardingForm.get('empresa.nombre')?.invalid && onboardingForm.get('empresa.nombre')?.touched">
+            El nombre es obligatorio (mín. 3 letras)
+          </span>
+        </div>
+
+        <div class="input-row">
+          <div class="input-field">
+            <label>Teléfono</label>
+            <input type="tel" formControlName="telefono" placeholder="+57 300..." />
+          </div>
+          <div class="input-field">
+            <label>Dirección</label>
+            <input type="text" formControlName="direccion" placeholder="Calle Falsa 123" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Datos del Administrador -->
+      <div class="section-title mt-4">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <span>Datos del Dueño (Administrador)</span>
+      </div>
+
+      <div formGroupName="usuario" class="form-group-section">
+        <div class="input-field">
+          <label>Tu Nombre Completo</label>
+          <input type="text" formControlName="nombre" placeholder="Juan Pérez" />
+          <span class="error-msg" *ngIf="onboardingForm.get('usuario.nombre')?.invalid && onboardingForm.get('usuario.nombre')?.touched">
+            Tu nombre es obligatorio
+          </span>
+        </div>
+
+        <div class="input-row">
+          <div class="input-field">
+            <label>Correo Electrónico</label>
+            <input type="email" formControlName="correo" placeholder="juan@barberia.com" />
+            <span class="error-msg" *ngIf="onboardingForm.get('usuario.correo')?.invalid && onboardingForm.get('usuario.correo')?.touched">
+              Ingresa un correo válido
+            </span>
+          </div>
+
+          <div class="input-field">
+            <label>Contraseña Maestra</label>
+            <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
+            <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.invalid && onboardingForm.get('usuario.password')?.touched">
+              Mínimo 6 caracteres
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Términos y Condiciones -->
+      <div class="terms-container">
+        <label class="custom-checkbox">
+          <input type="checkbox" formControlName="terminos" />
+          <span class="checkmark"></span>
+          Acepto los <a href="#">Términos de Servicio</a> y <a href="#">Política de Privacidad</a>
+        </label>
+      </div>
+
+      <!-- Botón de Envío -->
+      <button type="submit" class="btn-submit" [disabled]="onboardingForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Crear mi Barbería 🚀</span>
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+      </button>
+
+      <div class="login-link">
+        ¿Ya tienes tu barbería registrada? <a routerLink="/login">Inicia Sesión aquí</a>
+      </div>
+
+    </form>
+  </div>
+</div>

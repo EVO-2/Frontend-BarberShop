@@ -94,7 +94,8 @@ export class PagoDialogComponent {
           error: (err) => {
             this.loading = false;
             console.error('Error al reportar el pago:', err);
-            alert(err?.error?.message || 'Error al reportar el pago');
+            console.error('Backend error:', err?.error);
+            alert(err?.error?.mensaje || err?.error?.message || 'Error al reportar el pago');
           }
         });
     } else {
@@ -110,7 +111,8 @@ export class PagoDialogComponent {
           error: (err) => {
             this.loading = false;
             console.error('Error al pagar:', err);
-            alert(err?.error?.message || 'Error al procesar el pago');
+            console.error('Backend error:', err?.error);
+            alert(err?.error?.mensaje || err?.error?.message || 'Error al procesar el pago');
           }
         });
     }

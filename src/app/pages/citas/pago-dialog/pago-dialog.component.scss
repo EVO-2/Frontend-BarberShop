@@ -3,13 +3,13 @@
 ========================= */
 
 .pago-dialog-card {
-  width: 400px;
-  max-width: 95vw;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-
   border-radius: 16px;
 }
 

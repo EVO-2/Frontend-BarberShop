@@ -17,6 +17,13 @@ export class PagoDialogComponent {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      // Validar peso de la imagen (Máximo 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('❌ El archivo seleccionado es demasiado grande. Por favor, sube una imagen que pese menos de 2MB.');
+        event.target.value = ''; // Reset input
+        this.archivoComprobante = null;
+        return;
+      }
       this.archivoComprobante = file;
     }
   }
@@ -50,6 +57,9 @@ export class PagoDialogComponent {
 
     if (this.data.userRole === 'cliente') {
       this.pagoForm.get('monto')?.disable();
+    } else if (data.cita?.pago?.estado === 'reportado') {
+      // Si el peluquero abre un pago ya reportado, solo puede confirmar, no editar datos
+      this.pagoForm.disable();
     }
   }
 

@@ -374,6 +374,11 @@ private formatDuracion(minutos: number): string {
 
 
   cancelarCita(cita: any): void {
+    if (['pagada', 'finalizada'].includes(cita.estado) || cita.calificacion) {
+      this.snack.open('⚠️ No puedes cancelar una cita que ya fue finalizada, pagada o calificada.', 'Cerrar', { duration: 4000 });
+      return;
+    }
+
     const dialogRef = this.dialog.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(
       ConfirmDialogComponent,
       {

@@ -35,6 +35,9 @@ export class PusherService {
 
     // Escuchar pagos reportados
     this.escucharPagosReportados();
+
+    // Escuchar pagos confirmados
+    this.escucharPagosConfirmados();
   }
 
   private escucharNuevasCitas() {
@@ -173,6 +176,33 @@ export class PusherService {
           confirmButtonColor: '#3085d6'
         });
       }
+    });
+  }
+
+  private escucharPagosConfirmados() {
+    this.channel.bind('pago-confirmado', (data: any) => {
+      console.log('📢 [Pusher] pago-confirmado recibido:', data);
+
+      const rol = this.authService.obtenerRol();
+      const miUsuario = this.authService.getUsuarioActual();
+
+      // Emitir el evento para que las tablas se refresquen en tiempo real
+      this.pagoReportado$.next(data);
+
+      if (rol !== 'cliente') {
+        return; // Esta notificación visual es para el cliente
+      }
+
+      const miClienteId = miUsuario?.cliente?._id || miUsuario?.cliente || miUsuario?._id;
+      if (data.clienteId && String(miClienteId) !== String(data.clienteId)) {
+        return; // Es de otro cliente
+      }
+
+      this.toastr.success(data.mensaje, '¡Pago Confirmado!', {
+        timeOut: 8000,
+        progressBar: true,
+        positionClass: 'toast-top-right'
+      });
     });
   }
 }

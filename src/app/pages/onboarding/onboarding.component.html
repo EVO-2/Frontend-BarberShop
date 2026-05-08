@@ -74,10 +74,18 @@
 
           <div class="input-field">
             <label>Contraseña Maestra</label>
-            <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres" />
-            <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.invalid && onboardingForm.get('usuario.password')?.touched">
-              Mínimo 6 caracteres
-            </span>
+            <input type="password" formControlName="password" placeholder="Ej. Barber@2026!" />
+            <ng-container *ngIf="onboardingForm.get('usuario.password')?.invalid && onboardingForm.get('usuario.password')?.touched">
+              <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.errors?.['required']">
+                La contraseña es obligatoria.
+              </span>
+              <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.errors?.['minlength']">
+                Debe tener al menos 8 caracteres.
+              </span>
+              <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.errors?.['pattern'] && !onboardingForm.get('usuario.password')?.errors?.['minlength']">
+                Debe tener mayúscula, minúscula, número y carácter especial.
+              </span>
+            </ng-container>
           </div>
         </div>
       </div>

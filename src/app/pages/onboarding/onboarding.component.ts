@@ -44,7 +44,11 @@ export class OnboardingComponent implements OnInit {
       usuario: this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
         correo: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]]
+        password: ['', [
+          Validators.required, 
+          Validators.minLength(8),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/)
+        ]]
       }),
 
       terminos: [false, Validators.requiredTrue]

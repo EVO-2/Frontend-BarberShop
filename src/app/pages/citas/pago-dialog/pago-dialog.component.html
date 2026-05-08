@@ -51,8 +51,31 @@
     </div>
 
     <!-- MOSTRAR COMPROBANTE AL BARBERO/ADMIN -->
-    <div *ngIf="data.userRole !== 'cliente' && data.cita.pago?.estado === 'reportado' && data.cita.pago?.urlComprobante" style="margin-bottom: 20px; padding: 15px; border: 1px dashed #ccc; border-radius: 8px; background-color: #f5f5f5;">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div *ngIf="data.userRole !== 'cliente' && data.cita.pago?.estado === 'reportado'" style="margin-bottom: 20px;">
+      
+      <!-- Datos de solo lectura -->
+      <div style="padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fafafa; margin-bottom: 10px;">
+        <h3 style="margin-top: 0; margin-bottom: 15px; color: #333; font-size: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+          <mat-icon style="font-size: 16px; width: 16px; height: 16px; vertical-align: middle; color: #1976d2;">info</mat-icon> Datos reportados por el cliente
+        </h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+          <div>
+            <span style="color: #666; font-size: 12px; display: block;">Monto a confirmar:</span>
+            <strong>{{ (data.cita.pago?.monto || pagoForm.get('monto')?.value) | currency }}</strong>
+          </div>
+          <div>
+            <span style="color: #666; font-size: 12px; display: block;">Método de pago:</span>
+            <strong style="text-transform: capitalize;">{{ data.cita.pago?.metodo || pagoForm.get('metodo')?.value }}</strong>
+          </div>
+          <div style="grid-column: 1 / -1;" *ngIf="data.cita.pago?.observaciones">
+            <span style="color: #666; font-size: 12px; display: block;">Observaciones / Referencia:</span>
+            <strong>{{ data.cita.pago.observaciones.replace('[Reporte Cliente]: ', '') }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket -->
+      <div *ngIf="data.cita.pago?.urlComprobante" style="padding: 15px; border: 1px dashed #ccc; border-radius: 8px; background-color: #f9f9f9; display: flex; align-items: center; justify-content: space-between;">
         <div>
           <strong style="display: block; color: #333;">Comprobante adjuntado</strong>
           <span style="font-size: 12px; color: #666;">El cliente subió una foto del pago</span>
@@ -64,8 +87,8 @@
       </div>
     </div>
 
-    <!-- FORMULARIO -->
-    <form [formGroup]="pagoForm" *ngIf="data.cita.estado !== 'pagada' && !(data.cita.pago?.estado === 'reportado' && data.userRole === 'cliente')" class="pago-form">
+    <!-- FORMULARIO EDITABLE -->
+    <form [formGroup]="pagoForm" *ngIf="data.cita.estado !== 'pagada' && data.cita.pago?.estado !== 'reportado'" class="pago-form">
 
       <!-- MONTO -->
       <mat-form-field appearance="outline" class="full-width">

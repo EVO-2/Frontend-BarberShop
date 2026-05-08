@@ -7,11 +7,13 @@ export class EsDateAdapter extends NativeDateAdapter {}
 
 
 // =================== COMPONENTE GESTIONAR CITAS ===================
-import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
+import { PusherService } from 'src/app/services/pusher.service';
 
 import { CitaService } from 'src/app/shared/services/cita.service';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -23,7 +25,9 @@ import { Cita } from 'src/app/shared/models/cita.model';
   templateUrl: './gestionar-citas.component.html',
   styleUrls: ['./gestionar-citas.component.scss']
 })
-export class GestionarCitasComponent implements OnInit, AfterViewInit {
+export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private pusherSub!: Subscription;
 
   displayedColumns: string[] = ['cliente', 'fecha', 'hora', 'turno', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
@@ -43,11 +47,22 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit {
     private auth: AuthService,
     private snack: MatSnackBar,
     private dialog: MatDialog,
-    private cd: ChangeDetectorRef 
+    private cd: ChangeDetectorRef,
+    private pusherService: PusherService
   ) {}
 
   ngOnInit(): void {
     this.cargarCitas();
+
+    this.pusherSub = this.pusherService.pagoReportado$.subscribe(() => {
+      this.cargarCitas();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.pusherSub) {
+      this.pusherSub.unsubscribe();
+    }
   }
 
   ngAfterViewInit(): void {

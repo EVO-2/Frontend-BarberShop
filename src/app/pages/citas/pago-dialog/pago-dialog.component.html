@@ -137,6 +137,11 @@
       <div *ngIf="data.userRole === 'cliente'" class="file-upload-container" style="margin-bottom: 15px; width: 100%;">
         <label style="display: block; margin-bottom: 5px; font-weight: 500; color: rgba(0, 0, 0, 0.6);">Subir foto del comprobante (opcional):</label>
         <input type="file" (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/jpg, image/webp" style="width: 100%; padding: 10px; border: 1px dashed #ccc; border-radius: 4px; background: #f9f9f9; cursor: pointer;">
+        
+        <div *ngIf="archivoComprobante" style="margin-top: 8px; padding: 8px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 4px; font-size: 13px; display: flex; align-items: center; gap: 8px; border: 1px solid #c8e6c9;">
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px;">check_circle</mat-icon>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Archivo cargado: <strong>{{ archivoComprobante.name }}</strong></span>
+        </div>
       </div>
 
     </form>

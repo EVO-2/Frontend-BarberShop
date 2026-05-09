@@ -11,6 +11,7 @@ export interface Usuario {
   rol: Rol | string;
   foto?: string;
   estado?: boolean;
+  empresaLogo?: string;
 
   permisos?: string[];
   cliente?: Cliente | string | null;

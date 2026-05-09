@@ -46,6 +46,21 @@
             <input type="text" formControlName="direccion" placeholder="Calle Falsa 123" />
           </div>
         </div>
+
+        <div class="logo-upload-container">
+          <label>Logo de la Barbería (Opcional)</label>
+          <div class="upload-area" (click)="fileInput.click()">
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+            <div class="preview-circle" *ngIf="logoPreview">
+              <img [src]="logoPreview" alt="Logo Preview" />
+            </div>
+            <div class="upload-placeholder" *ngIf="!logoPreview">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <span>Subir Logo</span>
+              <small>Máx 2MB (JPG, PNG)</small>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Sección: Datos del Administrador -->

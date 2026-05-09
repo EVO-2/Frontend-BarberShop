@@ -353,6 +353,7 @@ export class AuthService {
       correo: usuario.correo,
       rol: nombreRol,
       foto: usuario.foto || undefined,
+      empresaLogo: usuario.empresaLogo || 'assets/sede.png',
 
       // 🔐 Permisos
       permisos: usuario.permisos || (usuario.rol?.permisos?.map((p: any) => p.nombre) || []),

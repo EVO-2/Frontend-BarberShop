@@ -19,7 +19,9 @@
     z-index: 2;
     
     img {
-      width: 75%;
+      width: 80%;
+      max-height: 80px;
+      object-fit: contain;
       border-radius: 12px;
       transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       box-shadow: 0 4px 15px rgba(0,0,0,0.06);

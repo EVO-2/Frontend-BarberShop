@@ -25,6 +25,8 @@ export class OnboardingComponent implements OnInit {
 
   onboardingForm: FormGroup;
   isLoading: boolean = false;
+  logoFile: File | null = null;
+  logoPreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -55,19 +57,23 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
-
-  /* =========================================================
-     INIT
-  ========================================================= */
   ngOnInit(): void { }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.match(/image\/*/) || file.size > 2 * 1024 * 1024) {
+        this.toastr.error('Solo se permiten imágenes (JPG, PNG) menores a 2MB.', 'Archivo inválido');
+        return;
+      }
+      this.logoFile = file;
 
+      const reader = new FileReader();
+      reader.onload = (e) => this.logoPreview = reader.result;
+      reader.readAsDataURL(file);
+    }
+  }
 
-
-
-  /* =========================================================
-     REGISTRO SAAS
-  ========================================================= */
   registrarSaaS(): void {
 
     if (this.onboardingForm.invalid) {
@@ -76,7 +82,14 @@ export class OnboardingComponent implements OnInit {
     }
 
     this.isLoading = true;
-    const formData = this.onboardingForm.value;
+    const formValues = this.onboardingForm.value;
+
+    const formData = new FormData();
+    formData.append('empresa', JSON.stringify(formValues.empresa));
+    formData.append('usuario', JSON.stringify(formValues.usuario));
+    if (this.logoFile) {
+      formData.append('logo', this.logoFile);
+    }
 
     this.authService.registroSaaS(formData).subscribe({
 

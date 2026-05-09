@@ -31,6 +31,7 @@ export class SidebarComponent implements OnInit {
   @Output() linkClicked = new EventEmitter<void>();
   menuItems: any[] = [];
   usuario: Usuario | null = null;
+  empresaLogo: string = 'assets/sede.png';
   expandedItem: string | null = null; // controla qué menú está expandido
 
   constructor(
@@ -42,6 +43,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
     this.authService.usuario$.subscribe((usuario: Usuario | null) => {
       this.usuario = usuario;
+      this.empresaLogo = usuario?.empresaLogo || 'assets/sede.png';
 
       if (usuario?.rol) {
         const rol = typeof usuario.rol === 'string' ? usuario.rol : usuario.rol.nombre;

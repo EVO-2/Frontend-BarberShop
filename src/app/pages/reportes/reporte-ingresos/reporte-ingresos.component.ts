@@ -41,6 +41,8 @@ interface InventarioReporte {
   totalSede: number;
 }
 
+import { AuthService } from 'src/app/auth/auth.service';
+
 @Component({
   selector: 'app-reporte-ingresos',
   templateUrl: './reporte-ingresos.component.html',
@@ -74,15 +76,18 @@ export class ReporteIngresosComponent implements OnInit {
 
   cargando = false;
   tabSeleccionada = 0;
+  usuarioLogueado: any = null;
 
   constructor(
     private fb: FormBuilder,
     private reportesService: ReportesService,
     private sedeService: SedeService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    this.authService.usuario$.subscribe(u => this.usuarioLogueado = u);
     this.filtroForm = this.fb.group({
       fechaInicio: [''],
       fechaFin: [''],
@@ -473,7 +478,7 @@ export class ReporteIngresosComponent implements OnInit {
     let sheetName = 'Datos';
     let colWidths: any[] = [];
 
-    const barberiaNombre = 'Cristian barberShop';
+    const barberiaNombre = this.usuarioLogueado?.nombre || 'Reporte Empresarial';
 
     const fechaColombia = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',
@@ -745,7 +750,7 @@ export class ReporteIngresosComponent implements OnInit {
     let headers: string[] = [];
     let keys: string[] = [];
 
-    const barberiaNombre = 'Cristian barberShop';
+    const barberiaNombre = this.usuarioLogueado?.nombre || 'Reporte Empresarial';
 
     const fechaColombia = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',
@@ -907,12 +912,37 @@ export class ReporteIngresosComponent implements OnInit {
     const doc = new jsPDF();
 
     const logo = new Image();
+    logo.crossOrigin = 'Anonymous';
 
-    logo.src = 'assets/sede.png';
+    const logoUrl = this.usuarioLogueado?.empresaLogo && this.usuarioLogueado.empresaLogo !== '' 
+      ? this.usuarioLogueado.empresaLogo 
+      : 'assets/sede.png';
+
+    logo.src = logoUrl;
+
+    const fallbackLogo = () => {
+      const fallbackImage = new Image();
+      fallbackImage.src = 'assets/sede.png';
+      fallbackImage.onload = () => {
+        doc.addImage(fallbackImage, 'PNG', 14, 10, 30, 15);
+        renderPdfContent();
+      };
+    };
 
     logo.onload = () => {
+      try {
+        doc.addImage(logo, 'PNG', 14, 10, 30, 15);
+        renderPdfContent();
+      } catch (e) {
+        fallbackLogo();
+      }
+    };
+    
+    logo.onerror = () => {
+      fallbackLogo();
+    };
 
-      doc.addImage(logo, 'PNG', 14, 10, 30, 15);
+    const renderPdfContent = () => {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
@@ -1138,8 +1168,8 @@ export class ReporteIngresosComponent implements OnInit {
         doc.save(fileName);
       }
 
+    // === END RENDER PDF CONTENT ===
     };
-
   }
 
 }

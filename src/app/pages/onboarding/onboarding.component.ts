@@ -105,8 +105,8 @@ export class OnboardingComponent implements OnInit {
         ===================================================== */
 
         this.authService.login({
-          correo: formData.usuario.correo,
-          password: formData.usuario.password
+          correo: formValues.usuario.correo,
+          password: formValues.usuario.password
         }).subscribe({
 
           next: (loginResp) => {

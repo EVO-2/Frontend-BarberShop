@@ -12,6 +12,7 @@ import {
 import { Router } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 import { AuthService } from 'src/app/auth/auth.service';
 
@@ -133,6 +134,36 @@ export class OnboardingComponent implements OnInit {
           'Error de Registro'
         );
       }
+    });
+  }
+
+  openTermsDialog(event: Event): void {
+    event.preventDefault();
+    Swal.fire({
+      title: 'Términos y Política de Privacidad',
+      html: `
+        <div style="text-align: left; font-size: 0.95rem; line-height: 1.5; color: #444;">
+          <h4 style="margin-top: 0; color: #222;">Tratamiento de Datos Personales (Ley 1581 de 2012 - Habeas Data)</h4>
+          <p>Al aceptar estos términos, usted autoriza de manera voluntaria, previa, explícita, informada e inequívoca a <strong>BarberSaaS</strong> para tratar sus datos personales de acuerdo con la Ley 1581 de 2012 y sus decretos reglamentarios.</p>
+          
+          <h5 style="color: #222; margin-bottom: 0.5rem;">Finalidad del Tratamiento:</h5>
+          <ul style="margin-top: 0;">
+            <li>Registro y administración de su cuenta en la plataforma.</li>
+            <li>Gestión de citas y notificaciones de los servicios.</li>
+            <li>Envío de información comercial, publicitaria y promocional.</li>
+            <li>Fines estadísticos y mejora continua del servicio.</li>
+          </ul>
+          
+          <h5 style="color: #222; margin-bottom: 0.5rem;">Derechos del Titular:</h5>
+          <p style="margin-top: 0;">Como titular de sus datos personales, usted tiene derecho a conocer, actualizar, rectificar y suprimir su información, así como a revocar la autorización otorgada, conforme a la ley aplicable.</p>
+          
+          <p style="margin-bottom: 0;">Nos comprometemos a proteger su privacidad y mantener estricta confidencialidad de su información mediante medidas de seguridad adecuadas.</p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#e6b17e',
+      width: '600px'
     });
   }
 }

@@ -10,6 +10,8 @@ import { BiometricService } from '../../services/biometric.service';
 // ✅ Animaciones Angular
 import { trigger, transition, style, animate } from '@angular/animations';
 
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -32,6 +34,7 @@ export class LoginComponent {
   hidePassword = true;
   errorLogin: string = '';
   biometricAvailable = false;
+  empresaLogo: string = 'assets/sede.png';
 
   constructor(
     private fb: FormBuilder,
@@ -48,9 +51,29 @@ export class LoginComponent {
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)
       ]]
     });
+
+    this.form.get('correo')?.valueChanges.pipe(
+      debounceTime(600),
+      distinctUntilChanged()
+    ).subscribe(email => {
+      if (this.form.get('correo')?.valid && email) {
+        this.authService.verificarLogo(email).subscribe({
+          next: (res) => {
+            this.empresaLogo = res.logo || 'assets/sede.png';
+            localStorage.setItem('last_empresa_logo', this.empresaLogo);
+          },
+          error: () => {}
+        });
+      }
+    });
   }
 
   async ngOnInit() {
+
+    const lastLogo = localStorage.getItem('last_empresa_logo');
+    if (lastLogo) {
+      this.empresaLogo = lastLogo;
+    }
 
     // 🔌 Ping backend
     const urlPing = this.authService.apiUrl.replace('/api/auth', '');

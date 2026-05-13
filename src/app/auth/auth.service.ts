@@ -89,6 +89,10 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/verificar-correo`, { correo: email });
   }
 
+  verificarLogo(email: string): Observable<{ logo: string }> {
+    return this.http.post<{ logo: string }>(`${this.apiUrl}/verificar-logo`, { correo: email });
+  }
+
   cerrarSesion(): void {
 
     localStorage.removeItem('token');

@@ -10,31 +10,35 @@
 
 .header {
   margin-bottom: 50px;
-  
+
   h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2.8rem;
+    font-weight: 800;
     margin-bottom: 15px;
-    background: linear-gradient(135deg, #FFD700, #FDB931);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #a0aec0;
+    /* Color dorado sólido para evitar cortes en las letras */
+    text-shadow: 0px 4px 10px rgba(255, 215, 0, 0.2);
+    line-height: 1.3;
+    padding-bottom: 10px;
   }
-  
+
   p {
     font-size: 1.1rem;
-    color: #a0aec0;
+    color: #585f68;
     max-width: 600px;
     margin: 0 auto 20px;
+    font-weight: 500;
   }
 
   .estado-actual {
-    font-size: 0.9rem;
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.05);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.4);
     display: inline-block;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
 
     .badge {
       font-weight: bold;
@@ -42,9 +46,19 @@
       border-radius: 4px;
       margin-left: 8px;
 
-      &.trial { color: #f6e05e; }
-      &.activa { color: #48bb78; }
-      &.vencida, &.suspendida, &.cancelada { color: #f56565; }
+      &.trial {
+        color: #f6e05e;
+      }
+
+      &.activa {
+        color: #48bb78;
+      }
+
+      &.vencida,
+      &.suspendida,
+      &.cancelada {
+        color: #f56565;
+      }
     }
   }
 }
@@ -186,20 +200,36 @@
 .wompi-banner {
   margin-top: 40px;
   text-align: center;
-  
+  background: rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: 12px;
+  display: inline-block;
+
   p {
-    font-size: 0.85rem;
-    color: #a0aec0;
-    margin-bottom: 10px;
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-bottom: 5px;
+    font-weight: 500;
   }
 
-  img {
-    height: 30px;
-    opacity: 0.8;
-    transition: opacity 0.3s;
+  .wompi-text {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #004481;
+    /* Color oficial de Wompi / Bancolombia */
+    background: #fff;
+    padding: 4px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    letter-spacing: -1px;
 
-    &:hover {
-      opacity: 1;
+    span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #333;
+      vertical-align: middle;
+      margin-left: 5px;
+      letter-spacing: 0;
     }
   }
 }
@@ -207,7 +237,7 @@
 @media (max-width: 768px) {
   .plan-card.recomendado {
     transform: scale(1);
-    
+
     &:hover {
       transform: translateY(-5px);
     }

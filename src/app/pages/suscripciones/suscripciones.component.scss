@@ -1,0 +1,215 @@
+.suscripciones-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 50px;
+  
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #FFD700, #FDB931);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: #a0aec0;
+    max-width: 600px;
+    margin: 0 auto 20px;
+  }
+
+  .estado-actual {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .badge {
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+
+      &.trial { color: #f6e05e; }
+      &.activa { color: #48bb78; }
+      &.vencida, &.suspendida, &.cancelada { color: #f56565; }
+    }
+  }
+}
+
+.planes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.plan-card {
+  background: rgba(26, 32, 44, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 40px 30px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-align: left;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  &.recomendado {
+    background: rgba(45, 55, 72, 0.8);
+    border: 1px solid #FFD700;
+    transform: scale(1.05);
+
+    &:hover {
+      transform: scale(1.05) translateY(-10px);
+    }
+  }
+
+  .recomendado-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #FFD700, #FDB931);
+    color: #1a202c;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 6px 16px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  }
+
+  .plan-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+
+    .plan-nombre {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #cbd5e0;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .plan-precio {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+
+      span {
+        font-size: 1rem;
+        color: #a0aec0;
+        font-weight: 500;
+      }
+    }
+
+    .plan-desc {
+      font-size: 0.9rem;
+      color: #a0aec0;
+      min-height: 40px;
+    }
+  }
+
+  .plan-caracteristicas {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+
+      ion-icon {
+        color: #48bb78;
+        font-size: 1.2rem;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .btn-seleccionar {
+    width: 100%;
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #FFD700, #FDB931);
+      color: #1a202c;
+      border: none;
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.wompi-banner {
+  margin-top: 40px;
+  text-align: center;
+  
+  p {
+    font-size: 0.85rem;
+    color: #a0aec0;
+    margin-bottom: 10px;
+  }
+
+  img {
+    height: 30px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .plan-card.recomendado {
+    transform: scale(1);
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+}

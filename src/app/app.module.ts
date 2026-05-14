@@ -58,6 +58,7 @@ import { HistorialComponent } from './pages/historial/historial.component';
 // ======= 🚀 SaaS Onboarding =======
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscripcion-vencida.component';
+import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.component';
 
 @NgModule({
   declarations: [
@@ -104,7 +105,8 @@ import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscrip
 
     // 🚀 SaaS Onboarding
     OnboardingComponent,
-    SuscripcionVencidaComponent
+    SuscripcionVencidaComponent,
+    SuscripcionesComponent
   ],
   imports: [
     BrowserModule,

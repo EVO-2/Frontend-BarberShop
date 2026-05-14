@@ -1,0 +1,43 @@
+<div class="suscripciones-container">
+  <div class="header">
+    <h1>Elige tu Plan de Crecimiento</h1>
+    <p>Mejora tu barbería con nuestras herramientas avanzadas. Cancela en cualquier momento.</p>
+    
+    <div class="estado-actual" *ngIf="suscripcionEstado">
+      Estado de tu cuenta: 
+      <span class="badge" [ngClass]="suscripcionEstado">{{ suscripcionEstado | uppercase }}</span>
+    </div>
+  </div>
+
+  <div class="planes-grid">
+    <div class="plan-card" *ngFor="let plan of planes" [class.recomendado]="plan.recomendado">
+      <div class="recomendado-badge" *ngIf="plan.recomendado">MÁS POPULAR</div>
+      
+      <div class="plan-header">
+        <h2 class="plan-nombre">{{ plan.nombre }}</h2>
+        <div class="plan-precio">{{ plan.precioStr }}<span>/mes</span></div>
+        <p class="plan-desc">{{ plan.descripcion }}</p>
+      </div>
+
+      <ul class="plan-caracteristicas">
+        <li *ngFor="let item of plan.caracteristicas">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          {{ item }}
+        </li>
+      </ul>
+
+      <button 
+        class="btn-seleccionar" 
+        [class.btn-primary]="plan.recomendado" 
+        [disabled]="cargando"
+        (click)="iniciarPago(plan)">
+        {{ cargando ? 'Procesando...' : 'Elegir ' + plan.nombre }}
+      </button>
+    </div>
+  </div>
+
+  <div class="wompi-banner">
+    <p>Pagos 100% seguros procesados por</p>
+    <img src="https://wompi.com/wp-content/uploads/2021/02/Logo-Wompi-Horizontal.svg" alt="Wompi by Bancolombia">
+  </div>
+</div>

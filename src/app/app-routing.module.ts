@@ -33,6 +33,7 @@ import { HistorialComponent } from './pages/historial/historial.component';
 // 🚀 SaaS Onboarding
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscripcion-vencida.component';
+import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -145,6 +146,12 @@ const routes: Routes = [
       {
         path: 'auditoria',
         component: HistorialComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      },
+      {
+        path: 'suscripciones',
+        component: SuscripcionesComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
       }

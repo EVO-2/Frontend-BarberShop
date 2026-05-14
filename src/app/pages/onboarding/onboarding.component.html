@@ -1,13 +1,13 @@
 <div class="onboarding-container">
   <div class="overlay"></div>
-  
+
   <div class="glass-card">
     <!-- Header -->
     <div class="brand-header">
       <div class="logo">
         <ion-icon name="cut-outline"></ion-icon>
       </div>
-      <h2>BarberSaaS</h2>
+      <h2>Style Manager</h2>
       <p>Lleva tu barbería al siguiente nivel</p>
     </div>
 
@@ -20,7 +20,7 @@
 
     <!-- Formulario -->
     <form [formGroup]="onboardingForm" (ngSubmit)="registrarSaaS()" class="onboarding-form">
-      
+
       <!-- Sección: Datos del Negocio -->
       <div class="section-title">
         <ion-icon name="business-outline"></ion-icon>
@@ -31,7 +31,8 @@
         <div class="input-field">
           <label>Nombre de la Barbería</label>
           <input type="text" formControlName="nombre" placeholder="Ej. The Gentleman's Barbershop" />
-          <span class="error-msg" *ngIf="onboardingForm.get('empresa.nombre')?.invalid && onboardingForm.get('empresa.nombre')?.touched">
+          <span class="error-msg"
+            *ngIf="onboardingForm.get('empresa.nombre')?.invalid && onboardingForm.get('empresa.nombre')?.touched">
             El nombre es obligatorio (mín. 3 letras)
           </span>
         </div>
@@ -73,7 +74,8 @@
         <div class="input-field">
           <label>Tu Nombre Completo</label>
           <input type="text" formControlName="nombre" placeholder="Juan Pérez" />
-          <span class="error-msg" *ngIf="onboardingForm.get('usuario.nombre')?.invalid && onboardingForm.get('usuario.nombre')?.touched">
+          <span class="error-msg"
+            *ngIf="onboardingForm.get('usuario.nombre')?.invalid && onboardingForm.get('usuario.nombre')?.touched">
             Tu nombre es obligatorio
           </span>
         </div>
@@ -82,7 +84,8 @@
           <div class="input-field">
             <label>Correo Electrónico</label>
             <input type="email" formControlName="correo" placeholder="juan@barberia.com" />
-            <span class="error-msg" *ngIf="onboardingForm.get('usuario.correo')?.invalid && onboardingForm.get('usuario.correo')?.touched">
+            <span class="error-msg"
+              *ngIf="onboardingForm.get('usuario.correo')?.invalid && onboardingForm.get('usuario.correo')?.touched">
               Ingresa un correo válido
             </span>
           </div>
@@ -90,14 +93,16 @@
           <div class="input-field">
             <label>Contraseña Maestra</label>
             <input type="password" formControlName="password" placeholder="Ej. Barber@2026!" />
-            <ng-container *ngIf="onboardingForm.get('usuario.password')?.invalid && onboardingForm.get('usuario.password')?.touched">
+            <ng-container
+              *ngIf="onboardingForm.get('usuario.password')?.invalid && onboardingForm.get('usuario.password')?.touched">
               <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.errors?.['required']">
                 La contraseña es obligatoria.
               </span>
               <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.errors?.['minlength']">
                 Debe tener al menos 8 caracteres.
               </span>
-              <span class="error-msg" *ngIf="onboardingForm.get('usuario.password')?.errors?.['pattern'] && !onboardingForm.get('usuario.password')?.errors?.['minlength']">
+              <span class="error-msg"
+                *ngIf="onboardingForm.get('usuario.password')?.errors?.['pattern'] && !onboardingForm.get('usuario.password')?.errors?.['minlength']">
                 Debe tener mayúscula, minúscula, número y carácter especial.
               </span>
             </ng-container>
@@ -110,7 +115,8 @@
         <label class="custom-checkbox">
           <input type="checkbox" formControlName="terminos" />
           <span class="checkmark"></span>
-          Acepto los <a href="javascript:void(0)" (click)="openTermsDialog($event)">Términos de Servicio y Política de Privacidad (Ley de Habeas Data)</a>
+          Acepto los <a href="javascript:void(0)" (click)="openTermsDialog($event)">Términos de Servicio y Política de
+            Privacidad (Ley de Habeas Data)</a>
         </label>
       </div>
 

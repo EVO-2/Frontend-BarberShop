@@ -78,7 +78,9 @@
               "jspdf",
               "raf",
               "rgbcolor",
-              "pusher-js"
+              "pusher-js",
+              "core-js",
+              "sweetalert2"
             ]
           },
           "configurations": {

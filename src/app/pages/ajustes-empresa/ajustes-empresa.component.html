@@ -1,0 +1,48 @@
+<div class="page-container">
+  <div class="header-actions">
+    <h1>Ajustes de la Empresa</h1>
+    <p>Administra la apertura y cierre del agendamiento de citas.</p>
+  </div>
+
+  <mat-card class="settings-card" *ngIf="!loading">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="header-icon">storefront</mat-icon>
+      <mat-card-title>Control de Agendamiento</mat-card-title>
+      <mat-card-subtitle>Abre o cierra la posibilidad de que los clientes agenden citas</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content class="mt-4">
+      <div class="toggle-container">
+        <mat-slide-toggle [(ngModel)]="estadoAgendamiento.agendamientoAbierto" color="primary">
+          <span class="toggle-label" [class.abierto]="estadoAgendamiento.agendamientoAbierto" [class.cerrado]="!estadoAgendamiento.agendamientoAbierto">
+            {{ estadoAgendamiento.agendamientoAbierto ? 'Agendamiento Abierto' : 'Agendamiento Cerrado' }}
+          </span>
+        </mat-slide-toggle>
+        <p class="hint-text mt-2">
+          Cuando está cerrado, los clientes no podrán seleccionar servicios ni agendar citas. Recibirán un mensaje notificando el cierre.
+        </p>
+      </div>
+
+      <div class="message-container" *ngIf="!estadoAgendamiento.agendamientoAbierto">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Mensaje para los clientes</mat-label>
+          <textarea matInput rows="3" [(ngModel)]="estadoAgendamiento.mensajeCierre" placeholder="Ej: El agendamiento está cerrado por remodelación..."></textarea>
+          <mat-hint>Este mensaje se mostrará a los clientes cuando intenten agendar.</mat-hint>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end" class="p-4">
+      <button mat-flat-button color="primary" (click)="guardarCambios()" [disabled]="saving">
+        <mat-icon *ngIf="!saving">save</mat-icon>
+        <mat-icon *ngIf="saving" class="spin-icon">autorenew</mat-icon>
+        {{ saving ? 'Guardando...' : 'Guardar Cambios' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <div *ngIf="loading" class="loading-state">
+    <mat-icon class="spin-icon">autorenew</mat-icon>
+    <p>Cargando ajustes...</p>
+  </div>
+</div>

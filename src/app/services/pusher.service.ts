@@ -14,6 +14,7 @@ export class PusherService {
 
   // Emisor de eventos para que los componentes se suscriban
   public pagoReportado$ = new Subject<any>();
+  public agendamientoEstado$ = new Subject<{agendamientoAbierto: boolean, mensajeCierre: string}>();
 
   constructor(
     private toastr: ToastrService,
@@ -38,6 +39,25 @@ export class PusherService {
 
     // Escuchar pagos confirmados
     this.escucharPagosConfirmados();
+
+    // Escuchar estados de agendamiento
+    this.escucharEstadoAgendamiento();
+  }
+
+  private escucharEstadoAgendamiento() {
+    this.channel.bind('agendamiento-cerrado', (data: any) => {
+      const miUsuario = this.authService.getUsuarioActual();
+      if (miUsuario?.empresaId && data.empresaId && String(miUsuario.empresaId) === String(data.empresaId)) {
+        this.agendamientoEstado$.next({ agendamientoAbierto: false, mensajeCierre: data.mensaje });
+      }
+    });
+
+    this.channel.bind('agendamiento-abierto', (data: any) => {
+      const miUsuario = this.authService.getUsuarioActual();
+      if (miUsuario?.empresaId && data.empresaId && String(miUsuario.empresaId) === String(data.empresaId)) {
+        this.agendamientoEstado$.next({ agendamientoAbierto: true, mensajeCierre: '' });
+      }
+    });
   }
 
   private escucharNuevasCitas() {

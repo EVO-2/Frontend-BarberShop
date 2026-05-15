@@ -1,0 +1,105 @@
+.page-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .header-actions {
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    p {
+      color: #6b7280;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .settings-card {
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    .header-icon {
+      background-color: rgba(79, 70, 229, 0.1);
+      color: #4f46e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-container {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background-color: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+
+      .toggle-label {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-left: 0.5rem;
+
+        &.abierto {
+          color: #10b981;
+        }
+
+        &.cerrado {
+          color: #ef4444;
+        }
+      }
+
+      .hint-text {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        margin-bottom: 0;
+      }
+    }
+
+    .message-container {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+  }
+
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: #6b7280;
+
+    mat-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      margin-bottom: 1rem;
+      color: #4f46e5;
+    }
+  }
+
+  .spin-icon {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

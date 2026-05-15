@@ -1,4 +1,17 @@
-<form [formGroup]="reservarForm" (ngSubmit)="reservarCita()" class="reserva-form">
+<div *ngIf="cargandoEstado" class="loading-state">
+  <mat-spinner diameter="40"></mat-spinner>
+  <p>Verificando estado del agendamiento...</p>
+</div>
+
+<div *ngIf="!cargandoEstado && !estadoAgendamiento?.agendamientoAbierto" class="closed-state">
+  <div class="closed-content">
+    <mat-icon class="closed-icon">event_busy</mat-icon>
+    <h2>Agendamiento Cerrado</h2>
+    <p>{{ estadoAgendamiento?.mensajeCierre }}</p>
+  </div>
+</div>
+
+<form *ngIf="!cargandoEstado && estadoAgendamiento?.agendamientoAbierto" [formGroup]="reservarForm" (ngSubmit)="reservarCita()" class="reserva-form">
 
   <!-- Cliente (solo si rol es admin) -->
   <mat-form-field appearance="fill" class="full-width" *ngIf="esAdmin">

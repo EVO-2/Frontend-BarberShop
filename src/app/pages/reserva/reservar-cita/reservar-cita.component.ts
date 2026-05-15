@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ReservaService } from 'src/app/shared/services/reserva.service';
@@ -7,6 +7,9 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ServicioCardDialogComponent } from 'src/app/shared/components/servicio-card-dialog/servicio-card-dialog.component';
 import { environment } from 'src/environments/environment';
+import { EmpresaService, AgendamientoEstado } from 'src/app/core/services/empresa.service';
+import { PusherService } from 'src/app/services/pusher.service';
+import { Subscription } from 'rxjs';
 
 interface PeluqueroDropdownItem {
   _id: string;
@@ -23,7 +26,7 @@ interface PeluqueroDropdownItem {
   templateUrl: './reservar-cita.component.html',
   styleUrls: ['./reservar-cita.component.scss']
 })
-export class ReservarCitaComponent implements OnInit {
+export class ReservarCitaComponent implements OnInit, OnDestroy {
 
   reservarForm!: FormGroup;
 
@@ -60,6 +63,9 @@ export class ReservarCitaComponent implements OnInit {
   private ultimaHora: string | null = null;
   private ultimaSedeId: string | null = null;
 
+  estadoAgendamiento: AgendamientoEstado | null = null;
+  cargandoEstado = true;
+  private pusherSub!: Subscription;
 
   private servicioIdFromQuery: string | null = null;
 
@@ -69,7 +75,9 @@ export class ReservarCitaComponent implements OnInit {
     private snackBar: MatSnackBar,
     private authService: AuthService,
     private dialog: MatDialog,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private empresaService: EmpresaService,
+    private pusherService: PusherService
   ) { }
 
   ngOnInit(): void {
@@ -82,6 +90,8 @@ export class ReservarCitaComponent implements OnInit {
     this.route.queryParams.subscribe((params: any) => {
       this.servicioIdFromQuery = params['servicioId'] || null;
     });
+
+    this.verificarEstadoAgendamiento();
 
     this.initForm();
     this.cargarDatos();
@@ -106,6 +116,43 @@ export class ReservarCitaComponent implements OnInit {
       const sedeSeleccionada = this.ctrl('sede')?.value;
       if (sedeSeleccionada) {
         this.actualizarPeluquerosCompatibles(sedeSeleccionada);
+      }
+    });
+
+    this.pusherSub = this.pusherService.agendamientoEstado$.subscribe(estado => {
+      this.estadoAgendamiento = {
+        agendamientoAbierto: estado.agendamientoAbierto,
+        mensajeCierre: estado.mensajeCierre
+      };
+      
+      if (!estado.agendamientoAbierto && this.rolUsuario !== 'admin') {
+        this.snackBar.open('El agendamiento ha sido cerrado por el administrador.', 'OK', { duration: 5000 });
+      } else if (estado.agendamientoAbierto) {
+        this.snackBar.open('El agendamiento ha sido abierto nuevamente.', 'OK', { duration: 5000 });
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.pusherSub) {
+      this.pusherSub.unsubscribe();
+    }
+  }
+
+  private verificarEstadoAgendamiento(): void {
+    this.empresaService.obtenerEstadoAgendamiento().subscribe({
+      next: (res) => {
+        this.estadoAgendamiento = {
+          agendamientoAbierto: res.agendamientoAbierto,
+          mensajeCierre: res.mensajeCierre
+        };
+        this.cargandoEstado = false;
+      },
+      error: (err) => {
+        console.error('Error al obtener estado de agendamiento', err);
+        // Fallback a true si falla
+        this.estadoAgendamiento = { agendamientoAbierto: true, mensajeCierre: '' };
+        this.cargandoEstado = false;
       }
     });
   }

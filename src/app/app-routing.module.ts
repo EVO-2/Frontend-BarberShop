@@ -154,6 +154,12 @@ const routes: Routes = [
         component: SuscripcionesComponent,
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
+      },
+      {
+        path: 'ajustes-empresa',
+        loadComponent: () => import('./pages/ajustes-empresa/ajustes-empresa.component').then(m => m.AjustesEmpresaComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       }
     ]
   },

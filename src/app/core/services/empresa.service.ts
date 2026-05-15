@@ -13,7 +13,7 @@ export interface AgendamientoEstado {
 })
 export class EmpresaService {
 
-  private apiUrl = `${environment.apiUrl}/api/empresa`;
+  private apiUrl = `${environment.apiUrl}/empresa`;
 
   constructor(private http: HttpClient) { }
 

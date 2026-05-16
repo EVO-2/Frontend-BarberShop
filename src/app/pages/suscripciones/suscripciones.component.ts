@@ -91,7 +91,7 @@ export class SuscripcionesComponent implements OnInit {
 
   iniciarPago(plan: any) {
     this.cargando = true;
-    const referencia = `SUB-${this.empresaId}-${Date.now()}`;
+    const referencia = `SUB-${this.empresaId}-${plan.nombre}-${Date.now()}`;
     const monto_en_centavos = plan.precio * 100;
     const moneda = 'COP';
 

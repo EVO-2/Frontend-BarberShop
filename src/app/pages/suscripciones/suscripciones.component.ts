@@ -21,12 +21,12 @@ export class SuscripcionesComponent implements OnInit {
   planes = [
     {
       nombre: 'BÁSICO',
-      precio: 35000,
-      precioStr: '$35.000',
+      precio: 45000,
+      precioStr: '$45.000',
       descripcion: 'Ideal para barberías pequeñas.',
       caracteristicas: [
-        'Hasta 3 barberos',
-        'Agenda de citas básica',
+        'Hasta 3 profesionales',
+        'Logo de empresa dinámico',
         'Gestión de clientes',
         'Soporte por email'
       ],
@@ -34,12 +34,12 @@ export class SuscripcionesComponent implements OnInit {
     },
     {
       nombre: 'PRO',
-      precio: 75000,
-      precioStr: '$75.000',
+      precio: 89000,
+      precioStr: '$89.000',
       descripcion: 'Para barberías en crecimiento.',
       caracteristicas: [
-        'Hasta 10 barberos',
-        'Agenda avanzada y reportes',
+        'Hasta 10 profesionales',
+        'Reportes con tu propia marca',
         'Gestión de inventario',
         'Soporte prioritario'
       ],
@@ -47,12 +47,12 @@ export class SuscripcionesComponent implements OnInit {
     },
     {
       nombre: 'PREMIUM',
-      precio: 120000,
-      precioStr: '$120.000',
+      precio: 150000,
+      precioStr: '$150.000',
       descripcion: 'El paquete completo con automatización.',
       caracteristicas: [
-        'Barberos ilimitados',
-        'Múltiples sucursales',
+        'Profesionales ilimitados',
+        'Múltiples sucursales (Marca Blanca)',
         'Bot de WhatsApp para citas',
         'Soporte 24/7'
       ],

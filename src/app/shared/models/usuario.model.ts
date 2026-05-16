@@ -12,6 +12,7 @@ export interface Usuario {
   foto?: string;
   estado?: boolean;
   empresaLogo?: string;
+  empresaNombre?: string;
 
   permisos?: string[];
   cliente?: Cliente | string | null;

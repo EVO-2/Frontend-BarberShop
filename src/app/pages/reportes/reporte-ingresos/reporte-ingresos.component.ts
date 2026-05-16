@@ -478,7 +478,7 @@ export class ReporteIngresosComponent implements OnInit {
     let sheetName = 'Datos';
     let colWidths: any[] = [];
 
-    const barberiaNombre = this.usuarioLogueado?.nombre || 'Reporte Empresarial';
+    const barberiaNombre = this.usuarioLogueado?.empresaNombre || 'Reporte Empresarial';
 
     const fechaColombia = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',
@@ -750,7 +750,7 @@ export class ReporteIngresosComponent implements OnInit {
     let headers: string[] = [];
     let keys: string[] = [];
 
-    const barberiaNombre = this.usuarioLogueado?.nombre || 'Reporte Empresarial';
+    const barberiaNombre = this.usuarioLogueado?.empresaNombre || 'Reporte Empresarial';
 
     const fechaColombia = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',

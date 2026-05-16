@@ -272,7 +272,19 @@ export class UsuarioDialogComponent implements OnInit {
       })
     ).subscribe({
       next: () => this.dialogRef.close(true),
-      error: (err) => console.error(`❌ Error al ${this.modo === 'crear' ? 'crear' : 'actualizar'} usuario:`, err)
+      error: (err) => {
+        console.error(`❌ Error al ${this.modo === 'crear' ? 'crear' : 'actualizar'} usuario:`, err);
+        const backendError = err.error?.error || err.error?.msg || err.error?.mensaje || 'Error al procesar la solicitud.';
+        
+        import('sweetalert2').then(Swal => {
+          Swal.default.fire({
+            title: 'Acción Denegada',
+            text: backendError,
+            icon: 'warning',
+            confirmButtonColor: '#e6b17e'
+          });
+        });
+      }
     });
   }
 

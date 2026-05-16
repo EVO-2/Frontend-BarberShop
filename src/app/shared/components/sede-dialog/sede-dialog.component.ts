@@ -73,7 +73,17 @@ export class SedeDialogComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Error al guardar sede:', err);
-        this.snack.open('Error al guardar la sede', 'Cerrar', { duration: 3000 });
+        const backendError = err.error?.mensaje || err.error?.error || err.error?.msg || 'Error al guardar la sede';
+        
+        import('sweetalert2').then(Swal => {
+          Swal.default.fire({
+            title: 'Acción Denegada',
+            text: backendError,
+            icon: 'warning',
+            confirmButtonColor: '#e6b17e'
+          });
+        });
+        
         this.cargando = false;
       },
     });

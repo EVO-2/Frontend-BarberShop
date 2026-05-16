@@ -6,8 +6,14 @@ import {
 import {
   FormBuilder,
   FormGroup,
-  Validators
+  Validators,
+  AbstractControl,
+  AsyncValidatorFn,
+  ValidationErrors
 } from '@angular/forms';
+
+import { Observable, of, timer } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 
 import { Router } from '@angular/router';
 
@@ -39,14 +45,14 @@ export class OnboardingComponent implements OnInit {
     this.onboardingForm = this.fb.group({
 
       empresa: this.fb.group({
-        nombre: ['', [Validators.required, Validators.minLength(3)]],
+        nombre: ['', [Validators.required, Validators.minLength(3)], [this.validarEmpresaUnica()]],
         telefono: ['', Validators.required],
         direccion: ['', Validators.required]
       }),
 
       usuario: this.fb.group({
         nombre: ['', [Validators.required, Validators.minLength(3)]],
-        correo: ['', [Validators.required, Validators.email]],
+        correo: ['', [Validators.required, Validators.email], [this.validarCorreoUnico()]],
         password: ['', [
           Validators.required, 
           Validators.minLength(8),
@@ -56,6 +62,29 @@ export class OnboardingComponent implements OnInit {
 
       terminos: [false, Validators.requiredTrue]
     });
+  }
+
+  validarEmpresaUnica(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value) return of(null);
+      // debounce de 500ms
+      return timer(500).pipe(
+        switchMap(() => this.authService.verificarEmpresa(control.value)),
+        map(res => (res.disponible ? null : { empresaDuplicada: true })),
+        catchError(() => of(null))
+      );
+    };
+  }
+
+  validarCorreoUnico(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value) return of(null);
+      return timer(500).pipe(
+        switchMap(() => this.authService.verificarCorreoOnboarding(control.value)),
+        map(res => (res.disponible ? null : { correoDuplicado: true })),
+        catchError(() => of(null))
+      );
+    };
   }
 
   ngOnInit(): void { }

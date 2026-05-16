@@ -85,6 +85,14 @@ export class AuthService {
     return this.http.post(`${environment.apiUrl}/onboarding/registrar`, datosOnboarding);
   }
 
+  verificarEmpresa(nombre: string): Observable<{ disponible: boolean }> {
+    return this.http.get<{ disponible: boolean }>(`${environment.apiUrl}/onboarding/check-empresa`, { params: { nombre } });
+  }
+
+  verificarCorreoOnboarding(correo: string): Observable<{ disponible: boolean }> {
+    return this.http.get<{ disponible: boolean }>(`${environment.apiUrl}/onboarding/check-correo`, { params: { correo } });
+  }
+
   verificarCorreo(email: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/verificar-correo`, { correo: email });
   }

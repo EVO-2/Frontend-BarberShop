@@ -32,8 +32,11 @@
           <label>Nombre de la Barbería</label>
           <input type="text" formControlName="nombre" placeholder="Ej. The Gentleman's Barbershop" />
           <span class="error-msg"
-            *ngIf="onboardingForm.get('empresa.nombre')?.invalid && onboardingForm.get('empresa.nombre')?.touched">
+            *ngIf="onboardingForm.get('empresa.nombre')?.hasError('required') && onboardingForm.get('empresa.nombre')?.touched">
             El nombre es obligatorio (mín. 3 letras)
+          </span>
+          <span class="error-msg" *ngIf="onboardingForm.get('empresa.nombre')?.hasError('empresaDuplicada')">
+            Esta barbería ya está registrada.
           </span>
         </div>
 
@@ -85,8 +88,11 @@
             <label>Correo Electrónico</label>
             <input type="email" formControlName="correo" placeholder="juan@barberia.com" />
             <span class="error-msg"
-              *ngIf="onboardingForm.get('usuario.correo')?.invalid && onboardingForm.get('usuario.correo')?.touched">
+              *ngIf="onboardingForm.get('usuario.correo')?.hasError('required') && onboardingForm.get('usuario.correo')?.touched">
               Ingresa un correo válido
+            </span>
+            <span class="error-msg" *ngIf="onboardingForm.get('usuario.correo')?.hasError('correoDuplicado')">
+              Este correo ya está en uso.
             </span>
           </div>
 

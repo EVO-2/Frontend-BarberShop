@@ -8,6 +8,27 @@ export interface AgendamientoEstado {
   mensajeCierre: string;
 }
 
+export interface HorarioDia {
+  _id?: string;
+  dia: 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo';
+  abierto: boolean;
+  apertura: string;
+  cierre: string;
+}
+
+export interface EmpresaInfo {
+  _id?: string;
+  nombre: string;
+  nit?: string;
+  direccion?: string;
+  telefono?: string;
+  email?: string;
+  logo?: string;
+  horarios?: HorarioDia[];
+  agendamientoAbierto?: boolean;
+  mensajeCierre?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,6 +44,14 @@ export class EmpresaService {
 
   cambiarEstadoAgendamiento(estado: AgendamientoEstado): Observable<any> {
     return this.http.put(`${this.apiUrl}/agendamiento-estado`, estado);
+  }
+
+  obtenerInfoEmpresa(): Observable<{ success: boolean, empresa: EmpresaInfo }> {
+    return this.http.get<{ success: boolean, empresa: EmpresaInfo }>(`${this.apiUrl}/info`);
+  }
+
+  actualizarInfoEmpresa(datos: EmpresaInfo): Observable<{ success: boolean, msg: string, empresa: EmpresaInfo }> {
+    return this.http.put<{ success: boolean, msg: string, empresa: EmpresaInfo }>(`${this.apiUrl}/info`, datos);
   }
 
 }

@@ -11,7 +11,7 @@
       </p>
       <div class="contact-inline">
         <mat-icon>location_on</mat-icon>
-        <span>Calle 7 # 64-24 Apt 101</span>
+        <span>{{ direccion }}</span>
       </div>
     </div>
 
@@ -22,15 +22,13 @@
         <li>
           <mat-icon>phone_android</mat-icon>
           <div class="contact-details">
-            <a href="tel:+573104606301">310 460 6301</a>
-            <a href="tel:+573159013979">315 901 3979</a>
+            <a [href]="'tel:' + telefono">{{ telefono }}</a>
           </div>
         </li>
         <li>
           <mat-icon>email</mat-icon>
           <div class="contact-details emails">
-            <a href="mailto:jhonedward.valencia6218@gmail.com">jhonedward.valencia6218&#64;gmail.com</a>
-            <a href="mailto:edwardvalencia6218@hotmail.com">edwardvalencia6218&#64;hotmail.com</a>
+            <a [href]="'mailto:' + email">{{ email }}</a>
           </div>
         </li>
       </ul>
@@ -40,9 +38,10 @@
     <div class="footer-section links-section">
       <h3>Horario de Atención</h3>
       <ul class="schedule-list">
-        <li><span>Lunes - Jueves:</span> <span>9:00 AM - 6:30 PM</span></li>
-        <li><span>Viernes y Sábados:</span> <span>9:00 AM - 8:00 PM</span></li>
-        <li><span>Domingos:</span> <span>10:00 AM - 2:00 PM</span></li>
+        <li *ngFor="let h of obtenerHorariosProcesados()">
+          <span>{{ h.dia }}:</span>
+          <span [class.closed-day]="!h.abierto">{{ h.rango }}</span>
+        </li>
       </ul>
     </div>
 

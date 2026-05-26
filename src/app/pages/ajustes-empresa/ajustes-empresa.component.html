@@ -1,48 +1,168 @@
 <div class="page-container">
   <div class="header-actions">
     <h1>Ajustes de la Empresa</h1>
-    <p>Administra la apertura y cierre del agendamiento de citas.</p>
+    <p>Administra la información comercial, los horarios de atención y el agendamiento de citas.</p>
   </div>
 
-  <mat-card class="settings-card" *ngIf="!loading">
-    <mat-card-header>
-      <mat-icon mat-card-avatar class="header-icon">storefront</mat-icon>
-      <mat-card-title>Control de Agendamiento</mat-card-title>
-      <mat-card-subtitle>Abre o cierra la posibilidad de que los clientes agenden citas</mat-card-subtitle>
-    </mat-card-header>
+  <form [formGroup]="form" (ngSubmit)="guardarCambios()" *ngIf="!loading">
+    <mat-card class="settings-card">
+      
+      <!-- Pestañas de Navegación Premium -->
+      <mat-tab-group color="primary" animationDuration="250ms" class="modern-tabs">
+        
+        <!-- Pestaña 1: Información Corporativa -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">storefront</mat-icon>
+            <span>Información General</span>
+          </ng-template>
+          
+          <div class="tab-content">
+            <div class="form-grid">
+              
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Nombre de la Barbería</mat-label>
+                <input matInput formControlName="nombre" placeholder="Ej: Barbería El JEVO" required />
+                <mat-icon matSuffix>business</mat-icon>
+                <mat-error *ngIf="form.get('nombre')?.hasError('required')">El nombre es obligatorio</mat-error>
+              </mat-form-field>
 
-    <mat-card-content class="mt-4">
-      <div class="toggle-container">
-        <mat-slide-toggle [(ngModel)]="estadoAgendamiento.agendamientoAbierto" color="primary">
-          <span class="toggle-label" [class.abierto]="estadoAgendamiento.agendamientoAbierto" [class.cerrado]="!estadoAgendamiento.agendamientoAbierto">
-            {{ estadoAgendamiento.agendamientoAbierto ? 'Agendamiento Abierto' : 'Agendamiento Cerrado' }}
-          </span>
-        </mat-slide-toggle>
-        <p class="hint-text mt-2">
-          Cuando está cerrado, los clientes no podrán seleccionar servicios ni agendar citas. Recibirán un mensaje notificando el cierre.
-        </p>
-      </div>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>NIT / Identificación Comercial</mat-label>
+                <input matInput formControlName="nit" placeholder="Ej: 123456789-0" />
+                <mat-icon matSuffix>branding_watermark</mat-icon>
+              </mat-form-field>
 
-      <div class="message-container" *ngIf="!estadoAgendamiento.agendamientoAbierto">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Mensaje para los clientes</mat-label>
-          <textarea matInput rows="3" [(ngModel)]="estadoAgendamiento.mensajeCierre" placeholder="Ej: El agendamiento está cerrado por remodelación..."></textarea>
-          <mat-hint>Este mensaje se mostrará a los clientes cuando intenten agendar.</mat-hint>
-        </mat-form-field>
-      </div>
-    </mat-card-content>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Dirección</mat-label>
+                <input matInput formControlName="direccion" placeholder="Ej: Calle 7 # 64-24" />
+                <mat-icon matSuffix>place</mat-icon>
+              </mat-form-field>
 
-    <mat-card-actions align="end" class="p-4">
-      <button mat-flat-button color="primary" (click)="guardarCambios()" [disabled]="saving">
-        <mat-icon *ngIf="!saving">save</mat-icon>
-        <mat-icon *ngIf="saving" class="spin-icon">autorenew</mat-icon>
-        {{ saving ? 'Guardando...' : 'Guardar Cambios' }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Teléfono de Contacto</mat-label>
+                <input matInput formControlName="telefono" placeholder="Ej: 310 460 6301" />
+                <mat-icon matSuffix>phone</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Correo Electrónico</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="Ej: contacto@empresa.com" />
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="form.get('email')?.hasError('email')">Ingresa un correo electrónico válido</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>URL del Logo</mat-label>
+                <input matInput formControlName="logo" placeholder="Ej: assets/sede.png" />
+                <mat-icon matSuffix>image</mat-icon>
+              </mat-form-field>
+
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Pestaña 2: Control de Agendamiento -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">settings_applications</mat-icon>
+            <span>Estado del Agendamiento</span>
+          </ng-template>
+
+          <div class="tab-content">
+            <div class="toggle-container">
+              <mat-slide-toggle formControlName="agendamientoAbierto" color="primary">
+                <span class="toggle-label" [class.abierto]="form.get('agendamientoAbierto')?.value" [class.cerrado]="!form.get('agendamientoAbierto')?.value">
+                  {{ form.get('agendamientoAbierto')?.value ? 'Agendamiento Abierto' : 'Agendamiento Cerrado' }}
+                </span>
+              </mat-slide-toggle>
+              <p class="hint-text mt-2">
+                Cuando está cerrado, los clientes no podrán agendar nuevas citas. Recibirán un mensaje personalizado explicando el motivo.
+              </p>
+            </div>
+
+            <div class="message-container" *ngIf="!form.get('agendamientoAbierto')?.value">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Mensaje de Cierre para los Clientes</mat-label>
+                <textarea matInput rows="3" formControlName="mensajeCierre" placeholder="Ej: Estamos cerrados por remodelación..."></textarea>
+                <mat-hint>Este mensaje se le mostrará a tus clientes al intentar agendar.</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Pestaña 3: Horarios de Atención -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">schedule</mat-icon>
+            <span>Horarios de Atención</span>
+          </ng-template>
+
+          <div class="tab-content">
+            <p class="hint-text mb-4">
+              Define los días laborables y el rango de horario en el cual los clientes pueden agendar sus citas.
+            </p>
+
+            <div formArrayName="horarios" class="schedule-rows-container">
+              <div *ngFor="let h of horariosArray.controls; let i = index" [formGroupName]="i" class="schedule-row">
+                
+                <!-- Día -->
+                <div class="day-cell">
+                  <strong>{{ capitalizar(h.get('dia')?.value) }}</strong>
+                </div>
+
+                <!-- Abierto / Cerrado toggle -->
+                <div class="switch-cell">
+                  <mat-slide-toggle formControlName="abierto" color="primary">
+                    {{ h.get('abierto')?.value ? 'Abierto' : 'Cerrado' }}
+                  </mat-slide-toggle>
+                </div>
+
+                <!-- Selectores de horas (Solo visibles si está abierto) -->
+                <div class="hours-cell" *ngIf="h.get('abierto')?.value">
+                  <mat-form-field appearance="outline" class="hour-select">
+                    <mat-label>Apertura</mat-label>
+                    <mat-select formControlName="apertura">
+                      <mat-option *ngFor="let hora of horas" [value]="hora">{{ hora }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <span class="hour-separator">a</span>
+
+                  <mat-form-field appearance="outline" class="hour-select">
+                    <mat-label>Cierre</mat-label>
+                    <mat-select formControlName="cierre">
+                      <mat-option *ngFor="let hora of horas" [value]="hora">{{ hora }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="hours-cell closed-cell" *ngIf="!h.get('abierto')?.value">
+                  <span class="closed-label">No laborable (Cerrado)</span>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+
+      <!-- Botón de Guardado Único al final de la Tarjeta -->
+      <mat-card-actions align="end" class="p-4 card-actions-footer">
+        <button mat-flat-button color="primary" type="submit" [disabled]="saving || form.invalid" class="btn-save">
+          <mat-icon *ngIf="!saving">save</mat-icon>
+          <mat-icon *ngIf="saving" class="spin-icon">autorenew</mat-icon>
+          {{ saving ? 'Guardando...' : 'Guardar Todos los Ajustes' }}
+        </button>
+      </mat-card-actions>
+      
+    </mat-card>
+  </form>
 
   <div *ngIf="loading" class="loading-state">
     <mat-icon class="spin-icon">autorenew</mat-icon>
-    <p>Cargando ajustes...</p>
+    <p>Cargando ajustes de la empresa...</p>
   </div>
 </div>

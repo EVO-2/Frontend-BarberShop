@@ -148,6 +148,15 @@
       font-weight: 600;
       color: #1e293b;
     }
+
+    span.closed-day {
+      color: #94a3b8 !important;
+      font-weight: 500 !important;
+      font-style: italic;
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
   }
 }
 

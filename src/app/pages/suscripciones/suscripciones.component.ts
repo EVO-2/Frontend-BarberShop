@@ -67,13 +67,13 @@ export class SuscripcionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatosUsuario();
+    this.verificarRetornoPago();
   }
 
   cargarDatosUsuario() {
     const usrStr = localStorage.getItem('usuario');
     if (usrStr) {
       this.usuario = JSON.parse(usrStr);
-      // Asume que la empresaId está en el usuario, pero lo ideal es consultar el perfil
     }
 
     // Consultamos el perfil real para obtener el estado de la empresa
@@ -87,6 +87,16 @@ export class SuscripcionesComponent implements OnInit {
       },
       error: (err) => console.error('Error al obtener perfil', err)
     });
+  }
+
+  verificarRetornoPago() {
+    const params = new URLSearchParams(window.location.search);
+    const transaccionId = params.get('id');
+    if (transaccionId) {
+      this.snackBar.open('Tu pago está siendo procesado por Wompi. La suscripción se activará automáticamente en unos segundos.', 'Cerrar', { duration: 7000 });
+      // Limpiar los query parameters de la URL para estética de la SPA
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }
 
   iniciarPago(plan: any) {
@@ -120,33 +130,24 @@ export class SuscripcionesComponent implements OnInit {
   }
 
   abrirWidgetWompi(plan: any, referencia: string, monto_en_centavos: number, signature: string) {
-    // 2. Obtener la llave pública
+    // 2. Obtener la llave pública del comercio
     this.http.get<any>(`${this.apiUrl}/wompi/keys`).subscribe({
       next: (res) => {
         this.cargando = false;
-        const checkout = new WidgetCheckout({
-          currency: 'COP',
-          amountInCents: monto_en_centavos,
-          reference: referencia,
-          publicKey: res.publicKey,
-          signature: { integrity: signature },
-          redirectUrl: window.location.href, // Redirige aquí mismo tras el pago
-          customerData: {
-            email: this.usuario?.correo,
-            fullName: this.usuario?.nombre
-          }
-        });
-
-        checkout.open((result: any) => {
-          const transaction = result.transaction;
-          if (transaction.status === 'APPROVED') {
-            this.snackBar.open('¡Pago exitoso! Tu suscripción ha sido activada.', 'Cerrar', { duration: 5000 });
-            this.suscripcionEstado = 'activa';
-            this.planActual = plan.nombre;
-          } else {
-            this.snackBar.open(`Transacción ${transaction.status}.`, 'Cerrar', { duration: 5000 });
-          }
-        });
+        
+        // 3. Generar la URL de redirección del checkout de Wompi
+        // Omitimos redirect-url si estamos en localhost para evitar que el Firewall (WAF) de Wompi bloquee con 403
+        const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const redirectParam = esLocal 
+          ? '' 
+          : `&redirect-url=${encodeURIComponent(window.location.origin + '/suscripciones')}`;
+          
+        const checkoutUrl = `https://checkout.wompi.co/p/?public-key=${res.publicKey}&currency=COP&amount-in-cents=${monto_en_centavos}&reference=${referencia}${redirectParam}&signature:integrity=${signature}`;
+        
+        console.log('⚡ Redirigiendo a Wompi Checkout seguro:', checkoutUrl);
+        
+        // Redireccionar al usuario para evitar cualquier error de iframe/scroll
+        window.location.href = checkoutUrl;
       },
       error: (err) => {
         this.cargando = false;

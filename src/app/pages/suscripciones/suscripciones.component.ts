@@ -77,7 +77,7 @@ export class SuscripcionesComponent implements OnInit {
     }
 
     // Consultamos el perfil real para obtener el estado de la empresa
-    this.http.get<any>(`${this.apiUrl}/api/usuarios/perfil`).subscribe({
+    this.http.get<any>(`${this.apiUrl}/usuarios/perfil`).subscribe({
       next: (res) => {
         if (res.usuario && res.usuario.empresaId) {
           this.empresaId = res.usuario.empresaId._id || res.usuario.empresaId;
@@ -91,12 +91,19 @@ export class SuscripcionesComponent implements OnInit {
 
   iniciarPago(plan: any) {
     this.cargando = true;
-    const referencia = `SUB-${this.empresaId}-${plan.nombre}-${Date.now()}`;
+
+    // Sanitizar nombre de plan (remover acentos y convertir a minúsculas, ej: "BÁSICO" -> "basico")
+    const planNombreSeguro = plan.nombre
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+    const referencia = `SUB-${this.empresaId}-${planNombreSeguro}-${Date.now()}`;
     const monto_en_centavos = plan.precio * 100;
     const moneda = 'COP';
 
     // 1. Solicitar firma de integridad al backend
-    this.http.post<any>(`${this.apiUrl}/api/wompi/firma`, {
+    this.http.post<any>(`${this.apiUrl}/wompi/firma`, {
       referencia,
       monto_en_centavos,
       moneda
@@ -114,7 +121,7 @@ export class SuscripcionesComponent implements OnInit {
 
   abrirWidgetWompi(plan: any, referencia: string, monto_en_centavos: number, signature: string) {
     // 2. Obtener la llave pública
-    this.http.get<any>(`${this.apiUrl}/api/wompi/keys`).subscribe({
+    this.http.get<any>(`${this.apiUrl}/wompi/keys`).subscribe({
       next: (res) => {
         this.cargando = false;
         const checkout = new WidgetCheckout({

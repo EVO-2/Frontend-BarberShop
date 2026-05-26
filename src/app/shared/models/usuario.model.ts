@@ -13,6 +13,7 @@ export interface Usuario {
   estado?: boolean;
   empresaLogo?: string;
   empresaNombre?: string;
+  empresaId?: any;
 
   permisos?: string[];
   cliente?: Cliente | string | null;

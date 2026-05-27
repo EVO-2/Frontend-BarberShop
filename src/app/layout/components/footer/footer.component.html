@@ -38,7 +38,7 @@
     <div class="footer-section links-section">
       <h3>Horario de Atención</h3>
       <ul class="schedule-list">
-        <li *ngFor="let h of obtenerHorariosProcesados()">
+        <li *ngFor="let h of horariosProcesados">
           <span>{{ h.dia }}:</span>
           <span [class.closed-day]="!h.abierto">{{ h.rango }}</span>
         </li>

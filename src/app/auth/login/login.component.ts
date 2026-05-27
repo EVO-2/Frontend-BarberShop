@@ -53,27 +53,25 @@ export class LoginComponent {
     });
 
     this.form.get('correo')?.valueChanges.pipe(
-      debounceTime(600),
+      debounceTime(400),
       distinctUntilChanged()
     ).subscribe(email => {
       if (this.form.get('correo')?.valid && email) {
         this.authService.verificarLogo(email).subscribe({
           next: (res) => {
             this.empresaLogo = res.logo || 'assets/sede.png';
-            localStorage.setItem('last_empresa_logo', this.empresaLogo);
           },
-          error: () => {}
+          error: () => {
+            this.empresaLogo = 'assets/sede.png';
+          }
         });
+      } else {
+        this.empresaLogo = 'assets/sede.png';
       }
     });
   }
 
   async ngOnInit() {
-
-    const lastLogo = localStorage.getItem('last_empresa_logo');
-    if (lastLogo) {
-      this.empresaLogo = lastLogo;
-    }
 
     // 🔌 Ping backend
     const urlPing = this.authService.apiUrl.replace('/api/auth', '');

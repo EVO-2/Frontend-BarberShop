@@ -59,6 +59,7 @@ import { HistorialComponent } from './pages/historial/historial.component';
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscripcion-vencida.component';
 import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.component';
+import { LandingComponent } from './pages/landing/landing.component';
 
 @NgModule({
   declarations: [
@@ -106,7 +107,8 @@ import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.comp
     // 🚀 SaaS Onboarding
     OnboardingComponent,
     SuscripcionVencidaComponent,
-    SuscripcionesComponent
+    SuscripcionesComponent,
+    LandingComponent
   ],
   imports: [
     BrowserModule,

@@ -25,6 +25,8 @@ export class FooterComponent implements OnInit {
     { dia: 'domingo', abierto: true, apertura: '10:00', cierre: '14:00' }
   ];
 
+  horariosProcesados: { dia: string, abierto: boolean, rango: string }[] = [];
+
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
@@ -45,6 +47,7 @@ export class FooterComponent implements OnInit {
           }
         }
       }
+      this.procesarHorarios();
     });
   }
 
@@ -53,12 +56,11 @@ export class FooterComponent implements OnInit {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  // Generar lista estilizada y ordenada para el template html
-  obtenerHorariosProcesados(): { dia: string, abierto: boolean, rango: string }[] {
+  procesarHorarios(): void {
     const ordenDias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
     const sorted = [...this.horarios].sort((a, b) => ordenDias.indexOf(a.dia) - ordenDias.indexOf(b.dia));
     
-    return sorted.map(h => {
+    this.horariosProcesados = sorted.map(h => {
       const diaStr = this.capitalizar(h.dia);
       if (!h.abierto) {
         return { dia: diaStr, abierto: false, rango: 'Cerrado' };

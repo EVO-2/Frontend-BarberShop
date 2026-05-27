@@ -1,3 +1,277 @@
-<p>
-  landing works!
-</p>
+<div class="landing-page">
+
+  <!-- 1. NAVBAR COMERCIAL -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="brand">
+        <img src="assets/sede.png" alt="Style Manager Logo" class="logo" />
+        <span class="brand-name">Style Manager</span>
+      </div>
+
+      <!-- Menú Desktop -->
+      <nav class="nav-links">
+        <a href="#" (click)="verCaracteristicas($event)">Características</a>
+        <a href="#" (click)="verPlanes($event)">Planes</a>
+        <a href="#" (click)="verPreguntasFrecuentes($event)">Preguntas Frecuentes</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button mat-button class="btn-login" (click)="irALogin($event)">Iniciar Sesión</button>
+        <button mat-flat-button color="primary" class="btn-cta-nav" (click)="irAOnboarding($event)">Registrar Barbería</button>
+      </div>
+
+      <!-- Botón Hamburguesa Móvil -->
+      <button class="burger-btn" (click)="toggleMenuMovil()" aria-label="Abrir menú">
+        <mat-icon>{{ menuMovilAbierto ? 'close' : 'menu' }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- Menú Colapsable Móvil -->
+    <div class="mobile-menu" [class.open]="menuMovilAbierto">
+      <a href="#" (click)="verCaracteristicas($event)">Características</a>
+      <a href="#" (click)="verPlanes($event)">Planes</a>
+      <a href="#" (click)="verPreguntasFrecuentes($event)">Preguntas Frecuentes</a>
+      <hr class="mobile-divider" />
+      <button mat-button class="btn-login-mob" (click)="irALogin($event)">Iniciar Sesión</button>
+      <button mat-flat-button color="primary" class="btn-cta-mob" (click)="irAOnboarding($event)">Registrar Barbería</button>
+    </div>
+  </header>
+
+  <!-- 2. HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-info">
+        <div class="badge-trial">✨ 14 DÍAS DE PRUEBA GRATIS — SIN TARJETA DE CRÉDITO</div>
+        <h1>Lleva tu Barbería al <span class="gold-text">Siguiente Nivel</span></h1>
+        <p class="hero-desc">
+          La plataforma SaaS todo en uno para digitalizar tu negocio. Agenda citas en tiempo real, administra sucursales, controla tu caja y automatiza recordatorios de clientes con nuestro Bot de WhatsApp exclusivo.
+        </p>
+        <div class="hero-ctas">
+          <button mat-flat-button color="primary" class="cta-primary" (click)="irAOnboarding($event)">
+            Comenzar Prueba Gratis <mat-icon class="ml-1">arrow_forward</mat-icon>
+          </button>
+          <button mat-stroked-button class="cta-secondary" (click)="verPlanes($event)">
+            Ver Planes de Pago
+          </button>
+        </div>
+        <div class="trust-indicators">
+          <span>✔️ Activación Inmediata</span>
+          <span>✔️ Cancela cuando quieras</span>
+          <span>✔️ Soporte 24/7 en Español</span>
+        </div>
+      </div>
+
+      <!-- Mockup Premium del Sistema -->
+      <div class="hero-mockup">
+        <div class="mockup-frame">
+          <div class="mockup-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <div class="mockup-url">dashboard.stylemanager.co/jevo-style</div>
+          </div>
+          <div class="mockup-body">
+            <!-- Representación visual enriquecida y moderna de la App -->
+            <div class="app-sidebar-mock"></div>
+            <div class="app-content-mock">
+              <div class="mock-header">
+                <span class="mock-title">Panel General</span>
+                <span class="mock-badge">PLAN PRO</span>
+              </div>
+              <div class="mock-stats">
+                <div class="stat-card">
+                  <span class="stat-num">$89.000</span>
+                  <span class="stat-label">Ingresos Mensuales</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-num">142</span>
+                  <span class="stat-label">Citas de la semana</span>
+                </div>
+              </div>
+              <div class="mock-chart">
+                <div class="chart-line-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. FEATURES SECTION (CARACTERÍSTICAS) -->
+  <section id="caracteristicas" class="features-section">
+    <div class="section-header">
+      <h2>Diseñado para Impulsar tu Crecimiento</h2>
+      <p>Todo lo que necesitas para automatizar la gestión y brindar una experiencia inolvidable a tus clientes.</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="icon-wrapper">
+          <mat-icon>calendar_today</mat-icon>
+        </div>
+        <h3>Agendamiento Inteligente</h3>
+        <p>Tus clientes agendan sus citas de forma digital en segundos. El sistema bloquea horarios de forma inteligente para evitar cruces.</p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-card gold-border">
+        <div class="icon-wrapper gold-bg">
+          <mat-icon>chat</mat-icon>
+        </div>
+        <h3>Bot de WhatsApp 24/7</h3>
+        <p>Tu propio asistente virtual que responde, agenda, cancela citas y envía recordatorios automáticos por WhatsApp de forma autónoma.</p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="icon-wrapper">
+          <mat-icon>storefront</mat-icon>
+        </div>
+        <h3>Marca Blanca & Multi-Sede</h3>
+        <p>Administra múltiples locales o sucursales desde un único panel maestro, manteniendo tus reportes, logos y personalizaciones.</p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="feature-card">
+        <div class="icon-wrapper">
+          <mat-icon>assessment</mat-icon>
+        </div>
+        <h3>Control Financiero & Caja</h3>
+        <p>Monitorea comisiones de barberos, ingresos diarios, salidas y reportes automatizados al final del día directamente en tu correo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PRICING SECTION (PLANES) -->
+  <section id="precios" class="pricing-section">
+    <div class="section-header">
+      <h2>Planes a la Medida de tu Barbería</h2>
+      <p>Comienza gratis hoy mismo y escala tu plan a medida que tu negocio crezca. Sin sorpresas ni cobros ocultos.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Plan Básico -->
+      <div class="pricing-card">
+        <div class="card-header">
+          <span class="plan-name">BÁSICO</span>
+          <div class="price">$45.000 <span>/ mes</span></div>
+          <p class="plan-desc">Ideal para barberías pequeñas o independientes.</p>
+        </div>
+        <hr class="card-divider" />
+        <ul class="features-list">
+          <li><mat-icon class="check-icon">check</mat-icon> Hasta 3 Profesionales</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Agendamiento Online</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Logo de Empresa dinámico</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Soporte por Correo</li>
+          <li class="disabled"><mat-icon class="close-icon">close</mat-icon> Multi-Sede</li>
+          <li class="disabled"><mat-icon class="close-icon">close</mat-icon> Bot de WhatsApp</li>
+        </ul>
+        <button mat-flat-button class="btn-pricing-cta" (click)="irAOnboarding()">Elegir Plan Básico</button>
+      </div>
+
+      <!-- Plan Pro (Recomendado) -->
+      <div class="pricing-card popular">
+        <div class="popular-badge">EL MÁS POPULAR</div>
+        <div class="card-header">
+          <span class="plan-name gold-text">PRO</span>
+          <div class="price">$89.000 <span>/ mes</span></div>
+          <p class="plan-desc">Perfecto para barberías en crecimiento y consolidación.</p>
+        </div>
+        <hr class="card-divider gold" />
+        <ul class="features-list">
+          <li><mat-icon class="check-icon">check</mat-icon> Hasta 10 Profesionales</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Agendamiento Online</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Reportes con tu Marca</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Gestión de Inventario</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Soporte Prioritario</li>
+          <li class="disabled"><mat-icon class="close-icon">close</mat-icon> Bot de WhatsApp</li>
+        </ul>
+        <button mat-flat-button class="btn-pricing-cta popular-btn" (click)="irAOnboarding()">Comenzar Prueba Gratis</button>
+      </div>
+
+      <!-- Plan Premium -->
+      <div class="pricing-card">
+        <div class="card-header">
+          <span class="plan-name">PREMIUM</span>
+          <div class="price">$150.000 <span>/ mes</span></div>
+          <p class="plan-desc">El paquete definitivo con automatización y marca blanca.</p>
+        </div>
+        <hr class="card-divider" />
+        <ul class="features-list">
+          <li><mat-icon class="check-icon">check</mat-icon> Profesionales ilimitados</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Múltiples Sucursales</li>
+          <li><mat-icon class="check-icon">check</mat-icon> <strong>Bot de WhatsApp Completo</strong></li>
+          <li><mat-icon class="check-icon">check</mat-icon> Landing Personalizable</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Soporte 24/7 Dedicado</li>
+          <li><mat-icon class="check-icon">check</mat-icon> Marca Blanca Completa</li>
+        </ul>
+        <button mat-flat-button class="btn-pricing-cta" (click)="irAOnboarding()">Elegir Plan Premium</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. FAQ SECTION (PREGUNTAS FRECUENTES) -->
+  <section id="faq" class="faq-section">
+    <div class="section-header">
+      <h2>Preguntas Frecuentes</h2>
+      <p>¿Tienes dudas sobre Style Manager? Aquí respondemos las preguntas más comunes de nuestros comercios.</p>
+    </div>
+
+    <div class="faq-container">
+      <div *ngFor="let faq of faqs; let idx = index" class="faq-item" [class.active]="faq.abierta" (click)="toggleFAQ(idx)">
+        <div class="faq-question">
+          <h3>{{ faq.pregunta }}</h3>
+          <mat-icon class="arrow-icon">{{ faq.abierta ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        <div class="faq-answer" *ngIf="faq.abierta">
+          <p>{{ faq.respuesta }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. FINAL CTA BANNER -->
+  <section class="final-cta">
+    <div class="cta-card">
+      <h2>¿Listo para Digitalizar tu Negocio?</h2>
+      <p>Regístrate en menos de 2 minutos, configura tus horarios y comienza a recibir citas automáticas. Sin compromisos.</p>
+      <button mat-flat-button color="primary" class="btn-cta-final" (click)="irAOnboarding()">
+        Comenzar Prueba de 14 Días Gratis <mat-icon class="ml-1">star</mat-icon>
+      </button>
+    </div>
+  </section>
+
+  <!-- 7. FOOTER COMERCIAL -->
+  <footer class="commercial-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand-inline">
+          <img src="assets/sede.png" alt="Style Manager" class="logo" />
+          <span>Style Manager</span>
+        </div>
+        <p>Forjando tu estilo, perfeccionando tu imagen a través de la tecnología SaaS más robusta.</p>
+      </div>
+      
+      <div class="footer-links">
+          <h4>Plataforma</h4>
+          <a href="#" (click)="verCaracteristicas($event)">Características</a>
+          <a href="#" (click)="verPlanes($event)">Planes</a>
+          <a href="#" (click)="irALogin($event)">Acceso Administrativo</a>
+        </div>
+
+      <div class="footer-legal-links">
+        <h4>Legal</h4>
+        <a href="#" (click)="abrirTerminos($event)">Términos y Condiciones</a>
+        <a href="#" (click)="abrirPolitica($event)">Política de Privacidad</a>
+        <a href="#" (click)="abrirSoporte($event)">Contacto Soporte</a>
+      </div>
+    </div>
+
+    <div class="footer-credits">
+      <p>&copy; 2026 Style Manager JEVO. Todos los derechos reservados. Colombia.</p>
+    </div>
+  </footer>
+
+</div>

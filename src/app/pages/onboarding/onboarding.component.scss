@@ -84,35 +84,37 @@ $error: #ff4d4d;
   text-align: center;
   margin-bottom: 2rem;
 
-  .logo {
-    width: 70px;
-    height: 70px;
-
-    margin: 0 auto 1rem;
-
+  .brand-logo-wrapper {
+    width: 95px;
+    height: 95px;
+    margin: 0 auto 1.2rem;
+    border-radius: 50%;
+    border: 2px solid $primary;
+    background-color: #000000;
+    box-shadow: 0 0 20px rgba(230, 177, 126, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 
-    border-radius: 50%;
-    border: 1px solid $primary;
-
-    background: linear-gradient(135deg, #1a1a1a, #333);
-
-    box-shadow: 0 0 20px rgba(230, 177, 126, 0.3);
-
-    ion-icon {
-      font-size: 2rem;
-      color: $primary;
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      mix-blend-mode: screen; /* 🔥 Elimina el fondo negro rectangular del archivo PNG y lo hace 100% transparente */
     }
   }
 
   h2 {
     margin: 0 0 0.5rem;
 
-    color: $text-light;
-    font-size: 2rem;
-    font-weight: 700;
+    color: $primary; /* 🔥 Color dorado premium coherente */
+    font-family: 'Pinyon Script', 'Herr Von Muellerhoff', 'Great Vibes', cursive;
+    font-size: 3.2rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-shadow: 0 0 12px rgba(230, 177, 126, 0.3);
   }
 
   p {
@@ -404,13 +406,10 @@ $error: #ff4d4d;
       font-size: 1.5rem;
     }
 
-    .logo {
-      width: 60px;
-      height: 60px;
-
-      ion-icon {
-        font-size: 1.8rem;
-      }
+    .brand-logo-wrapper {
+      width: 75px;
+      height: 75px;
+      margin-bottom: 1rem;
     }
   }
 }

@@ -37,8 +37,8 @@ export class HeaderComponent implements OnInit {
       const formData = new FormData();
       formData.append('foto', file);
 
-      if (!this.usuario?._id && !this.usuario?.id) return;
-      const userId = this.usuario._id || this.usuario.id;
+      const userId = (this.usuario?._id || this.usuario?.id)?.toString();
+      if (!userId) return;
 
       this.authService.subirFotoPerfil(userId, formData).subscribe({
         next: (resp) => {

@@ -15,6 +15,7 @@ export class PusherService {
   // Emisor de eventos para que los componentes se suscriban
   public pagoReportado$ = new Subject<any>();
   public agendamientoEstado$ = new Subject<{agendamientoAbierto: boolean, mensajeCierre: string}>();
+  public citaActualizada$ = new Subject<any>();
 
   constructor(
     private toastr: ToastrService,
@@ -42,6 +43,9 @@ export class PusherService {
 
     // Escuchar estados de agendamiento
     this.escucharEstadoAgendamiento();
+
+    // Escuchar actualizaciones de citas
+    this.escucharCitasActualizadas();
   }
 
   private escucharEstadoAgendamiento() {
@@ -223,6 +227,44 @@ export class PusherService {
         progressBar: true,
         positionClass: 'toast-top-right'
       });
+    });
+  }
+
+  private escucharCitasActualizadas() {
+    this.channel.bind('cita-actualizada', (data: any) => {
+      console.log('📢 [Pusher] cita-actualizada recibido:', data);
+
+      // Emitir siempre el evento para que los componentes (mis-citas, gestionar-citas, etc.) se refresquen reactivamente
+      this.citaActualizada$.next(data);
+
+      const rol = this.authService.obtenerRol();
+      const miUsuario = this.authService.getUsuarioActual();
+
+      // Dependiendo de si es cliente o barbero/admin, mostrar el toastr correspondiente
+      if (rol === 'cliente') {
+        const miClienteId = miUsuario?.cliente?._id || miUsuario?.cliente || miUsuario?._id;
+        if (data.clienteId && String(miClienteId) === String(data.clienteId)) {
+          this.toastr.info(data.mensaje || 'Tu cita ha sido actualizada', 'Cita Actualizada', {
+            timeOut: 6000,
+            progressBar: true,
+            positionClass: 'toast-top-right'
+          });
+        }
+      } else {
+        // Para admin/barbero
+        if (rol !== 'admin') {
+          const miPeluqueroId = miUsuario?.peluquero?._id || miUsuario?.peluquero || miUsuario?._id;
+          if (data.peluqueroId && String(miPeluqueroId) !== String(data.peluqueroId)) {
+            return; // La cita es de otro barbero, no mostrar Toastr
+          }
+        }
+        
+        this.toastr.info(data.mensaje || 'Una cita ha sido actualizada', 'Cita Actualizada', {
+          timeOut: 6000,
+          progressBar: true,
+          positionClass: 'toast-top-right'
+        });
+      }
     });
   }
 }

@@ -27,7 +27,7 @@ import { Cita } from 'src/app/shared/models/cita.model';
 })
 export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  private pusherSub!: Subscription;
+  private pusherSubs: Subscription[] = [];
 
   displayedColumns: string[] = ['cliente', 'fecha', 'hora', 'turno', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
@@ -54,15 +54,21 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit(): void {
     this.cargarCitas();
 
-    this.pusherSub = this.pusherService.pagoReportado$.subscribe(() => {
-      this.cargarCitas();
-    });
+    this.pusherSubs.push(
+      this.pusherService.pagoReportado$.subscribe(() => {
+        this.cargarCitas();
+      })
+    );
+
+    this.pusherSubs.push(
+      this.pusherService.citaActualizada$.subscribe(() => {
+        this.cargarCitas();
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.pusherSub) {
-      this.pusherSub.unsubscribe();
-    }
+    this.pusherSubs.forEach(sub => sub.unsubscribe());
   }
 
   ngAfterViewInit(): void {

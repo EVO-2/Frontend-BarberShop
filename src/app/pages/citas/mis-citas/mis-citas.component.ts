@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
 })
 export class MisCitasComponent implements OnInit, OnDestroy {
 
-  private pusherSub!: Subscription;
+  private pusherSubs: Subscription[] = [];
 
   cargando: boolean = true;
 
@@ -58,15 +58,22 @@ export class MisCitasComponent implements OnInit, OnDestroy {
     this.cargarCitas();
 
     // Escuchar pagos en tiempo real
-    this.pusherSub = this.pusherService.pagoReportado$.subscribe(() => {
-      this.cargarCitas(); // Recargar la tabla si alguien reporta un pago
-    });
+    this.pusherSubs.push(
+      this.pusherService.pagoReportado$.subscribe(() => {
+        this.cargarCitas(); // Recargar la tabla si alguien reporta un pago
+      })
+    );
+
+    // Escuchar cambios de estado en tiempo real
+    this.pusherSubs.push(
+      this.pusherService.citaActualizada$.subscribe(() => {
+        this.cargarCitas(); // Recargar la tabla si la cita cambia de estado
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.pusherSub) {
-      this.pusherSub.unsubscribe();
-    }
+    this.pusherSubs.forEach(sub => sub.unsubscribe());
   }
 
   formatFechaHora(fechaStr: string | Date): string {

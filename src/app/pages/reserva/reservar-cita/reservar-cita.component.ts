@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ServicioCardDialogComponent } from 'src/app/shared/components/servicio-card-dialog/servicio-card-dialog.component';
 import { environment } from 'src/environments/environment';
-import { EmpresaService, AgendamientoEstado } from 'src/app/core/services/empresa.service';
+import { EmpresaService, AgendamientoEstado, EmpresaInfo } from 'src/app/core/services/empresa.service';
 import { PusherService } from 'src/app/services/pusher.service';
 import { Subscription } from 'rxjs';
 
@@ -66,6 +66,7 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
   estadoAgendamiento: AgendamientoEstado | null = null;
   cargandoEstado = true;
   private pusherSub!: Subscription;
+  empresaInfo: EmpresaInfo | null = null;
 
   private servicioIdFromQuery: string | null = null;
 
@@ -92,6 +93,7 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
     });
 
     this.verificarEstadoAgendamiento();
+    this.cargarEmpresaInfo();
 
     this.initForm();
     this.cargarDatos();
@@ -153,6 +155,20 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
         // Fallback a true si falla
         this.estadoAgendamiento = { agendamientoAbierto: true, mensajeCierre: '' };
         this.cargandoEstado = false;
+      }
+    });
+  }
+
+  private cargarEmpresaInfo(): void {
+    this.empresaService.obtenerInfoEmpresa().subscribe({
+      next: (res) => {
+        if (res && res.empresa) {
+          this.empresaInfo = res.empresa;
+          this.generarHorasDisponibles();
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar la información de la empresa:', err);
       }
     });
   }
@@ -607,51 +623,64 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
       fecha.getDate() === hoy.getDate();
 
     const diaSemana = fecha.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-    let apertura = 9;
-    let cierre = 19; // Genera hasta 18:30 (6:30 PM)
+    const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const nombreDia = DIAS_SEMANA[diaSemana];
 
-    if (diaSemana >= 1 && diaSemana <= 4) {
-      // Lunes a Jueves: 9:00 AM a 6:30 PM
-      apertura = 9;
-      cierre = 19; 
-    } else if (diaSemana === 5 || diaSemana === 6) {
-      // Viernes y Sábado: 9:00 AM a 8:00 PM
-      apertura = 9;
-      cierre = 20; // Genera hasta 19:30
-    } else if (diaSemana === 0) {
-      // Domingos: 10:00 AM a 2:00 PM
-      apertura = 10;
-      cierre = 14; // Genera hasta 13:30
+    let diaAbierto = true;
+    let horaAperturaStr = '09:00';
+    let horaCierreStr = '19:00';
+
+    if (this.empresaInfo && this.empresaInfo.horarios) {
+      const horarioDia = this.empresaInfo.horarios.find(h => h.dia === nombreDia);
+      if (horarioDia) {
+        diaAbierto = horarioDia.abierto;
+        horaAperturaStr = horarioDia.apertura || '09:00';
+        horaCierreStr = horarioDia.cierre || '19:00';
+      }
+    } else {
+      // Fallback a los estáticos si no ha cargado la info de la empresa
+      if (diaSemana >= 1 && diaSemana <= 4) {
+        horaAperturaStr = '09:00';
+        horaCierreStr = '19:00';
+      } else if (diaSemana === 5 || diaSemana === 6) {
+        horaAperturaStr = '09:00';
+        horaCierreStr = '20:00';
+      } else if (diaSemana === 0) {
+        horaAperturaStr = '10:00';
+        horaCierreStr = '14:00';
+      }
     }
 
+    if (!diaAbierto) {
+      this.horasDisponibles = [];
+      this.snackBar.open(`⚠️ La agenda de la empresa está cerrada los días ${nombreDia}.`, 'Entendido', { duration: 5000 });
+      return;
+    }
+
+    const [aperturaH, aperturaM] = horaAperturaStr.split(':').map(Number);
+    const [cierreH, cierreM] = horaCierreStr.split(':').map(Number);
+
     const horas: string[] = [];
+    const minutosInicio = aperturaH * 60 + aperturaM;
+    const minutosFin = cierreH * 60 + cierreM;
 
-    for (let h = apertura; h < cierre; h++) {
+    for (let min = minutosInicio; min < minutosFin; min += this.intervaloMinutos) {
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      const horaStr = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 
-      for (let m = 0; m < 60; m += this.intervaloMinutos) {
-
-        const horaStr =
-          `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-
-        if (esHoy) {
-
-          const ahora = new Date();
-          const horaCita = this.combinarFechaHora(fecha, horaStr);
-
-          if (horaCita <= ahora) {
-            continue;
-          }
-
+      if (esHoy) {
+        const ahora = new Date();
+        const horaCita = this.combinarFechaHora(fecha, horaStr);
+        if (horaCita <= ahora) {
+          continue;
         }
-
-        horas.push(horaStr);
-
       }
 
+      horas.push(horaStr);
     }
 
     this.horasDisponibles = horas;
-
   }
 
   private combinarFechaHora(fecha: any, hora: string): Date {

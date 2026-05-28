@@ -367,7 +367,7 @@ export class AuthService {
       foto: usuario.foto || undefined,
       empresaLogo: usuario.empresaLogo || 'assets/sede.png',
       empresaNombre: usuario.empresaNombre || 'Style Manager',
-      empresaId: usuario.empresaId ? (usuario.empresaId._id || usuario.empresaId) : undefined,
+      empresaId: usuario.empresaId,
 
       // 🔐 Permisos
       permisos: usuario.permisos || (usuario.rol?.permisos?.map((p: any) => p.nombre) || []),

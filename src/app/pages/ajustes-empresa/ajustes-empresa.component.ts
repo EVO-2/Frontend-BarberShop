@@ -147,6 +147,16 @@ export class AjustesEmpresaComponent implements OnInit {
           const usuario = JSON.parse(usrStr);
           usuario.empresaNombre = res.empresa.nombre;
           usuario.empresaLogo = res.empresa.logo;
+          
+          if (usuario.empresaId && typeof usuario.empresaId === 'object') {
+            usuario.empresaId = {
+              ...usuario.empresaId,
+              ...res.empresa
+            };
+          } else {
+            usuario.empresaId = res.empresa;
+          }
+          
           localStorage.setItem('usuario', JSON.stringify(usuario));
           
           // Recargar ventana después de un segundo para propagar la actualización al footer global

@@ -1,92 +1,120 @@
-<div class="contenedor-servicios">
-  <!-- Cabecera de la página -->
-  <header class="header-servicios">
-    <div class="titulo-seccion">
-      <span class="badge-premium">PORTAFOLIO</span>
-      <h1>Nuestros Servicios</h1>
-      <p class="subtitulo">Elige el servicio ideal y reserva tu cita en segundos</p>
+<div class="contenedor-servicios-luxury">
+  
+  <!-- 🌟 RADIAL DECORATIVE LIGHTING GLOWS -->
+  <div class="glow-spot glow-1"></div>
+  <div class="glow-spot glow-2"></div>
+
+  <!-- 💅 HERO HEADER SECTION -->
+  <header class="header-servicios-luxury">
+    <div class="meta-header">
+      <span class="badge-luxury">PORTAFOLIO EXCLUSIVO</span>
+      <h1 class="titulo-luxury">Nuestros Servicios</h1>
+      <p class="subtitulo-luxury">Descubre experiencias premium de estilo, cuidado y bienestar diseñadas para ti</p>
     </div>
-    
-    <!-- Filtros y Búsqueda -->
-    <div class="controles-filtro" *ngIf="!cargando && servicios.length > 0">
-      <div class="caja-busqueda">
+
+    <!-- CONTROLES FILTRADO (GLASSMORPHIC) -->
+    <div class="controles-luxury" *ngIf="!cargando && servicios.length > 0">
+      <div class="control-wrapper search-wrapper">
         <span class="material-icons buscar-icono">search</span>
-        <input type="text" [(ngModel)]="filtroNombre" placeholder="Buscar corte, afeitado, tinte...">
+        <input type="text" [(ngModel)]="filtroNombre" placeholder="Buscar corte, barba, estilo...">
       </div>
-      
-      <div class="caja-ordenar">
+
+      <div class="control-wrapper sort-wrapper">
         <span class="material-icons ordenar-icono">sort</span>
         <select [(ngModel)]="ordenarPor">
-          <option value="">Recomendados</option>
+          <option value="">Servicios Recomendados</option>
           <option value="precio-asc">Precio: Menor a Mayor</option>
           <option value="precio-desc">Precio: Mayor a Menor</option>
-          <option value="duracion">Duración: Menor a Mayor</option>
+          <option value="duracion">Duración: Más Cortos Primero</option>
         </select>
       </div>
     </div>
   </header>
 
-  <!-- 🔄 Loader -->
-  <div *ngIf="cargando" class="estado-cargando">
-    <div class="spinner-premium"></div>
-    <p>Cargando nuestro catálogo de servicios...</p>
+  <!-- 🔄 LOADER LUXURY -->
+  <div *ngIf="cargando" class="estado-cargando-luxury">
+    <div class="spinner-luxury">
+      <div class="double-bounce1"></div>
+      <div class="double-bounce2"></div>
+    </div>
+    <p>Preparando nuestro catálogo exclusivo...</p>
   </div>
 
-  <!-- ❌ Error -->
-  <div *ngIf="error" class="estado-error">
-    <span class="material-icons error-icono">error_outline</span>
+  <!-- ❌ ERROR STATE -->
+  <div *ngIf="error" class="estado-error-luxury">
+    <span class="material-icons error-icono">warning_amber</span>
+    <h3>No se pudo cargar el catálogo</h3>
     <p>{{ error }}</p>
   </div>
 
-  <!-- 📦 Grid de servicios -->
-  <div class="grid-servicios" *ngIf="!cargando && serviciosFiltrados.length > 0">
-    <div class="card-servicio-premium" *ngFor="let servicio of serviciosFiltrados">
+  <!-- 📦 GRID DE SERVICIOS PREMIUM -->
+  <div class="grid-servicios-luxury" *ngIf="!cargando && serviciosFiltrados.length > 0">
+    
+    <article class="card-servicio-luxury" *ngFor="let servicio of serviciosFiltrados">
       
-      <!-- Contenedor de la Imagen con Badge Flotante -->
-      <div class="imagen-wrapper">
-        <img [src]="obtenerImagenPrincipal(servicio)" [alt]="servicio.nombre" loading="lazy">
-        <div class="overlay-hover"></div>
-        <div class="badge-precio">
-          {{ servicio.precio | currency:'COP':'symbol':'1.0-0' }}
+      <!-- CONTENEDOR IMAGEN PREMIUM CON DIFUMINADO RETROALIMENTADO -->
+      <div class="imagen-container-luxury" [style.--bg-img]="'url(' + obtenerImagenPrincipal(servicio) + ')'">
+        <div class="imagen-overlay-glass"></div>
+        <img [src]="obtenerImagenPrincipal(servicio)" [alt]="servicio.nombre" class="imagen-principal-luxury" loading="lazy">
+        
+        <!-- FLOATING PRICE BADGE -->
+        <div class="badge-precio-luxury">
+          <span class="currency">$</span>
+          <span class="amount">{{ servicio.precio | number:'1.0-0' }}</span>
+        </div>
+
+        <!-- CERTIFIED STATUS BADGE (Top-Left overlay indicator) -->
+        <div class="badge-certificado">
+          <span class="material-icons cert-icon">verified</span>
+          <span>Garantizado</span>
         </div>
       </div>
 
-      <!-- Detalles del Servicio -->
-      <div class="info-servicio">
-        <div class="categoria-tags" *ngIf="servicio.asignadoA?.length">
-          <span *ngFor="let rol of servicio.asignadoA" class="tag-rol" [ngClass]="'tag-' + rol">
-            {{ rol | titlecase }}
+      <!-- DETALLES Y CONTENIDO DE LA TARJETA -->
+      <div class="contenido-servicio-luxury">
+        
+        <!-- ROLES ASIGNADOS / CATEGORÍAS -->
+        <div class="roles-badges" *ngIf="servicio.asignadoA?.length">
+          <span *ngFor="let rol of servicio.asignadoA" class="badge-rol-luxury" [ngClass]="'badge-' + rol">
+            {{ rol }}
           </span>
         </div>
 
-        <h3 class="nombre-servicio">{{ servicio.nombre }}</h3>
+        <h3 class="nombre-servicio-luxury">{{ servicio.nombre }}</h3>
         
-        <p class="descripcion-servicio" [title]="servicio.descripcion">
-          {{ servicio.descripcion || 'Disfruta de una experiencia de cuidado y estilo personalizada con nuestros expertos.' }}
+        <p class="descripcion-servicio-luxury" [title]="servicio.descripcion">
+          {{ servicio.descripcion || 'Una experiencia única que combina técnicas modernas con la atención al detalle de nuestros mejores estilistas.' }}
         </p>
 
-        <!-- Fila de metadatos (Duración) -->
-        <div class="meta-servicio">
-          <div class="duracion-wrapper">
-            <span class="material-icons clock-icon">schedule</span>
-            <span class="duracion-txt">{{ servicio.duracion || '30' }}</span>
+        <!-- INFO EXTRA CON ICONOS DETALLADOS -->
+        <div class="footer-meta-luxury">
+          <div class="meta-item duration-item">
+            <span class="material-icons meta-icono">schedule</span>
+            <span class="meta-txt">{{ servicio.duracion || '30 min' }}</span>
+          </div>
+
+          <div class="meta-item availability-item">
+            <span class="material-icons meta-icono">dry_cleaning</span>
+            <span class="meta-txt">Estilistas Pro</span>
           </div>
         </div>
 
-        <!-- Botón de acción -->
-        <button class="btn-reservar-premium" (click)="reservarServicio(servicio)">
-          <span>Reservar Cita</span>
-          <span class="material-icons chevron-icono">chevron_right</span>
+        <!-- BOTÓN DE RESERVA TOTALMENTE ANIMADO -->
+        <button class="btn-reservar-luxury" (click)="reservarServicio(servicio)">
+          <span class="btn-txt">Reservar Ahora</span>
+          <span class="material-icons btn-arrow">arrow_forward</span>
         </button>
       </div>
 
-    </div>
+    </article>
+
   </div>
 
-  <!-- 📭 Sin servicios -->
-  <div *ngIf="!cargando && serviciosFiltrados.length === 0" class="estado-vacio">
-    <span class="material-icons vacio-icono">sentiment_dissatisfied</span>
-    <h3>No encontramos servicios</h3>
-    <p>Prueba ajustando los términos de tu búsqueda.</p>
+  <!-- 📭 EMPTY STATE -->
+  <div *ngIf="!cargando && serviciosFiltrados.length === 0" class="estado-vacio-luxury">
+    <span class="material-icons vacio-icono">search_off</span>
+    <h3>No se encontraron resultados</h3>
+    <p>Prueba con otros términos de búsqueda o filtros diferentes.</p>
   </div>
+
 </div>

@@ -78,8 +78,8 @@ export class SuperadminDashboardComponent implements OnInit {
     return this.empresas.filter(emp => {
       const cumpleNombre = !this.filtroNombre || 
         emp.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase()) ||
-        (emp.dueño && emp.dueño.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase())) ||
-        (emp.dueño && emp.dueño.correo.toLowerCase().includes(this.filtroNombre.toLowerCase()));
+        (emp.dueno && emp.dueno.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase())) ||
+        (emp.dueno && emp.dueno.correo.toLowerCase().includes(this.filtroNombre.toLowerCase()));
       
       const cumplePlan = !this.filtroPlan || emp.plan === this.filtroPlan;
       const cumpleEstado = !this.filtroEstado || emp.suscripcionEstado === this.filtroEstado;

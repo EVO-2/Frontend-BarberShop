@@ -168,9 +168,9 @@
 
                 <!-- Dueño / Contacto -->
                 <td>
-                  <div class="owner-info" *ngIf="emp.dueño; else noOwner">
-                    <span class="owner-name">{{ emp.dueño.nombre }}</span>
-                    <span class="owner-email">{{ emp.dueño.correo }}</span>
+                  <div class="owner-info" *ngIf="emp.dueno; else noOwner">
+                    <span class="owner-name">{{ emp.dueno.nombre }}</span>
+                    <span class="owner-email">{{ emp.dueno.correo }}</span>
                   </div>
                   <ng-template #noOwner>
                     <span class="no-owner">Sin dueño asignado</span>

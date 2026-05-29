@@ -27,7 +27,7 @@
       <div
         class="carousel-track"
         [style.transform]="'translateX(-' + currentIndex * 100 + '%)'">
-        <div class="image-wrap" *ngFor="let img of images">
+        <div class="image-wrap" *ngFor="let img of images" [style.--bg-img]="'url(' + getImageUrl(img) + ')'">
           <img [src]="getImageUrl(img)" [alt]="servicio.nombre" loading="lazy" />
         </div>
       </div>

@@ -13,6 +13,10 @@ export class ServiciosClienteComponent implements OnInit {
   servicios: Servicio[] = [];
   cargando: boolean = false;
   error: string = '';
+  
+  // Filtros y ordenación
+  filtroNombre: string = '';
+  ordenarPor: string = '';
 
   readonly baseUrl: string = environment.baseUrl; // ⚡ URL base del backend
 
@@ -20,6 +24,32 @@ export class ServiciosClienteComponent implements OnInit {
     private serviciosService: ServiciosService,
     private router: Router
   ) { }
+
+  get serviciosFiltrados(): Servicio[] {
+    let resultado = [...this.servicios];
+
+    if (this.filtroNombre?.trim()) {
+      const query = this.filtroNombre.toLowerCase().trim();
+      resultado = resultado.filter(s =>
+        s.nombre.toLowerCase().includes(query) ||
+        (s.descripcion && s.descripcion.toLowerCase().includes(query))
+      );
+    }
+
+    if (this.ordenarPor === 'precio-asc') {
+      resultado.sort((a, b) => a.precio - b.precio);
+    } else if (this.ordenarPor === 'precio-desc') {
+      resultado.sort((a, b) => b.precio - a.precio);
+    } else if (this.ordenarPor === 'duracion') {
+      resultado.sort((a, b) => {
+        const durA = parseInt(a.duracion, 10) || 0;
+        const durB = parseInt(b.duracion, 10) || 0;
+        return durA - durB;
+      });
+    }
+
+    return resultado;
+  }
 
   ngOnInit(): void {
     this.obtenerServicios();

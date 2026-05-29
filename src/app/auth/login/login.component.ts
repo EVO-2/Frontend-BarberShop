@@ -177,6 +177,10 @@ export class LoginComponent {
 
     switch (rolNormalizado) {
 
+      case 'superadmin':
+        this.router.navigate(['/superadmin/dashboard']);
+        break;
+
       case 'admin':
         this.router.navigate(['/dashboard']);
         break;

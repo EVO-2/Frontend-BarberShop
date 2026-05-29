@@ -8,6 +8,7 @@ export class MenuService {
 
   private menu = [
 
+    { label: 'Dashboard SaaS', ruta: '/superadmin/dashboard', icono: 'dashboard', roles: ['superadmin'] },
     { label: 'Dashboard', ruta: '/dashboard', icono: 'dashboard', roles: ['admin'] },
     { label: 'Servicios', ruta: '/servicios', icono: 'content_cut', roles: ['cliente', 'admin'] },
     { label: 'Tienda', ruta: '/tienda', icono: 'shopping_bag', roles: ['cliente', 'barbero', 'manicurista', 'admin'] },

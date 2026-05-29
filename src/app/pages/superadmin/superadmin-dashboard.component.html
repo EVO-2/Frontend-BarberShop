@@ -1,0 +1,331 @@
+<div class="superadmin-container">
+  <!-- HEADER -->
+  <header class="header-section">
+    <div class="title-area">
+      <span class="badge">PLATAFORMA SAAS</span>
+      <h1>Panel de Control Global</h1>
+      <p class="subtitle">Monitoreo y administración general de inquilinos y suscripciones</p>
+    </div>
+    <button class="btn-primary" (click)="cargarStats(); cargarEmpresas()">
+      <span class="material-icons">refresh</span> Refrescar Datos
+    </button>
+  </header>
+
+  <!-- LOADING STATS -->
+  <div class="loader-wrapper" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando métricas de la plataforma...</p>
+  </div>
+
+  <!-- METRICS CARDS -->
+  <div class="kpi-grid" *ngIf="!loading && stats">
+    <div class="kpi-card card-blue">
+      <div class="card-icon">
+        <span class="material-icons">business</span>
+      </div>
+      <div class="card-content">
+        <h3>Empresas Totales</h3>
+        <p class="value">{{ stats.totalEmpresas }}</p>
+        <span class="card-desc">Registros en el sistema</span>
+      </div>
+    </div>
+
+    <div class="kpi-card card-green">
+      <div class="card-icon">
+        <span class="material-icons">task_alt</span>
+      </div>
+      <div class="card-content">
+        <h3>Suscripciones Activas</h3>
+        <p class="value">{{ getDesgloseCantidad(stats.desgloseEstados, 'activa') }}</p>
+        <span class="card-desc">Planes de pago vigentes</span>
+      </div>
+    </div>
+
+    <div class="kpi-card card-orange">
+      <div class="card-icon">
+        <span class="material-icons">schedule</span>
+      </div>
+      <div class="card-content">
+        <h3>Empresas en Demo</h3>
+        <p class="value">{{ getDesgloseCantidad(stats.desgloseEstados, 'trial') }}</p>
+        <span class="card-desc">Periodos de prueba activos</span>
+      </div>
+    </div>
+
+    <div class="kpi-card card-purple">
+      <div class="card-icon">
+        <span class="material-icons">people</span>
+      </div>
+      <div class="card-content">
+        <h3>Usuarios Globales</h3>
+        <p class="value">{{ stats.totalUsuarios }}</p>
+        <span class="card-desc">Cuentas registradas totales</span>
+      </div>
+    </div>
+
+    <div class="kpi-card card-cyan">
+      <div class="card-icon">
+        <span class="material-icons">calendar_month</span>
+      </div>
+      <div class="card-content">
+        <h3>Citas Agendadas</h3>
+        <p class="value">{{ stats.totalCitas }}</p>
+        <span class="card-desc">Transacciones de citas</span>
+      </div>
+    </div>
+
+    <div class="kpi-card card-pink">
+      <div class="card-icon">
+        <span class="material-icons">store</span>
+      </div>
+      <div class="card-content">
+        <h3>Sedes Activas</h3>
+        <p class="value">{{ stats.totalSedes }}</p>
+        <span class="card-desc">Ubicaciones operacionales</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE & RECENT LOGS SECTION -->
+  <div class="main-content-layout">
+    <!-- LEFT: EMPRESAS LIST -->
+    <div class="companies-section">
+      <div class="section-card">
+        <div class="card-header">
+          <h2>Listado de Inquilinos (Barberías)</h2>
+          <span class="badge">{{ empresasFiltradas.length }} encontradas</span>
+        </div>
+
+        <!-- SEARCH AND FILTERS -->
+        <div class="filters-row">
+          <div class="search-box">
+            <span class="material-icons search-icon">search</span>
+            <input type="text" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre, dueño o correo..." />
+          </div>
+
+          <div class="select-box">
+            <select [(ngModel)]="filtroPlan">
+              <option value="">Todos los Planes</option>
+              <option value="trial">Trial (Prueba)</option>
+              <option value="basico">Plan Básico</option>
+              <option value="pro">Plan Pro</option>
+              <option value="premium">Plan Premium</option>
+            </select>
+          </div>
+
+          <div class="select-box">
+            <select [(ngModel)]="filtroEstado">
+              <option value="">Todos los Estados</option>
+              <option value="trial">Trial (Demo)</option>
+              <option value="activa">Activa (Paga)</option>
+              <option value="vencida">Vencida</option>
+              <option value="suspendida">Suspendida</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- LOADING EMPRESAS -->
+        <div class="loader-inside" *ngIf="loadingEmpresas">
+          <div class="spinner-small"></div>
+          <p>Obteniendo listado...</p>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-container" *ngIf="!loadingEmpresas">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Empresa</th>
+                <th>NIT / Ubicación</th>
+                <th>Dueño / Contacto</th>
+                <th>Sedes</th>
+                <th>Suscripción</th>
+                <th>Estado Plataforma</th>
+                <th class="text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let emp of empresasFiltradas" [class.inactive-row]="!emp.estado">
+                <!-- Empresa -->
+                <td class="empresa-cell">
+                  <div class="logo-circle">
+                    <img [src]="emp.logo || 'assets/sede.png'" alt="logo" />
+                  </div>
+                  <div class="emp-info">
+                    <span class="emp-name">{{ emp.nombre }}</span>
+                    <span class="emp-date">Registrada: {{ emp.createdAt | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                </td>
+                
+                <!-- NIT/Ubicación -->
+                <td>
+                  <div class="nit-info">
+                    <span class="nit-txt">NIT: {{ emp.nit || 'Sin registrar' }}</span>
+                    <span class="dir-txt">{{ emp.direccion || 'Sin dirección' }}</span>
+                  </div>
+                </td>
+
+                <!-- Dueño / Contacto -->
+                <td>
+                  <div class="owner-info" *ngIf="emp.dueño; else noOwner">
+                    <span class="owner-name">{{ emp.dueño.nombre }}</span>
+                    <span class="owner-email">{{ emp.dueño.correo }}</span>
+                  </div>
+                  <ng-template #noOwner>
+                    <span class="no-owner">Sin dueño asignado</span>
+                  </ng-template>
+                </td>
+
+                <!-- Sedes -->
+                <td class="text-center">
+                  <span class="badge badge-light-blue">{{ emp.sedesCount }} sedes</span>
+                </td>
+
+                <!-- Suscripción -->
+                <td>
+                  <div class="subs-info">
+                    <span class="plan-label" [ngClass]="'plan-' + emp.plan">{{ emp.plan | uppercase }}</span>
+                    <span class="state-badge" [ngClass]="'state-' + emp.suscripcionEstado">{{ emp.suscripcionEstado | uppercase }}</span>
+                  </div>
+                </td>
+
+                <!-- Estado Plataforma -->
+                <td>
+                  <div class="status-toggle">
+                    <label class="switch">
+                      <input type="checkbox" [checked]="emp.estado" (change)="toggleEstadoEmpresa(emp, $event)" />
+                      <span class="slider round"></span>
+                    </label>
+                    <span class="status-lbl" [class.lbl-active]="emp.estado">{{ emp.estado ? 'Activo' : 'Suspendido' }}</span>
+                  </div>
+                </td>
+
+                <!-- Acciones -->
+                <td class="text-right actions-cell">
+                  <button class="btn-icon" (click)="abrirModalSuscripcion(emp)" title="Gestionar Suscripción">
+                    <span class="material-icons">payments</span>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="empresasFiltradas.length === 0">
+                <td colspan="7" class="empty-state">
+                  <span class="material-icons empty-icon">sentiment_dissatisfied</span>
+                  <p>No se encontraron empresas con los filtros especificados.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: LOGS FEED -->
+    <div class="logs-section" *ngIf="!loading">
+      <div class="section-card">
+        <div class="card-header">
+          <h2>Actividad Reciente</h2>
+          <span class="material-icons">history</span>
+        </div>
+
+        <div class="logs-feed">
+          <div class="feed-item" *ngFor="let item of historial" [class.failed-item]="!item.exito">
+            <div class="feed-icon" [ngClass]="'icon-' + item.accion">
+              <span class="material-icons" *ngIf="item.accion === 'LOGIN'">login</span>
+              <span class="material-icons" *ngIf="item.accion === 'INTENTO_FALLIDO'">lock_reset</span>
+              <span class="material-icons" *ngIf="item.accion === 'CREAR'">add_circle</span>
+              <span class="material-icons" *ngIf="item.accion === 'ACTUALIZAR'">edit</span>
+              <span class="material-icons" *ngIf="item.accion === 'ELIMINAR'">delete</span>
+              <span class="material-icons" *ngIf="item.accion !== 'LOGIN' && item.accion !== 'INTENTO_FALLIDO' && item.accion !== 'CREAR' && item.accion !== 'ACTUALIZAR' && item.accion !== 'ELIMINAR'">info</span>
+            </div>
+            
+            <div class="feed-content">
+              <div class="feed-header-line">
+                <span class="feed-user">{{ item.usuario?.nombre || 'Plataforma' }}</span>
+                <span class="feed-time">{{ item.fecha | date:'HH:mm' }}</span>
+              </div>
+              <p class="feed-desc">{{ item.descripcion }}</p>
+              <div class="feed-meta">
+                <span class="feed-emp" *ngIf="item.empresaId?.nombre">🏢 {{ item.empresaId.nombre }}</span>
+                <span class="feed-ip" *ngIf="item.ip">📍 {{ item.ip }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="feed-item empty-state" *ngIf="historial.length === 0">
+            <p>No hay registros de auditoría recientes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTIONAR SUSCRIPCIÓN -->
+  <div class="modal-backdrop" *ngIf="mostrarModalSuscripcion">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Gestionar Suscripción</h2>
+        <button class="btn-close" (click)="cerrarModalSuscripcion()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body" *ngIf="empresaSeleccionada">
+        <div class="empresa-header-modal">
+          <div class="logo-circle-large">
+            <img [src]="empresaSeleccionada.logo || 'assets/sede.png'" alt="logo" />
+          </div>
+          <div>
+            <h3>{{ empresaSeleccionada.nombre }}</h3>
+            <p>{{ empresaSeleccionada.email }}</p>
+          </div>
+        </div>
+
+        <form class="modal-form" (submit)="guardarSuscripcion()">
+          <!-- PLAN -->
+          <div class="form-group">
+            <label>Plan de Suscripción</label>
+            <div class="custom-select">
+              <select name="plan" [(ngModel)]="datosSuscripcion.plan">
+                <option value="trial">Trial (Prueba)</option>
+                <option value="basico">Plan Básico</option>
+                <option value="pro">Plan Pro</option>
+                <option value="premium">Plan Premium</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ESTADO -->
+          <div class="form-group">
+            <label>Estado de Suscripción</label>
+            <div class="custom-select">
+              <select name="suscripcionEstado" [(ngModel)]="datosSuscripcion.suscripcionEstado">
+                <option value="trial">Trial (Periodo de Prueba)</option>
+                <option value="activa">Activa (Vigente)</option>
+                <option value="vencida">Vencida (Bloqueo temporal)</option>
+                <option value="suspendida">Suspendida (Desactivación manual)</option>
+                <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- FECHAS -->
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Fin del Periodo Demo</label>
+              <input type="date" name="fechaFinPrueba" [(ngModel)]="datosSuscripcion.fechaFinPrueba" />
+            </div>
+            <div class="form-group">
+              <label>Fecha Próximo Cobro</label>
+              <input type="date" name="fechaProximoCobro" [(ngModel)]="datosSuscripcion.fechaProximoCobro" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="cerrarModalSuscripcion()">Cancelar</button>
+            <button type="submit" class="btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

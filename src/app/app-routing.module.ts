@@ -161,6 +161,12 @@ const routes: Routes = [
         loadComponent: () => import('./pages/ajustes-empresa/ajustes-empresa.component').then(m => m.AjustesEmpresaComponent),
         canActivate: [RoleGuard],
         data: { roles: ['admin'] }
+      },
+      {
+        path: 'superadmin/dashboard',
+        loadComponent: () => import('./pages/superadmin/superadmin-dashboard.component').then(m => m.SuperadminDashboardComponent),
+        canActivate: [RoleGuard],
+        data: { roles: ['superadmin'] }
       }
     ]
   },

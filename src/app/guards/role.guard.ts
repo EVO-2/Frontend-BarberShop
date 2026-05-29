@@ -25,7 +25,8 @@ export class RoleGuard implements CanActivate {
     // 🚫 Usuario con rol no permitido
     const rol = usuario.rol?.toLowerCase() || '';
     let homeUrl = '/login';
-    if (rol === 'admin') homeUrl = '/dashboard';
+    if (rol === 'superadmin') homeUrl = '/superadmin/dashboard';
+    else if (rol === 'admin') homeUrl = '/dashboard';
     else if (rol === 'barbero' || rol === 'manicurista' || rol === 'peluquero') homeUrl = '/gestionar-citas';
     else if (rol === 'cliente') homeUrl = '/servicios';
 

@@ -11,6 +11,18 @@
     </button>
   </header>
 
+  <!-- TAB SYSTEM -->
+  <div class="tab-system">
+    <button class="tab-button" [class.active-tab]="tabActiva === 'dashboard'" (click)="tabActiva = 'dashboard'">
+      <span class="material-icons">analytics</span> Métricas y Empresas
+    </button>
+    <button class="tab-button" [class.active-tab]="tabActiva === 'admins'" (click)="tabActiva = 'admins'; cargarSuperAdmins()">
+      <span class="material-icons">admin_panel_settings</span> Super Administradores
+    </button>
+  </div>
+
+  <ng-container *ngIf="tabActiva === 'dashboard'">
+
   <!-- LOADING STATS -->
   <div class="loader-wrapper" *ngIf="loading">
     <div class="spinner"></div>
@@ -255,6 +267,147 @@
             <p>No hay registros de auditoría recientes.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  </ng-container>
+
+  <!-- 🛠️ CRUD SUPERADMINS SECTION -->
+  <ng-container *ngIf="tabActiva === 'admins'">
+    <div class="admins-section">
+      <div class="section-card">
+        <div class="card-header-flex">
+          <div class="header-title-area">
+            <h2>Gestión de Super Administradores</h2>
+            <span class="badge">{{ adminsFiltrados.length }} administradores</span>
+          </div>
+          <button class="btn-primary" (click)="abrirModalCrearAdmin()">
+            <span class="material-icons">add</span> Agregar SuperAdmin
+          </button>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="filters-row">
+          <div class="search-box full-width-search">
+            <span class="material-icons search-icon">search</span>
+            <input type="text" [(ngModel)]="filtroAdmin" placeholder="Buscar administrador por nombre o correo..." />
+          </div>
+        </div>
+
+        <!-- LOADING ADMINS -->
+        <div class="loader-inside" *ngIf="loadingAdmins">
+          <div class="spinner-small"></div>
+          <p>Cargando administradores...</p>
+        </div>
+
+        <!-- ADMINS TABLE -->
+        <div class="table-container" *ngIf="!loadingAdmins">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo Electrónico</th>
+                <th>Fecha de Registro</th>
+                <th>Estado de Cuenta</th>
+                <th class="text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let adm of adminsFiltrados" [class.inactive-row]="!adm.estado">
+                <!-- Nombre -->
+                <td class="empresa-cell">
+                  <div class="avatar-circle">
+                    <span class="material-icons">person</span>
+                  </div>
+                  <span class="emp-name">{{ adm.nombre }}</span>
+                </td>
+                
+                <!-- Correo -->
+                <td>
+                  <span class="nit-txt">{{ adm.correo }}</span>
+                </td>
+
+                <!-- Fecha Registro -->
+                <td>
+                  <span class="dir-txt">{{ adm.createdAt | date:'dd/MM/yyyy, hh:mm a' }}</span>
+                </td>
+
+                <!-- Estado Toggle -->
+                <td>
+                  <div class="status-toggle">
+                    <label class="switch">
+                      <input type="checkbox" [checked]="adm.estado" (change)="toggleEstadoAdmin(adm, $event)" />
+                      <span class="slider round"></span>
+                    </label>
+                    <span class="status-lbl" [class.lbl-active]="adm.estado">{{ adm.estado ? 'Activo' : 'Inactivo' }}</span>
+                  </div>
+                </td>
+
+                <!-- Acciones -->
+                <td class="text-right actions-cell">
+                  <button class="btn-icon btn-edit" (click)="abrirModalEditarAdmin(adm)" title="Editar Datos">
+                    <span class="material-icons">edit</span>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="adminsFiltrados.length === 0">
+                <td colspan="5" class="empty-state">
+                  <span class="material-icons empty-icon">sentiment_dissatisfied</span>
+                  <p>No se encontraron superadministradores.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- MODAL: CREAR/EDITAR SUPERADMIN -->
+  <div class="modal-backdrop" *ngIf="mostrarModalAdmin">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>{{ modoEdicionAdmin ? 'Editar SuperAdministrador' : 'Agregar SuperAdministrador' }}</h2>
+        <button class="btn-close" (click)="cerrarModalAdmin()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form class="modal-form" (submit)="guardarAdmin()">
+          <!-- NOMBRE -->
+          <div class="form-group">
+            <label>Nombre Completo</label>
+            <div class="input-wrapper">
+              <span class="material-icons input-icon">person</span>
+              <input type="text" name="nombre" [(ngModel)]="datosAdmin.nombre" placeholder="Ej. Juan Pérez" required />
+            </div>
+          </div>
+
+          <!-- CORREO -->
+          <div class="form-group">
+            <label>Correo Electrónico</label>
+            <div class="input-wrapper">
+              <span class="material-icons input-icon">email</span>
+              <input type="email" name="correo" [(ngModel)]="datosAdmin.correo" placeholder="correo@ejemplo.com" required />
+            </div>
+          </div>
+
+          <!-- PASSWORD -->
+          <div class="form-group">
+            <label>Contraseña {{ modoEdicionAdmin ? '(Dejar en blanco para conservar actual)' : '' }}</label>
+            <div class="input-wrapper">
+              <span class="material-icons input-icon">lock</span>
+              <input type="password" name="password" [(ngModel)]="datosAdmin.password" placeholder="Contraseña de acceso" [required]="!modoEdicionAdmin" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="cerrarModalAdmin()">Cancelar</button>
+            <button type="submit" class="btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

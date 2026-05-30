@@ -26,4 +26,24 @@ export class SuperadminService {
   toggleEstadoEmpresa(id: string, estado: boolean): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/empresas/${id}/estado`, { estado });
   }
+
+  obtenerSuperAdmins(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admins`);
+  }
+
+  obtenerSuperAdminPorId(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admins/${id}`);
+  }
+
+  crearSuperAdmin(datos: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/admins`, datos);
+  }
+
+  actualizarSuperAdmin(id: string, datos: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/admins/${id}`, datos);
+  }
+
+  toggleSuperAdminEstado(id: string, estado: boolean): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/admins/${id}/estado`, { estado });
+  }
 }

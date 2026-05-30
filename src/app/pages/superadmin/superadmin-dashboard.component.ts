@@ -18,12 +18,20 @@ export class SuperadminDashboardComponent implements OnInit {
   loading = true;
   loadingEmpresas = true;
 
-  // Filtros
+  // Filtros de empresas
   filtroNombre = '';
   filtroPlan = '';
   filtroEstado = '';
 
-  // Modal de edición de suscripción
+  // Control de pestañas
+  tabActiva: 'dashboard' | 'admins' = 'dashboard';
+
+  // SuperAdministradores
+  admins: any[] = [];
+  loadingAdmins = false;
+  filtroAdmin = '';
+
+  // Modal de edición de suscripción de empresas
   mostrarModalSuscripcion = false;
   empresaSeleccionada: any = null;
   datosSuscripcion = {
@@ -31,6 +39,16 @@ export class SuperadminDashboardComponent implements OnInit {
     suscripcionEstado: '',
     fechaFinPrueba: '',
     fechaProximoCobro: ''
+  };
+
+  // Modal para CRUD de SuperAdmins
+  mostrarModalAdmin = false;
+  modoEdicionAdmin = false;
+  adminSeleccionado: any = null;
+  datosAdmin = {
+    nombre: '',
+    correo: '',
+    password: ''
   };
 
   constructor(
@@ -151,5 +169,130 @@ export class SuperadminDashboardComponent implements OnInit {
     if (!lista) return 0;
     const item = lista.find(i => i._id === key);
     return item ? item.cantidad : 0;
+  }
+
+  // ==========================================
+  // 🛠️ CRUD SUPERADMINS LÓGICA
+  // ==========================================
+
+  cargarSuperAdmins(): void {
+    this.loadingAdmins = true;
+    this.superadminService.obtenerSuperAdmins().subscribe({
+      next: (res) => {
+        this.admins = res.admins || [];
+        this.loadingAdmins = false;
+      },
+      error: (err) => {
+        console.error('Error cargando superadmins:', err);
+        this.toastr.error('No se pudo obtener el listado de administradores.');
+        this.loadingAdmins = false;
+      }
+    });
+  }
+
+  get adminsFiltrados(): any[] {
+    if (!this.filtroAdmin?.trim()) return this.admins;
+    const query = this.filtroAdmin.toLowerCase().trim();
+    return this.admins.filter(adm => 
+      adm.nombre.toLowerCase().includes(query) || 
+      adm.correo.toLowerCase().includes(query)
+    );
+  }
+
+  abrirModalCrearAdmin(): void {
+    this.modoEdicionAdmin = false;
+    this.adminSeleccionado = null;
+    this.datosAdmin = {
+      nombre: '',
+      correo: '',
+      password: ''
+    };
+    this.mostrarModalAdmin = true;
+  }
+
+  abrirModalEditarAdmin(admin: any): void {
+    this.modoEdicionAdmin = true;
+    this.adminSeleccionado = admin;
+    this.datosAdmin = {
+      nombre: admin.nombre,
+      correo: admin.correo,
+      password: '' // vacía para no sobrescribir a menos que el usuario la cambie
+    };
+    this.mostrarModalAdmin = true;
+  }
+
+  cerrarModalAdmin(): void {
+    this.mostrarModalAdmin = false;
+    this.adminSeleccionado = null;
+  }
+
+  guardarAdmin(): void {
+    if (!this.datosAdmin.nombre?.trim() || !this.datosAdmin.correo?.trim()) {
+      this.toastr.warning('El nombre y el correo electrónico son campos requeridos.');
+      return;
+    }
+
+    if (!this.modoEdicionAdmin && !this.datosAdmin.password) {
+      this.toastr.warning('La contraseña es obligatoria al crear un administrador.');
+      return;
+    }
+
+    this.loadingAdmins = true;
+
+    if (this.modoEdicionAdmin && this.adminSeleccionado) {
+      // Editar
+      const payload: any = {
+        nombre: this.datosAdmin.nombre,
+        correo: this.datosAdmin.correo
+      };
+      if (this.datosAdmin.password?.trim()) {
+        payload.password = this.datosAdmin.password;
+      }
+
+      this.superadminService.actualizarSuperAdmin(this.adminSeleccionado._id, payload).subscribe({
+        next: (res) => {
+          this.toastr.success('Superadministrador actualizado correctamente.');
+          this.cargarSuperAdmins();
+          this.cerrarModalAdmin();
+        },
+        error: (err) => {
+          console.error('Error al actualizar admin:', err);
+          this.toastr.error(err.error?.mensaje || 'No se pudo actualizar el administrador.');
+          this.loadingAdmins = false;
+        }
+      });
+    } else {
+      // Crear
+      this.superadminService.crearSuperAdmin(this.datosAdmin).subscribe({
+        next: (res) => {
+          this.toastr.success('Superadministrador registrado correctamente.');
+          this.cargarSuperAdmins();
+          this.cerrarModalAdmin();
+        },
+        error: (err) => {
+          console.error('Error al crear admin:', err);
+          this.toastr.error(err.error?.mensaje || 'No se pudo crear el administrador.');
+          this.loadingAdmins = false;
+        }
+      });
+    }
+  }
+
+  toggleEstadoAdmin(admin: any, event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const nuevoEstado = inputElement.checked;
+
+    this.superadminService.toggleSuperAdminEstado(admin._id, nuevoEstado).subscribe({
+      next: (res) => {
+        admin.estado = nuevoEstado;
+        this.toastr.success(`Superadministrador ${nuevoEstado ? 'activado' : 'desactivado'} con éxito.`);
+      },
+      error: (err) => {
+        console.error('Error al cambiar estado de admin:', err);
+        this.toastr.error(err.error?.mensaje || 'Error al cambiar el estado del administrador.');
+        // Revertir switch en la interfaz
+        inputElement.checked = !nuevoEstado;
+      }
+    });
   }
 }

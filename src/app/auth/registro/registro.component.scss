@@ -244,3 +244,47 @@ body {
   margin: 0;
   background: #f8fafc;
 }
+
+/* =======================
+   🏢 BANNER EMPRESA PRESET
+======================= */
+
+.empresa-preset-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+
+  .empresa-preset-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+  }
+
+  .empresa-preset-info {
+    display: flex;
+    flex-direction: column;
+    
+    .label {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nombre {
+      font-size: 16px;
+      color: #0f172a;
+      font-weight: 600;
+    }
+  }
+}

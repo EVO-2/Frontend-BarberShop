@@ -72,6 +72,27 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Empresa preseleccionada (Banner) -->
+      <div *ngIf="empresaPreset" class="empresa-preset-banner">
+        <img [src]="logoEmpresaPreset" alt="Logo Empresa" class="empresa-preset-logo">
+        <div class="empresa-preset-info">
+          <span class="label">Registrándote en:</span>
+          <strong class="nombre">{{ nombreEmpresaPreset || 'Cargando...' }}</strong>
+        </div>
+      </div>
+
+      <!-- Selector de Empresa (Si no viene en URL) -->
+      <mat-form-field *ngIf="!empresaPreset" class="full-width" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Selecciona la Peluquería / Barbería</mat-label>
+        <mat-icon matIconPrefix>store</mat-icon>
+        <mat-select formControlName="empresaId">
+          <mat-option *ngFor="let emp of empresas" [value]="emp._id">
+            {{ emp.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="empresaIdField?.hasError('required')">Debe seleccionar una empresa</mat-error>
+      </mat-form-field>
+
       <!-- Contraseña -->
       <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
         <mat-label>Contraseña</mat-label>

@@ -80,6 +80,10 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/registro`, nuevoUsuario);
   }
 
+  obtenerEmpresasPublicas(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/empresas`);
+  }
+
   // 🔥 Registro SaaS Multi-Tenant (Onboarding)
   registroSaaS(datosOnboarding: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/onboarding/registrar`, datosOnboarding);

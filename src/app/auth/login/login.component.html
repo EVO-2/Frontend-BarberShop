@@ -54,7 +54,7 @@
       <!-- Registro -->
       <!-- Registro -->
       <button mat-stroked-button class="full-width ripple-ionic btn-verde" type="button"
-        (click)="router.navigate(['/registro'])" matRipple>
+        (click)="router.navigate(['/registro'], { queryParamsHandling: 'merge' })" matRipple>
         Registrarse
       </button>
 

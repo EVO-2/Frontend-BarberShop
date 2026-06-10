@@ -44,7 +44,7 @@
   <!-- BOTÓN PERFIL -->
   <div class="sidebar-profile">
     <button mat-button [matMenuTriggerFor]="menu" class="profile-button">
-      <mat-icon>account_circle</mat-icon>
+      <img [src]="fotoPerfil" (error)="fotoPerfil = 'assets/img/default-avatar.png'" alt="Avatar" class="profile-avatar" />
       <span>{{ usuario?.nombre || 'Usuario' }}</span>
       <mat-icon class="ml-auto">keyboard_arrow_down</mat-icon>
     </button>

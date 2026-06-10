@@ -32,6 +32,7 @@ export class SidebarComponent implements OnInit {
   menuItems: any[] = [];
   usuario: Usuario | null = null;
   empresaLogo: string = 'assets/sede.png';
+  fotoPerfil: string = 'assets/img/default-avatar.png';
   expandedItem: string | null = null; // controla qué menú está expandido
 
   constructor(
@@ -51,6 +52,10 @@ export class SidebarComponent implements OnInit {
       } else {
         this.menuItems = [];
       }
+    });
+
+    this.authService.fotoPerfil$.subscribe((url: string) => {
+      this.fotoPerfil = url || 'assets/img/default-avatar.png';
     });
   }
 
@@ -73,6 +78,6 @@ export class SidebarComponent implements OnInit {
   // Ir a editar perfil
   // -------------------------
   irAEditarPerfil(): void {
-    this.router.navigate(['/editar-perfil']); // asegúrate de que la ruta exista
+    this.router.navigate(['/perfil']);
   }
 }

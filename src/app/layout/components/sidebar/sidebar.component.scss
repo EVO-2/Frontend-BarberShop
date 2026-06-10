@@ -209,8 +209,25 @@
         border-color: #e2e8f0;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         transform: translateY(-2px);
+
+        .profile-avatar {
+          transform: scale(1.05);
+          border-color: #1d4ed8;
+          box-shadow: 0 3px 8px rgba(29, 78, 216, 0.25);
+        }
       }
       
+      .profile-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+        border: 2px solid #2563eb;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.15);
+        transition: all 0.3s ease;
+      }
+
       .mat-icon {
         color: #64748b;
         margin-right: 10px;

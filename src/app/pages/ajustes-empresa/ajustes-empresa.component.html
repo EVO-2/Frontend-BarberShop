@@ -106,16 +106,18 @@
             <div formArrayName="horarios" class="schedule-rows-container">
               <div *ngFor="let h of horariosArray.controls; let i = index" [formGroupName]="i" class="schedule-row">
                 
-                <!-- Día -->
-                <div class="day-cell">
-                  <strong>{{ capitalizar(h.get('dia')?.value) }}</strong>
-                </div>
+                <div class="day-toggle-header">
+                  <!-- Día -->
+                  <div class="day-cell">
+                    <strong>{{ capitalizar(h.get('dia')?.value) }}</strong>
+                  </div>
 
-                <!-- Abierto / Cerrado toggle -->
-                <div class="switch-cell">
-                  <mat-slide-toggle formControlName="abierto" color="primary">
-                    {{ h.get('abierto')?.value ? 'Abierto' : 'Cerrado' }}
-                  </mat-slide-toggle>
+                  <!-- Abierto / Cerrado toggle -->
+                  <div class="switch-cell">
+                    <mat-slide-toggle formControlName="abierto" color="primary">
+                      {{ h.get('abierto')?.value ? 'Abierto' : 'Cerrado' }}
+                    </mat-slide-toggle>
+                  </div>
                 </div>
 
                 <!-- Selectores de horas (Solo visibles si está abierto) -->

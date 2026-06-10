@@ -120,13 +120,16 @@
       margin-top: 1rem;
     }
 
+    .day-toggle-header {
+      display: contents; /* Desaparece el contenedor para que día y toggle se alineen en el grid */
+    }
+
     .schedule-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 140px 140px 1fr;
       align-items: center;
-      justify-content: space-between;
       padding: 16px 0;
       border-bottom: 1px solid #f1f5f9;
-      flex-wrap: wrap;
       gap: 16px;
 
       &:last-child {
@@ -134,24 +137,24 @@
       }
 
       .day-cell {
-        flex: 1 1 120px;
         font-size: 1.05rem;
         color: #334155;
+        font-weight: 600;
       }
 
       .switch-cell {
-        flex: 0 0 120px;
+        display: flex;
+        align-items: center;
       }
 
       .hours-cell {
         display: flex;
         align-items: center;
         gap: 12px;
-        flex: 1 1 300px;
         justify-content: flex-end;
 
         .hour-select {
-          width: 120px;
+          width: 130px;
           margin-bottom: -1.25em; /* Compensar padding de material outline */
         }
 
@@ -166,7 +169,7 @@
           .closed-label {
             color: #94a3b8;
             font-size: 0.95rem;
-            font-style: italic;
+            font-weight: 500;
             background: #e2e8f0;
             padding: 4px 12px;
             border-radius: 20px;
@@ -249,27 +252,155 @@
   }
 }
 
-/* Responsive */
+::ng-deep {
+  .mat-mdc-tab-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .mat-mdc-tab {
+    font-weight: 600 !important;
+    
+    @media (max-width: 640px) {
+      padding: 0 12px !important;
+      font-size: 0.85rem !important;
+      
+      .tab-icon {
+        margin-right: 4px !important;
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+    }
+  }
+}
+
+/* Responsive Styles */
 @media (max-width: 640px) {
   .page-container {
     padding: 1rem;
-  }
-  .settings-card .tab-content {
-    padding: 1.5rem 1rem;
-  }
-  .settings-card .schedule-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    
-    .hours-cell, .hours-cell.closed-cell {
-      width: 100%;
-      justify-content: flex-start;
-      margin-top: 4px;
+
+    .header-actions {
+      margin-bottom: 1.5rem;
       
-      .hour-select {
-        flex: 1;
-        width: auto;
+      h1 {
+        font-size: 1.75rem;
+      }
+      p {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .settings-card {
+    .tab-content {
+      padding: 1.25rem 1rem !important;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    .toggle-container {
+      padding: 1.25rem !important;
+      margin-bottom: 1.5rem !important;
+
+      .toggle-label {
+        font-size: 1rem !important;
+        margin-left: 0.5rem !important;
+      }
+    }
+
+    .schedule-rows-container {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      margin-top: 0.75rem !important;
+    }
+
+    .schedule-row {
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 16px !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      margin-bottom: 12px !important;
+      gap: 12px !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+
+      &:last-child {
+        margin-bottom: 0 !important;
+      }
+
+      .day-toggle-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        border-bottom: 1px dashed #e2e8f0 !important;
+        padding-bottom: 10px !important;
+      }
+
+      .day-cell {
+        font-size: 1.05rem !important;
+        color: #1e293b !important;
+        font-weight: 700 !important;
+      }
+
+      .switch-cell {
+        display: flex !important;
+        align-items: center !important;
+      }
+
+      .hours-cell {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        gap: 10px !important;
+
+        .hour-select {
+          flex: 1 !important;
+          width: 100% !important;
+          margin-bottom: 0 !important;
+          
+          ::ng-deep .mat-mdc-form-field-wrapper {
+            padding-bottom: 0 !important;
+          }
+        }
+
+        .hour-separator {
+          color: #64748b !important;
+          font-weight: 600 !important;
+        }
+
+        &.closed-cell {
+          justify-content: center !important;
+          background: #f1f5f9 !important;
+          padding: 8px !important;
+          border-radius: 8px !important;
+          width: 100% !important;
+
+          .closed-label {
+            color: #64748b !important;
+            font-size: 0.95rem !important;
+            font-weight: 600 !important;
+            background: transparent !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+          }
+        }
+      }
+    }
+
+    .card-actions-footer {
+      padding: 1rem !important;
+      justify-content: center !important;
+
+      .btn-save {
+        width: 100% !important;
+        justify-content: center !important;
       }
     }
   }

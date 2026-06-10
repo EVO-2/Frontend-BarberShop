@@ -143,8 +143,8 @@
           <p>Obteniendo listado...</p>
         </div>
 
-        <!-- TABLE -->
-        <div class="table-container" *ngIf="!loadingEmpresas">
+        <!-- TABLE (DESKTOP VIEW) -->
+        <div class="table-container desktop-view" *ngIf="!loadingEmpresas">
           <table class="premium-table">
             <thead>
               <tr>
@@ -229,6 +229,70 @@
             </tbody>
           </table>
         </div>
+
+        <!-- CARDS (MOBILE/TABLET VIEW) -->
+        <div class="mobile-view" *ngIf="!loadingEmpresas">
+          <div class="mobile-companies-grid">
+            <div class="company-card-mobile" *ngFor="let emp of empresasFiltradas" [class.inactive-card]="!emp.estado">
+              <div class="card-header-mobile">
+                <div class="logo-circle">
+                  <img [src]="emp.logo || 'assets/sede.png'" alt="logo" />
+                </div>
+                <div class="emp-info">
+                  <span class="emp-name">{{ emp.nombre }}</span>
+                  <span class="emp-date">Registrada: {{ emp.createdAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+              
+              <div class="card-body-mobile">
+                <div class="info-row">
+                  <span class="info-label"><span class="material-icons text-subtle">badge</span> NIT</span>
+                  <span class="info-value">{{ emp.nit || 'Sin registrar' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label"><span class="material-icons text-subtle">place</span> Dirección</span>
+                  <span class="info-value">{{ emp.direccion || 'Sin dirección' }}</span>
+                </div>
+                <div class="info-row" *ngIf="emp.dueno">
+                  <span class="info-label"><span class="material-icons text-subtle">person</span> Dueño</span>
+                  <span class="info-value text-right-align">
+                    <span class="owner-name-lbl">{{ emp.dueno.nombre }}</span>
+                    <span class="owner-email-lbl">{{ emp.dueno.correo }}</span>
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label"><span class="material-icons text-subtle">store</span> Sedes</span>
+                  <span class="badge badge-light-blue">{{ emp.sedesCount }} sedes</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label"><span class="material-icons text-subtle">payments</span> Suscripción</span>
+                  <div class="subs-info">
+                    <span class="plan-label" [ngClass]="'plan-' + emp.plan">{{ emp.plan | uppercase }}</span>
+                    <span class="state-badge" [ngClass]="'state-' + emp.suscripcionEstado">{{ emp.suscripcionEstado | uppercase }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer-mobile">
+                <div class="status-toggle">
+                  <label class="switch">
+                    <input type="checkbox" [checked]="emp.estado" (change)="toggleEstadoEmpresa(emp, $event)" />
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="status-lbl" [class.lbl-active]="emp.estado">{{ emp.estado ? 'Activo' : 'Suspendido' }}</span>
+                </div>
+                <button class="btn-primary-small" (click)="abrirModalSuscripcion(emp)">
+                  <span class="material-icons">payments</span> Gestionar
+                </button>
+              </div>
+            </div>
+            
+            <div *ngIf="empresasFiltradas.length === 0" class="empty-state">
+              <span class="material-icons empty-icon">sentiment_dissatisfied</span>
+              <p>No se encontraron empresas con los filtros especificados.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -301,8 +365,8 @@
           <p>Cargando administradores...</p>
         </div>
 
-        <!-- ADMINS TABLE -->
-        <div class="table-container" *ngIf="!loadingAdmins">
+        <!-- ADMINS TABLE (DESKTOP VIEW) -->
+        <div class="table-container desktop-view" *ngIf="!loadingAdmins">
           <table class="premium-table">
             <thead>
               <tr>
@@ -359,6 +423,52 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- ADMINS CARDS (MOBILE/TABLET VIEW) -->
+        <div class="mobile-view" *ngIf="!loadingAdmins">
+          <div class="mobile-admins-grid">
+            <div class="admin-card-mobile" *ngFor="let adm of adminsFiltrados" [class.inactive-card]="!adm.estado">
+              <div class="card-header-mobile">
+                <div class="avatar-circle">
+                  <span class="material-icons">person</span>
+                </div>
+                <div class="admin-info">
+                  <span class="admin-name">{{ adm.nombre }}</span>
+                  <span class="admin-date">Registrado: {{ adm.createdAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+              
+              <div class="card-body-mobile">
+                <div class="info-row">
+                  <span class="info-label"><span class="material-icons text-subtle">email</span> Correo</span>
+                  <span class="info-value">{{ adm.correo }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label"><span class="material-icons text-subtle">schedule</span> Registro</span>
+                  <span class="info-value">{{ adm.createdAt | date:'hh:mm a' }}</span>
+                </div>
+              </div>
+
+              <div class="card-footer-mobile">
+                <div class="status-toggle">
+                  <label class="switch">
+                    <input type="checkbox" [checked]="adm.estado" (change)="toggleEstadoAdmin(adm, $event)" />
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="status-lbl" [class.lbl-active]="adm.estado">{{ adm.estado ? 'Activo' : 'Inactivo' }}</span>
+                </div>
+                <button class="btn-edit-small" (click)="abrirModalEditarAdmin(adm)">
+                  <span class="material-icons">edit</span> Editar
+                </button>
+              </div>
+            </div>
+            
+            <div *ngIf="adminsFiltrados.length === 0" class="empty-state">
+              <span class="material-icons empty-icon">sentiment_dissatisfied</span>
+              <p>No se encontraron superadministradores.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

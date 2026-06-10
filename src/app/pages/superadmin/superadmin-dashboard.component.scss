@@ -1058,3 +1058,388 @@ input:checked + .slider:before {
     }
   }
 }
+
+/* ==========================================================================
+   📱 RESPONSIVE ADJUSTMENTS & MOBILE VIEW CARDS (SaaS Dashboard)
+   ========================================================================== */
+
+/* Control de visualización responsiva de listados */
+.desktop-view {
+  display: block;
+}
+
+.mobile-view {
+  display: none;
+}
+
+/* Vista de Tarjetas Móviles para Empresas */
+.mobile-companies-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.company-card-mobile {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  &.inactive-card {
+    opacity: 0.7;
+    background-color: #f8fafc;
+    border-style: dashed;
+  }
+
+  .card-header-mobile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    .logo-circle {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .emp-info {
+      .emp-name {
+        display: block;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0f172a;
+      }
+      .emp-date {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+    }
+  }
+
+  .card-body-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 0.85rem;
+      gap: 12px;
+
+      .info-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #64748b;
+        font-weight: 500;
+        white-space: nowrap;
+
+        .material-icons {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: #94a3b8;
+        }
+      }
+
+      .info-value {
+        font-weight: 600;
+        color: #334155;
+        text-align: right;
+        word-break: break-all;
+
+        .owner-name-lbl {
+          display: block;
+          font-weight: 600;
+          color: #334155;
+        }
+        .owner-email-lbl {
+          display: block;
+          font-size: 0.75rem;
+          color: #64748b;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  .card-footer-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #e2e8f0;
+
+    .status-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .status-lbl {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #ef4444;
+
+        &.lbl-active {
+          color: #10b981;
+        }
+      }
+    }
+
+    .btn-primary-small {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(37, 99, 235, 0.08);
+      color: #2563eb;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #2563eb;
+        color: white;
+      }
+
+      .material-icons {
+        font-size: 0.95rem;
+      }
+    }
+  }
+}
+
+/* Vista de Tarjetas Móviles para Administradores */
+.mobile-admins-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.admin-card-mobile {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #cbd5e1;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  &.inactive-card {
+    opacity: 0.7;
+    background-color: #f8fafc;
+    border-style: dashed;
+  }
+
+  .card-header-mobile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    .avatar-circle {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.1);
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      .material-icons {
+        font-size: 1.5rem;
+      }
+    }
+
+    .admin-info {
+      .admin-name {
+        display: block;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0f172a;
+      }
+      .admin-date {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+    }
+  }
+
+  .card-body-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+
+      .info-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #64748b;
+        font-weight: 500;
+
+        .material-icons {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: #94a3b8;
+        }
+      }
+
+      .info-value {
+        font-weight: 600;
+        color: #334155;
+        text-align: right;
+        word-break: break-all;
+      }
+    }
+  }
+
+  .card-footer-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #e2e8f0;
+
+    .status-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .status-lbl {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #ef4444;
+
+        &.lbl-active {
+          color: #10b981;
+        }
+      }
+    }
+
+    .btn-edit-small {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: rgba(245, 158, 11, 0.08);
+      color: #d97706;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #f59e0b;
+        color: white;
+      }
+
+      .material-icons {
+        font-size: 0.95rem;
+      }
+    }
+  }
+}
+
+/* Responsividad en el menú de pestañas */
+@media (max-width: 576px) {
+  .tab-system {
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: none;
+    
+    .tab-button {
+      width: 100%;
+      justify-content: center;
+      border-radius: 8px !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      background: #f8fafc;
+      margin-bottom: 0 !important;
+      
+      &.active-tab {
+        background: rgba(59, 130, 246, 0.1);
+        box-shadow: none;
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+/* Grid de Formularios en modales adaptables */
+@media (max-width: 480px) {
+  .modal-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsividad general y Breakpoints */
+@media (max-width: 992px) {
+  .desktop-view {
+    display: none !important;
+  }
+  
+  .mobile-view {
+    display: block !important;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-card {
+    padding: 1.25rem;
+  }
+}
+

@@ -55,14 +55,29 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
     this.cargarCitas();
 
     this.pusherSubs.push(
-      this.pusherService.pagoReportado$.subscribe(() => {
-        this.cargarCitas();
+      this.pusherService.pagoReportado$.subscribe((data: any) => {
+        if (data && data.citaId) {
+          const index = this.dataSource.data.findIndex(c => c.id === data.citaId);
+          if (index !== -1) {
+            this.dataSource.data[index].estado = 'pagada';
+            this.dataSource.data = [...this.dataSource.data];
+          }
+        } else {
+          this.cargarCitas();
+        }
       })
     );
 
     this.pusherSubs.push(
-      this.pusherService.citaActualizada$.subscribe(() => {
-        this.cargarCitas();
+      this.pusherService.citaActualizada$.subscribe((data: any) => {
+        if (data && data.cita) {
+          const citaData = data.cita;
+          const index = this.dataSource.data.findIndex(c => c.id === (citaData._id || citaData.id));
+          if (index !== -1) {
+            this.dataSource.data[index] = { ...this.dataSource.data[index], ...citaData };
+            this.dataSource.data = [...this.dataSource.data];
+          }
+        }
       })
     );
   }
@@ -192,7 +207,6 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.citaService.iniciarCita(String(cita.id), peluqueroId, horaInicio).subscribe({
         next: (res: any) => {
-          this.cargarCitas();
 
           const citaActualizada = {
             ...cita,
@@ -251,14 +265,11 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
       this.citaService.finalizarCita(String(cita.id), peluqueroId, horaPayload).subscribe({
         next: (response: any) => {
           const updated: Cita = response.data || response; // ✅ soporte flexible
-          this.cargarCitas();
 
           const index = this.dataSource.data.findIndex(c => c.id === cita.id);
           if (index !== -1) {
-            this.dataSource.data[index] = { ...this.dataSource.data[index], ...updated };
+            this.dataSource.data[index] = { ...this.dataSource.data[index], ...updated, estado: updated.estado || 'finalizada' };
             this.dataSource.data = [...this.dataSource.data];
-          } else {
-            this.cargarCitas();
           }
 
           const duracion = updated?.duracionRealMin ?? 0;
@@ -403,7 +414,11 @@ private formatDuracion(minutos: number): string {
       this.citaService.cancelarCita(String(cita.id)).subscribe({
         next: () => {
           this.snack.open('❌ Cita cancelada', 'Cerrar', { duration: 3500 });
-          this.cargarCitas();
+          const index = this.dataSource.data.findIndex(c => c.id === cita.id);
+          if (index !== -1) {
+            this.dataSource.data[index].estado = 'cancelada';
+            this.dataSource.data = [...this.dataSource.data];
+          }
         },
         error: (err) => {
           const msg = err?.error?.mensaje || err.message || 'Error al cancelar cita';

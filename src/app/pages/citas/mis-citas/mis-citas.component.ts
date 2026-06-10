@@ -59,15 +59,30 @@ export class MisCitasComponent implements OnInit, OnDestroy {
 
     // Escuchar pagos en tiempo real
     this.pusherSubs.push(
-      this.pusherService.pagoReportado$.subscribe(() => {
-        this.cargarCitas(); // Recargar la tabla si alguien reporta un pago
+      this.pusherService.pagoReportado$.subscribe((data: any) => {
+        if (data && data.citaId) {
+          const index = this.citas.findIndex(c => c._id === data.citaId);
+          if (index !== -1) {
+            this.citas[index].estado = 'pagada';
+            this.citasFiltradas = [...this.citas];
+          }
+        } else {
+          this.cargarCitas();
+        }
       })
     );
 
     // Escuchar cambios de estado en tiempo real
     this.pusherSubs.push(
-      this.pusherService.citaActualizada$.subscribe(() => {
-        this.cargarCitas(); // Recargar la tabla si la cita cambia de estado
+      this.pusherService.citaActualizada$.subscribe((data: any) => {
+        if (data && data.cita) {
+          const citaData = data.cita;
+          const index = this.citas.findIndex(c => c._id === (citaData._id || citaData.id));
+          if (index !== -1) {
+            this.citas[index] = { ...this.citas[index], ...citaData };
+            this.citasFiltradas = [...this.citas];
+          }
+        }
       })
     );
   }
@@ -243,7 +258,12 @@ export class MisCitasComponent implements OnInit, OnDestroy {
         this.citaService.calificarCita(cita._id, result.value.calificacion, result.value.comentario_calificacion).subscribe({
           next: (res) => {
             this.snackBar.open('¡Gracias por tu calificación!', 'Cerrar', { duration: 4000 });
-            this.cargarCitas();
+            const index = this.citas.findIndex(c => c._id === cita._id);
+            if (index !== -1) {
+              this.citas[index].calificacion = result.value.calificacion;
+              this.citas[index].comentario_calificacion = result.value.comentario_calificacion;
+              this.citasFiltradas = [...this.citas];
+            }
           },
           error: (err) => {
             this.snackBar.open(err.error?.mensaje || 'Error al guardar la calificación', 'Cerrar', { duration: 4000 });

@@ -13,6 +13,7 @@ export class FooterComponent implements OnInit {
   direccion: string = 'Calle 7 # 64-24 Apt 101';
   telefono: string = '310 460 6301';
   email: string = 'jhonedward.valencia6218@gmail.com';
+  esSuperAdmin: boolean = false;
   
   // Lista de horarios dinámica por defecto (Lunes - Domingo)
   horarios: HorarioDia[] = [
@@ -32,22 +33,50 @@ export class FooterComponent implements OnInit {
   ngOnInit() {
     this.authService.usuario$.subscribe(usuario => {
       if (usuario) {
-        this.empresaNombre = usuario.empresaNombre || 'Style Manager';
-        this.empresaLogo = usuario.empresaLogo || 'assets/sede.png';
-        
-        // Si el empresaId es el objeto completo de la empresa poblado desde el perfil
-        if (usuario.empresaId && typeof usuario.empresaId === 'object') {
-          const emp = usuario.empresaId;
-          this.direccion = emp.direccion || this.direccion;
-          this.telefono = emp.telefono || this.telefono;
-          this.email = emp.email || this.email;
+        const rol = typeof usuario.rol === 'string' ? usuario.rol : (usuario.rol?.nombre || '');
+        this.esSuperAdmin = rol.toLowerCase() === 'superadmin';
+
+        if (this.esSuperAdmin) {
+          this.empresaNombre = usuario.nombre || 'Super Administrador';
+          this.email = usuario.correo || 'jhonedward.valencia6218@gmail.com';
+          this.direccion = '';
+          this.telefono = '';
+          this.empresaLogo = 'assets/sede.png';
+        } else {
+          this.empresaNombre = usuario.empresaNombre || 'Style Manager';
+          this.empresaLogo = usuario.empresaLogo || 'assets/sede.png';
           
-          if (emp.horarios && emp.horarios.length > 0) {
-            this.horarios = emp.horarios;
+          // Si el empresaId es el objeto completo de la empresa poblado desde el perfil
+          if (usuario.empresaId && typeof usuario.empresaId === 'object') {
+            const emp = usuario.empresaId;
+            this.direccion = emp.direccion || 'Calle 7 # 64-24 Apt 101';
+            this.telefono = emp.telefono || '310 460 6301';
+            this.email = emp.email || 'jhonedward.valencia6218@gmail.com';
+            
+            if (emp.horarios && emp.horarios.length > 0) {
+              this.horarios = emp.horarios;
+            }
+          } else {
+            this.direccion = 'Calle 7 # 64-24 Apt 101';
+            this.telefono = '310 460 6301';
+            this.email = 'jhonedward.valencia6218@gmail.com';
           }
         }
+      } else {
+        this.esSuperAdmin = false;
+        this.empresaNombre = 'Style Manager';
+        this.empresaLogo = 'assets/sede.png';
+        this.direccion = 'Calle 7 # 64-24 Apt 101';
+        this.telefono = '310 460 6301';
+        this.email = 'jhonedward.valencia6218@gmail.com';
       }
       this.procesarHorarios();
+    });
+
+    this.authService.fotoPerfil$.subscribe(url => {
+      if (this.esSuperAdmin) {
+        this.empresaLogo = url && !url.includes('default-avatar.png') ? url : 'assets/sede.png';
+      }
     });
   }
 

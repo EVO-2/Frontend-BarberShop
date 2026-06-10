@@ -9,7 +9,7 @@
       </div>
       <p class="slogan">Potenciado por Style Manager. Forjando tu estilo, perfeccionando tu imagen.
       </p>
-      <div class="contact-inline">
+      <div class="contact-inline" *ngIf="direccion">
         <mat-icon>location_on</mat-icon>
         <span>{{ direccion }}</span>
       </div>
@@ -19,7 +19,7 @@
     <div class="footer-section contact-section">
       <h3>Contacto Directo</h3>
       <ul>
-        <li>
+        <li *ngIf="telefono">
           <mat-icon>phone_android</mat-icon>
           <div class="contact-details">
             <a [href]="'tel:' + telefono">{{ telefono }}</a>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Enlaces / Info -->
-    <div class="footer-section links-section">
+    <div class="footer-section links-section" *ngIf="!esSuperAdmin">
       <h3>Horario de Atención</h3>
       <ul class="schedule-list">
         <li *ngFor="let h of horariosProcesados">

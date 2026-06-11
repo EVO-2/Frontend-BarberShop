@@ -57,20 +57,6 @@ export class MisCitasComponent implements OnInit, OnDestroy {
     this.userRole = this.authService.obtenerRol();
     this.cargarCitas();
 
-    // Escuchar pagos en tiempo real
-    this.pusherSubs.push(
-      this.pusherService.pagoReportado$.subscribe((data: any) => {
-        if (data && data.citaId) {
-          const index = this.citas.findIndex(c => c._id === data.citaId);
-          if (index !== -1) {
-            this.citas[index].estado = 'pagada';
-            this.citasFiltradas = [...this.citas];
-          }
-        } else {
-          this.cargarCitas();
-        }
-      })
-    );
 
     // Escuchar cambios de estado en tiempo real
     this.pusherSubs.push(
@@ -265,8 +251,16 @@ export class MisCitasComponent implements OnInit, OnDestroy {
       }
     }).then((result) => {
       if (result.isConfirmed && result.value) {
+        Swal.fire({
+          title: 'Enviando calificación...',
+          text: 'Por favor, espera.',
+          allowOutsideClick: false,
+          didOpen: () => { Swal.showLoading(); }
+        });
+
         this.citaService.calificarCita(cita._id, result.value.calificacion, result.value.comentario_calificacion).subscribe({
           next: (res) => {
+            Swal.close();
             this.snackBar.open('¡Gracias por tu calificación!', 'Cerrar', { duration: 4000 });
             const index = this.citas.findIndex(c => c._id === cita._id);
             if (index !== -1) {
@@ -276,7 +270,8 @@ export class MisCitasComponent implements OnInit, OnDestroy {
             }
           },
           error: (err) => {
-            this.snackBar.open(err.error?.mensaje || 'Error al guardar la calificación', 'Cerrar', { duration: 4000 });
+            Swal.close();
+            this.snackBar.open(err.error?.mensaje || 'Error al enviar la calificación.', 'Cerrar', { duration: 4000 });
           }
         });
       }

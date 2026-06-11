@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CitaService } from 'src/app/shared/services/cita.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pago-dialog',
@@ -91,10 +92,18 @@ export class PagoDialogComponent {
 
     const { monto, metodo, observaciones } = this.pagoForm.getRawValue();
 
+    Swal.fire({
+      title: 'Procesando pago...',
+      text: 'Por favor espera un momento.',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(); }
+    });
+
     if (this.data.userRole === 'cliente') {
       this.citaService.reportarPago(cita._id, metodo, observaciones, this.archivoComprobante || undefined)
         .subscribe({
           next: (citaActualizada) => {
+            Swal.close();
             this.loading = false;
             this.dialogRef.close({
               reportado: true,
@@ -102,6 +111,7 @@ export class PagoDialogComponent {
             });
           },
           error: (err) => {
+            Swal.close();
             this.loading = false;
             console.error('Error al reportar el pago:', err);
             console.error('Backend error:', err?.error);
@@ -112,6 +122,7 @@ export class PagoDialogComponent {
       this.citaService.pagarCita(cita._id, monto, metodo)
         .subscribe({
           next: (citaActualizada) => {
+            Swal.close();
             this.loading = false;
             this.dialogRef.close({
               pagado: true,
@@ -119,6 +130,7 @@ export class PagoDialogComponent {
             });
           },
           error: (err) => {
+            Swal.close();
             this.loading = false;
             console.error('Error al pagar:', err);
             console.error('Backend error:', err?.error);

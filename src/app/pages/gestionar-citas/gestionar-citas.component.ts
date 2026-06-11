@@ -19,6 +19,7 @@ import { CitaService } from 'src/app/shared/services/cita.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ConfirmDialogComponent, ConfirmDialogData } from 'src/app/shared/components/confirm-dialog/confirm-dialog.component';
 import { Cita } from 'src/app/shared/models/cita.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-gestionar-citas',
@@ -54,19 +55,6 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit(): void {
     this.cargarCitas();
 
-    this.pusherSubs.push(
-      this.pusherService.pagoReportado$.subscribe((data: any) => {
-        if (data && data.citaId) {
-          const index = this.dataSource.data.findIndex(c => c.id === data.citaId);
-          if (index !== -1) {
-            this.dataSource.data[index].estado = 'pagada';
-            this.dataSource.data = [...this.dataSource.data];
-          }
-        } else {
-          this.cargarCitas();
-        }
-      })
-    );
 
     this.pusherSubs.push(
       this.pusherService.citaActualizada$.subscribe((data: any) => {
@@ -215,8 +203,16 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
 
       const horaInicio = this.obtenerHoraActual();
 
+      Swal.fire({
+        title: 'Iniciando cita...',
+        text: 'Por favor, espera un momento.',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
       this.citaService.iniciarCita(String(cita.id), peluqueroId, horaInicio).subscribe({
         next: (res: any) => {
+          Swal.close();
 
           const citaActualizada = {
             ...cita,
@@ -237,6 +233,7 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
           this.snack.open('✅ Cita iniciada', 'Cerrar', { duration: 3500 });
         },
         error: (err: any) => {
+          Swal.close();
           this.snack.open(err.error?.mensaje || `❌ Error al iniciar cita`, 'Cerrar', { duration: 3500 });
           this.cargarCitas();
         }
@@ -272,8 +269,16 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
       const horaFin = `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
       const horaPayload = horaFin && horaFin.trim() !== '' ? horaFin.trim() : undefined;
 
+      Swal.fire({
+        title: 'Finalizando cita...',
+        text: 'Por favor, espera un momento.',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
       this.citaService.finalizarCita(String(cita.id), peluqueroId, horaPayload).subscribe({
         next: (response: any) => {
+          Swal.close();
           const updated: Cita = response.data || response; // ✅ soporte flexible
 
           const index = this.dataSource.data.findIndex(c => c.id === cita.id);
@@ -288,6 +293,7 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
           this.snack.open(`✅ Cita finalizada — duración: ${duracionFormateada}`, 'Cerrar', { duration: 3500 });
         },
         error: (err) => {
+          Swal.close();
           this.snack.open(err.error?.mensaje || `❌ Error al finalizar cita`, 'Cerrar', { duration: 3500 });
           this.cargarCitas();
         }
@@ -421,8 +427,16 @@ private formatDuracion(minutos: number): string {
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
 
+      Swal.fire({
+        title: 'Cancelando cita...',
+        text: 'Por favor, espera un momento.',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
       this.citaService.cancelarCita(String(cita.id)).subscribe({
         next: () => {
+          Swal.close();
           this.snack.open('❌ Cita cancelada', 'Cerrar', { duration: 3500 });
           const index = this.dataSource.data.findIndex(c => c.id === cita.id);
           if (index !== -1) {
@@ -431,6 +445,7 @@ private formatDuracion(minutos: number): string {
           }
         },
         error: (err) => {
+          Swal.close();
           const msg = err?.error?.mensaje || err.message || 'Error al cancelar cita';
           this.snack.open(`⚠️ ${msg}`, 'Cerrar', { duration: 3500 });
         }

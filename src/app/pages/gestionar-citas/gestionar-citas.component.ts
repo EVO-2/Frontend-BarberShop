@@ -77,6 +77,8 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
             this.dataSource.data[index] = { ...this.dataSource.data[index], ...citaData };
             this.dataSource.data = [...this.dataSource.data];
           }
+        } else {
+          this.cargarCitas();
         }
       })
     );

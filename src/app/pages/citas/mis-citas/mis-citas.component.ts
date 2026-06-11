@@ -82,6 +82,8 @@ export class MisCitasComponent implements OnInit, OnDestroy {
             this.citas[index] = { ...this.citas[index], ...citaData };
             this.citasFiltradas = [...this.citas];
           }
+        } else {
+          this.cargarCitas();
         }
       })
     );

@@ -82,6 +82,14 @@ export class MisCitasComponent implements OnInit, OnDestroy {
             this.citas[index] = { ...this.citas[index], ...citaData };
             this.citasFiltradas = [...this.citas];
           }
+        } else if (data && data.citaId && data.nuevoEstado) {
+          const index = this.citas.findIndex(c => c._id === data.citaId);
+          if (index !== -1) {
+            this.citas[index].estado = data.nuevoEstado;
+            this.citasFiltradas = [...this.citas];
+          } else {
+            this.cargarCitas();
+          }
         } else {
           this.cargarCitas();
         }

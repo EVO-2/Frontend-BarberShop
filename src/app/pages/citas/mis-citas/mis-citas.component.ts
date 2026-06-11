@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CitaService } from 'src/app/shared/services/cita.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CitaUpdateDialogComponent } from 'src/app/pages/citas/cita-update-dialog/cita-update-dialog.component';
@@ -50,7 +50,8 @@ export class MisCitasComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private authService: AuthService,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -67,12 +68,14 @@ export class MisCitasComponent implements OnInit, OnDestroy {
           if (index !== -1) {
             this.citas[index] = { ...this.citas[index], ...citaData };
             this.citasFiltradas = [...this.citas];
+            this.cd.detectChanges();
           }
         } else if (data && data.citaId && data.nuevoEstado) {
           const index = this.citas.findIndex(c => c._id === data.citaId);
           if (index !== -1) {
             this.citas[index].estado = data.nuevoEstado;
             this.citasFiltradas = [...this.citas];
+            this.cd.detectChanges();
           } else {
             this.cargarCitas();
           }
@@ -267,6 +270,7 @@ export class MisCitasComponent implements OnInit, OnDestroy {
               this.citas[index].calificacion = result.value.calificacion;
               this.citas[index].comentario_calificacion = result.value.comentario_calificacion;
               this.citasFiltradas = [...this.citas];
+              this.cd.detectChanges();
             }
           },
           error: (err) => {

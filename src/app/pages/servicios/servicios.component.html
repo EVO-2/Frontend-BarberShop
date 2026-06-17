@@ -10,7 +10,7 @@
   </div>
 
   <div class="tabla-container" *ngIf="!cargando; else cargandoTpl">
-    <table mat-table [dataSource]="servicios" class="mat-elevation-z8 tabla-servicios">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 tabla-servicios">
 
       <!-- # -->
       <ng-container matColumnDef="#">
@@ -89,7 +89,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <div *ngIf="servicios.length === 0" class="no-data">
+    <div *ngIf="dataSource.data.length === 0" class="no-data">
       <mat-icon>info</mat-icon>
       No hay servicios registrados.
     </div>

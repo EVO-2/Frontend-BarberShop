@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
 import { ServiciosService, Servicio } from 'src/app/core/services/servicios.service';
 import { ServicioCardDialogComponent } from 'src/app/shared/components/servicio-card-dialog/servicio-card-dialog.component';
 import { ServicioDialogComponent } from 'src/app/shared/components/servicio-dialog/servicio-dialog.component';
@@ -11,7 +12,7 @@ import { ServicioDialogComponent } from 'src/app/shared/components/servicio-dial
   styleUrls: ['./servicios.component.scss']
 })
 export class ServiciosComponent implements OnInit {
-  servicios: Servicio[] = [];
+  dataSource = new MatTableDataSource<Servicio>([]);
   displayedColumns: string[] = ['#', 'nombre', 'duracion', 'precio', 'estado', 'acciones'];
   cargando = false;
 
@@ -31,7 +32,7 @@ export class ServiciosComponent implements OnInit {
     this.cargando = true;
     this.serviciosService.obtenerServicios().subscribe({
       next: (data) => {
-        this.servicios = Array.isArray(data) ? data : data?.servicios || [];
+        this.dataSource.data = Array.isArray(data) ? data : data?.servicios || [];
         this.cargando = false;
       },
       error: () => {
@@ -75,7 +76,7 @@ export class ServiciosComponent implements OnInit {
       this.serviciosService.crearServicio(formData).subscribe({
         next: (respuesta) => {
           const nuevoServicio = respuesta.data;
-          this.servicios = [nuevoServicio, ...this.servicios];
+          this.dataSource.data = [nuevoServicio, ...this.dataSource.data];
           this.snackBar.open('✅ Servicio creado correctamente', 'Cerrar', {
             duration: 3000,
             panelClass: ['snack-success']
@@ -149,8 +150,11 @@ export class ServiciosComponent implements OnInit {
 
         this.serviciosService.actualizarServicio(servicio._id!, formData).subscribe({
           next: (servicioActualizado) => {
-            const index = this.servicios.findIndex(s => s._id === servicio._id);
-            if (index !== -1) this.servicios[index] = servicioActualizado.data;
+            const index = this.dataSource.data.findIndex(s => s._id === servicio._id);
+            if (index !== -1) {
+              this.dataSource.data[index] = servicioActualizado.data;
+              this.dataSource.data = [...this.dataSource.data];
+            }
 
             this.snackBar.open('✅ Servicio actualizado correctamente', 'Cerrar', {
               duration: 3000,
@@ -185,6 +189,7 @@ export class ServiciosComponent implements OnInit {
     this.serviciosService.cambiarEstadoServicio(idServicio, nuevoEstado).subscribe({
       next: () => {
         (servicio as any).estado = nuevoEstado;
+        this.dataSource.data = [...this.dataSource.data];
         this.snackBar.open(
           `Servicio ${nuevoEstado ? 'activado' : 'desactivado'} correctamente`,
           'Cerrar',

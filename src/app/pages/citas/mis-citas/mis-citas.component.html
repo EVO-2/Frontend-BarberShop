@@ -134,9 +134,14 @@
               <mat-icon>edit</mat-icon>
             </button>
 
-            <button *ngIf="cita.estado === 'finalizada'" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" [matTooltip]="userRole === 'cliente' ? 'Reportar Pago' : 'Confirmar Pago'">
+            <button *ngIf="cita.estado === 'finalizada' && !(userRole === 'cliente' && cita.pago?.estado === 'reportado')" mat-icon-button color="accent" (click)="abrirPagoDialog(cita)" [matTooltip]="userRole === 'cliente' ? 'Reportar Pago' : 'Confirmar Pago'">
               <mat-icon>{{ userRole === 'cliente' ? 'receipt' : (cita.pago?.estado === 'reportado' ? 'fact_check' : 'payment') }}</mat-icon>
             </button>
+
+            <!-- ⭐️ Badge de "En Revisión" para el cliente -->
+            <span *ngIf="cita.estado === 'finalizada' && userRole === 'cliente' && cita.pago?.estado === 'reportado'" class="estado-badge" style="background-color: #e0f2f1; color: #00897b; margin-left: 5px;" matTooltip="Tu comprobante está en revisión">
+              En revisión
+            </span>
 
             <!-- ⭐️ Botón para calificar servicio (Solo cliente, si está finalizada/pagada y no tiene calificación) -->
             <button *ngIf="(cita.estado === 'finalizada' || cita.estado === 'pagada') && userRole === 'cliente' && !cita.calificacion" mat-icon-button class="btn-calificar" (click)="calificarCita(cita)" matTooltip="Calificar Servicio">
@@ -204,10 +209,14 @@
           Editar
         </button>
 
-        <button *ngIf="cita.estado === 'finalizada'" mat-button color="accent" (click)="abrirPagoDialog(cita)">
+        <button *ngIf="cita.estado === 'finalizada' && !(userRole === 'cliente' && cita.pago?.estado === 'reportado')" mat-button color="accent" (click)="abrirPagoDialog(cita)">
           <mat-icon *ngIf="userRole !== 'cliente' && cita.pago?.estado === 'reportado'">fact_check</mat-icon>
           {{ userRole === 'cliente' ? 'Reportar Pago' : (cita.pago?.estado === 'reportado' ? 'Confirmar Pago' : 'Cobrar') }}
         </button>
+
+        <span *ngIf="cita.estado === 'finalizada' && userRole === 'cliente' && cita.pago?.estado === 'reportado'" class="estado-badge" style="background-color: #e0f2f1; color: #00897b; font-size: 13px; align-self: center;" matTooltip="Tu comprobante está en revisión">
+          En revisión
+        </span>
 
         <!-- ⭐️ Calificar (Mobile) -->
         <button *ngIf="(cita.estado === 'finalizada' || cita.estado === 'pagada') && userRole === 'cliente' && !cita.calificacion" mat-button class="btn-calificar" (click)="calificarCita(cita)">

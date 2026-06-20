@@ -133,6 +133,16 @@ export class MisCitasComponent implements OnInit, OnDestroy {
     });
   }
 
+  get totalComisiones(): number {
+    if (!this.citasFiltradas) return 0;
+    return this.citasFiltradas.reduce((acc, cita) => {
+      if (cita.estado === 'pagada' && cita.comisionPeluquero) {
+        return acc + cita.comisionPeluquero;
+      }
+      return acc;
+    }, 0);
+  }
+
   getServicios(cita: any): string {
     if (!cita?.servicios?.length) return '';
     return cita.servicios.map((s: any) => s?.nombre || '').join(', ');

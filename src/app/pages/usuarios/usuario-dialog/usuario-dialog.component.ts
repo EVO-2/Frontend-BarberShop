@@ -108,7 +108,8 @@ export class UsuarioDialogComponent implements OnInit {
       especialidades: [[]],
       experiencia: [0, [Validators.min(0), Validators.pattern('^[0-9]+$')]],
       sede: [''],
-      puestoTrabajo: [null]
+      puestoTrabajo: [null],
+      tipoContrato: ['herramientas_empresa', Validators.required]
     }, {
       validators: passwordsIguales('password', 'confirmarPassword')
     });
@@ -172,6 +173,7 @@ export class UsuarioDialogComponent implements OnInit {
           especialidades: detalles.especialidades || [],
           experiencia: detalles.experiencia || 0,
           sede: detalles.sede?._id || detalles.sede,
+          tipoContrato: detalles.tipoContrato || 'herramientas_empresa',
         });
 
         if (usuarioCompleto.foto) {
@@ -242,7 +244,8 @@ export class UsuarioDialogComponent implements OnInit {
         especialidades: formValues.especialidades,
         experiencia: formValues.experiencia,
         sede: formValues.sede,
-        puestoTrabajo: formValues.puestoTrabajo
+        puestoTrabajo: formValues.puestoTrabajo,
+        tipoContrato: formValues.tipoContrato
       }
     };
 

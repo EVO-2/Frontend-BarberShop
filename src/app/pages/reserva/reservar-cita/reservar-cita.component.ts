@@ -184,7 +184,20 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
       fecha: ['', Validators.required],
       hora: ['', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]],
       servicios: [[], Validators.required],
-      observaciones: ['']
+      observaciones: [''],
+      esDomicilio: [false],
+      direccionDomicilio: ['']
+    });
+
+    // Validar dirección si es a domicilio
+    this.reservarForm.get('esDomicilio')?.valueChanges.subscribe(isDom => {
+      const dirCtrl = this.reservarForm.get('direccionDomicilio');
+      if (isDom) {
+        dirCtrl?.setValidators([Validators.required]);
+      } else {
+        dirCtrl?.clearValidators();
+      }
+      dirCtrl?.updateValueAndValidity();
     });
   }
 
@@ -214,6 +227,28 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
 
     this.serviciosArray.setValue(current);
     this.serviciosArray.markAsTouched();
+  }
+
+  get esDomicilioSelected(): boolean {
+    return !!this.reservarForm.get('esDomicilio')?.value;
+  }
+
+  get subtotalServicios(): number {
+    const selectedIds = this.serviciosArray?.value || [];
+    let subtotal = 0;
+    for (const id of selectedIds) {
+      const s = this.servicios.find(sv => sv._id === id);
+      if (s) subtotal += s.precio || 0;
+    }
+    return subtotal;
+  }
+
+  get recargoDomicilio(): number {
+    return this.esDomicilioSelected ? this.subtotalServicios * 0.20 : 0;
+  }
+
+  get totalCita(): number {
+    return this.subtotalServicios + this.recargoDomicilio;
   }
 
   toggleServicioOnCard(id: string, event: Event) {
@@ -546,7 +581,9 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
           servicios: datos.servicios,
           fecha: fechaBase.toISOString(),
           hora: datos.hora,
-          observacion: datos.observaciones || ''
+          observacion: datos.observaciones || '',
+          esDomicilio: datos.esDomicilio,
+          direccionDomicilio: datos.esDomicilio ? datos.direccionDomicilio : null
         };
 
         if (clienteId) {

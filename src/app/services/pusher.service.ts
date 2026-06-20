@@ -181,6 +181,10 @@ export class PusherService {
         }
       }
 
+      // Reproducir sonido de notificación (para el profesional/admin)
+      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+      audio.play().catch(e => console.warn('El navegador bloqueó el sonido (autoplay):', e));
+
       // 1. Notificar visualmente
       this.toastr.info(`Ref: ${data.observaciones || 'Sin referencia'}`, data.mensaje || 'Pago Reportado', {
         timeOut: 8000,

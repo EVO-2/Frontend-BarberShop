@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -60,6 +60,7 @@ import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscripcion-vencida.component';
 import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.component';
 import { LandingComponent } from './pages/landing/landing.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -124,6 +125,12 @@ import { LandingComponent } from './pages/landing/landing.component';
       timeOut: 8000,
       positionClass: 'toast-top-right',
       preventDuplicates: true,
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
     })
   ],
   providers: [

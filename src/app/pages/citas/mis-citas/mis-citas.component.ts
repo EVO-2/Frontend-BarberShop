@@ -84,6 +84,22 @@ export class MisCitasComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    // Escuchar pagos reportados para actualizar el estado
+    this.pusherSubs.push(
+      this.pusherService.pagoReportado$.subscribe((data: any) => {
+        if (data && data.citaId) {
+          const index = this.citas.findIndex(c => c._id === data.citaId);
+          if (index !== -1) {
+            this.citas[index].estado = 'reportado';
+            this.citasFiltradas = [...this.citas];
+            this.cd.detectChanges();
+          } else {
+            this.cargarCitas();
+          }
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {

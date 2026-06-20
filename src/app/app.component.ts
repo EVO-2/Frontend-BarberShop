@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { PusherService } from './services/pusher.service';
 import { AuthService } from './auth/auth.service';
+import { PushNotificationService } from './services/push-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent implements OnInit {
   constructor(
     private pusherService: PusherService,
     private authService: AuthService,
+    private pushNotificationService: PushNotificationService,
     private titleService: Title,
     @Inject(DOCUMENT) private document: Document
   ) {
@@ -33,6 +35,10 @@ export class AppComponent implements OnInit {
           link.href = usuario.empresaLogo;
           this.document.getElementsByTagName('head')[0].appendChild(link);
         }
+
+        // Solicitar permisos de notificación push para el usuario logueado
+        this.pushNotificationService.requestSubscription();
+
       } else {
         this.titleService.setTitle('Style Manager SaaS');
       }

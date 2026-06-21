@@ -58,18 +58,24 @@ export class GestionarCitasComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.pusherSubs.push(
       this.pusherService.citaActualizada$.subscribe((data: any) => {
-        if (data && data.cita) {
-          const citaData = data.cita;
-          const index = this.dataSource.data.findIndex(c => c.id === (citaData._id || citaData.id));
+        if (data && data.citaId) {
+          const index = this.dataSource.data.findIndex(c => c.id === data.citaId || c.id === data.cita?._id);
           if (index !== -1) {
-            this.dataSource.data[index] = { ...this.dataSource.data[index], ...citaData };
-            this.dataSource.data = [...this.dataSource.data];
-            this.cd.detectChanges();
-          }
-        } else if (data && data.citaId && data.nuevoEstado) {
-          const index = this.dataSource.data.findIndex(c => c.id === data.citaId);
-          if (index !== -1) {
-            this.dataSource.data[index].estado = data.nuevoEstado;
+            if (data.cita) {
+              this.dataSource.data[index] = { ...this.dataSource.data[index], ...data.cita };
+            }
+            if (data.nuevoEstado) {
+              this.dataSource.data[index].estado = data.nuevoEstado;
+            }
+            if (data.calificacion !== undefined) {
+              this.dataSource.data[index].calificacion = data.calificacion;
+            }
+            if (data.comentario_calificacion !== undefined) {
+              this.dataSource.data[index].comentario_calificacion = data.comentario_calificacion;
+            }
+            if (data.pago !== undefined) {
+              this.dataSource.data[index].pago = { ...this.dataSource.data[index].pago, ...data.pago };
+            }
             this.dataSource.data = [...this.dataSource.data];
             this.cd.detectChanges();
           } else {

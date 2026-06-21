@@ -62,18 +62,24 @@ export class MisCitasComponent implements OnInit, OnDestroy {
     // Escuchar cambios de estado en tiempo real
     this.pusherSubs.push(
       this.pusherService.citaActualizada$.subscribe((data: any) => {
-        if (data && data.cita) {
-          const citaData = data.cita;
-          const index = this.citas.findIndex(c => c._id === (citaData._id || citaData.id));
+        if (data && data.citaId) {
+          const index = this.citas.findIndex(c => c._id === data.citaId || c._id === data.cita?._id);
           if (index !== -1) {
-            this.citas[index] = { ...this.citas[index], ...citaData };
-            this.citasFiltradas = [...this.citas];
-            this.cd.detectChanges();
-          }
-        } else if (data && data.citaId && data.nuevoEstado) {
-          const index = this.citas.findIndex(c => c._id === data.citaId);
-          if (index !== -1) {
-            this.citas[index].estado = data.nuevoEstado;
+            if (data.cita) {
+              this.citas[index] = { ...this.citas[index], ...data.cita };
+            }
+            if (data.nuevoEstado) {
+              this.citas[index].estado = data.nuevoEstado;
+            }
+            if (data.calificacion !== undefined) {
+              this.citas[index].calificacion = data.calificacion;
+            }
+            if (data.comentario_calificacion !== undefined) {
+              this.citas[index].comentario_calificacion = data.comentario_calificacion;
+            }
+            if (data.pago !== undefined) {
+              this.citas[index].pago = { ...this.citas[index].pago, ...data.pago };
+            }
             this.citasFiltradas = [...this.citas];
             this.cd.detectChanges();
           } else {
@@ -91,12 +97,8 @@ export class MisCitasComponent implements OnInit, OnDestroy {
         if (data && data.citaId) {
           const index = this.citas.findIndex(c => c._id === data.citaId);
           if (index !== -1) {
-            if (!this.citas[index].pago) {
-              this.citas[index].pago = {};
-            }
-            this.citas[index].pago.estado = 'reportado';
-            this.citasFiltradas = [...this.citas];
-            this.cd.detectChanges();
+            // Se elimina la asignación forzada a "reportado" para no sobreescribir pagos confirmados.
+            // La actualización de estado de pago la maneja citaActualizada$.
             
             // Reproducir sonido de notificación
             const audio = new Audio('assets/sounds/notification.mp3');

@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 export class PushNotificationService {
   
   // Llave VAPID Pública (igual que en backend)
-  private readonly VAPID_PUBLIC_KEY = 'BCPrerzZwG4YNbXv4SgFPjSENfeiwbOVtvD2BqTtHg92wUWcjuPUeAteU4K2wQg6Jq3TI2g26efsDbdURnlMT3Q';
+  private readonly VAPID_PUBLIC_KEY = 'BLvxEl0wVb9uPrwjNS0-1GX-2XfLojBIhXlFkNyVtIWRjKDvUO1Otvewg3Ics5JVhxO3uWrb1Esds-AlT2QPZJg';
 
   constructor(
     private swPush: SwPush,

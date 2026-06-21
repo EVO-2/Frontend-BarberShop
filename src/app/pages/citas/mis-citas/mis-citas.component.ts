@@ -97,6 +97,12 @@ export class MisCitasComponent implements OnInit, OnDestroy {
             this.citas[index].pago.estado = 'reportado';
             this.citasFiltradas = [...this.citas];
             this.cd.detectChanges();
+            
+            // Reproducir sonido de notificación
+            const audio = new Audio('assets/sounds/notification.mp3');
+            audio.play().catch(e => console.warn('No se pudo reproducir el sonido automáticamente', e));
+            
+            this.snackBar.open('💰 ' + (data.mensaje || '¡Nuevo comprobante de pago recibido!'), 'Cerrar', { duration: 5000 });
           } else {
             this.cargarCitas();
           }

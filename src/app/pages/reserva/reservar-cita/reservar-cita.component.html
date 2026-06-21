@@ -170,7 +170,7 @@
       ¿Servicio a domicilio?
     </mat-slide-toggle>
     <p class="domicilio-warning" *ngIf="esDomicilioSelected" style="color: #f44336; font-size: 0.85rem; margin-top: 0.5rem;">
-      * Se aplicará un recargo del 20% al valor total de los servicios.
+      * Se aplicará un recargo del 35% al valor total de los servicios.
     </p>
   </div>
 
@@ -195,7 +195,7 @@
       <strong>${{ subtotalServicios }}</strong>
     </div>
     <div *ngIf="esDomicilioSelected" style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #f44336;">
-      <span>Recargo Domicilio (20%):</span>
+      <span>Recargo Domicilio (35%):</span>
       <strong>+ ${{ recargoDomicilio }}</strong>
     </div>
     <mat-divider style="margin: 0.5rem 0;"></mat-divider>

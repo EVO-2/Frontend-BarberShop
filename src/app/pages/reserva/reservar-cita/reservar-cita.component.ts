@@ -244,7 +244,7 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
   }
 
   get recargoDomicilio(): number {
-    return this.esDomicilioSelected ? this.subtotalServicios * 0.20 : 0;
+    return this.esDomicilioSelected ? this.subtotalServicios * 0.35 : 0;
   }
 
   get totalCita(): number {

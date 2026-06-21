@@ -302,8 +302,11 @@ export class MisCitasComponent implements OnInit, OnDestroy {
             this.snackBar.open('¡Gracias por tu calificación!', 'Cerrar', { duration: 4000 });
             const index = this.citas.findIndex(c => c._id === cita._id);
             if (index !== -1) {
-              this.citas[index].calificacion = result.value.calificacion;
-              this.citas[index].comentario_calificacion = result.value.comentario_calificacion;
+              this.citas[index] = {
+                ...this.citas[index],
+                calificacion: result.value.calificacion,
+                comentario_calificacion: result.value.comentario_calificacion
+              };
               this.citasFiltradas = [...this.citas];
               this.cd.detectChanges();
             }

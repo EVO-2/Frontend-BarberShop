@@ -15,6 +15,7 @@ export class MenuService {
     { label: 'Usuarios', ruta: '/usuarios', icono: 'people', roles: ['admin'] },
     { label: 'Reservar Cita', ruta: '/reservar', icono: 'event', roles: ['cliente', 'admin'] },
     { label: 'Mis Citas', ruta: '/mis-citas', icono: 'calendar_month', roles: ['cliente', 'barbero', 'manicurista', 'admin'] },
+    { label: 'Mis Recompensas', ruta: '/mis-recompensas', icono: 'card_giftcard', roles: ['cliente'] },
     { label: 'Gestionar Citas', ruta: '/gestionar-citas', icono: 'content_cut', roles: ['barbero', 'manicurista', 'admin'] },
     { label: 'Reportes', ruta: '/reportes/ingresos', icono: 'bar_chart', roles: ['admin'] },
     { label: 'Mi Suscripción', ruta: '/suscripciones', icono: 'star', roles: ['admin'] },

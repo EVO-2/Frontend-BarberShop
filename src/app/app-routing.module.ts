@@ -19,6 +19,7 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
 // ✅ IMPORTAMOS COMPONENTES
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
 import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
+import { RecompensasComponent } from './pages/recompensas/recompensas.component';
 
 // 🔐 Roles
 import { RolesComponent } from './pages/roles/roles.component';
@@ -111,6 +112,13 @@ const routes: Routes = [
         component: ProductosClienteComponent,
         canActivate: [RoleGuard],
         data: { roles: ['cliente', 'barbero', 'manicurista', 'admin'] }
+      },
+
+      {
+        path: 'mis-recompensas',
+        component: RecompensasComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['cliente'] }
       },
 
       {

@@ -61,6 +61,7 @@ export class RegistroComponent implements OnInit {
       genero: ['', Validators.required],
       fecha_nacimiento: ['', Validators.required],
       empresaId: ['', Validators.required],
+      codigoReferido: [''],
       terminos: [false, Validators.requiredTrue]
     }, {
       validators: passwordsIguales('password', 'confirmarPassword')
@@ -113,7 +114,8 @@ export class RegistroComponent implements OnInit {
       direccion,
       genero,
       fecha_nacimiento,
-      empresaId
+      empresaId,
+      codigoReferido
     } = this.registroForm.value;
 
     const nuevoUsuario  = {
@@ -122,6 +124,7 @@ export class RegistroComponent implements OnInit {
       password,
       rol: 'cliente',
       empresaId: this.empresaIdPreset || empresaId,
+      codigoReferido,
       cliente: {
         telefono,
         direccion,

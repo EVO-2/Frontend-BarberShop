@@ -8,6 +8,15 @@
       <img src="assets/sede.png" class="login-logo" alt="Logo" />
     </div>
 
+    <!-- 🔥 BANNER DE BIENVENIDA -->
+    <div class="welcome-banner" style="background: linear-gradient(135deg, #1f1f1f, #333); color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #f39c12; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <mat-icon style="color: #f39c12;">card_giftcard</mat-icon>
+      <div style="display: flex; flex-direction: column; font-size: 14px;">
+        <strong style="color: #f39c12; font-size: 15px;">¡Regístrate hoy!</strong>
+        <span>Obtén un <strong>10% de descuento</strong> en tu primer servicio usando la app.</span>
+      </div>
+    </div>
+
     <!-- 🔥 FORM SCROLL -->
     <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" class="registro-form">
 
@@ -120,6 +129,14 @@
         <mat-error *ngIf="noCoinciden">
           Las contraseñas no coinciden
         </mat-error>
+      </mat-form-field>
+
+      <!-- Código de Referido (Opcional) -->
+      <mat-form-field class="full-width" appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Código de invitación (Opcional)</mat-label>
+        <mat-icon matIconPrefix>group_add</mat-icon>
+        <input matInput formControlName="codigoReferido" placeholder="Si un amigo te invitó, ingresa su código aquí" />
+        <mat-hint>Recibirás beneficios adicionales al usar un código válido.</mat-hint>
       </mat-form-field>
 
       <!-- Mensaje de error -->

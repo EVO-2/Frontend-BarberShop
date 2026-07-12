@@ -1,0 +1,78 @@
+<div class="recompensas-container">
+  
+  <div class="header">
+    <mat-icon>card_giftcard</mat-icon>
+    <h1>Mis Recompensas</h1>
+    <p>¡Disfruta de beneficios exclusivos por ser un cliente fiel!</p>
+  </div>
+
+  <div *ngIf="cargando" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando recompensas...</p>
+  </div>
+
+  <div *ngIf="!cargando" class="content-grid">
+    
+    <!-- TARJETA LEALTAD -->
+    <mat-card class="reward-card lealtad-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="primary">star</mat-icon>
+        <mat-card-title>Programa de Lealtad</mat-card-title>
+        <mat-card-subtitle>Acumula 10 visitas para un 50% de descuento</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="progress-info">
+          <span class="visitas">{{ visitasAcumuladas }} / {{ visitasParaPremio }} visitas</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="progresoVisitas" color="primary"></mat-progress-bar>
+        <p class="hint">¡Te faltan {{ visitasParaPremio - visitasAcumuladas }} visitas para tu recompensa!</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- TARJETA REFERIDOS -->
+    <mat-card class="reward-card referidos-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="accent">group_add</mat-icon>
+        <mat-card-title>Invita a un amigo</mat-card-title>
+        <mat-card-subtitle>Gana 15% de descuento por cada amigo</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Tu amigo recibe un 10% de descuento en su primer servicio y tú recibes un cupón del 15% cuando asista.</p>
+        
+        <div class="codigo-box" *ngIf="codigoReferidoPropio">
+          <span class="codigo">{{ codigoReferidoPropio }}</span>
+          <button mat-icon-button (click)="copiarCodigo()" matTooltip="Copiar código">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+        <p *ngIf="!codigoReferidoPropio">No tienes un código asignado aún.</p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-flat-button color="accent" (click)="compartirWhatsApp()" [disabled]="!codigoReferidoPropio">
+          <mat-icon>share</mat-icon> Compartir en WhatsApp
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- CUPONES ACTIVOS -->
+    <div class="cupones-section" *ngIf="cuponesActivos && cuponesActivos.length > 0">
+      <h2>Mis Cupones Disponibles</h2>
+      <div class="cupones-list">
+        <mat-card class="cupon-card" *ngFor="let cupon of cuponesActivos">
+          <div class="cupon-descuento">{{ cupon.descuentoPorcentaje }}% OFF</div>
+          <div class="cupon-info">
+            <strong>{{ cupon.tipo.replace('_', ' ') }}</strong>
+            <span>Válido hasta: {{ cupon.validoHasta | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <mat-chip *ngIf="!cupon.usado" color="primary" selected>Disponible</mat-chip>
+          <mat-chip *ngIf="cupon.usado" color="warn" selected>Usado</mat-chip>
+        </mat-card>
+      </div>
+    </div>
+    <div class="cupones-section" *ngIf="!cuponesActivos || cuponesActivos.length === 0">
+      <h2>Mis Cupones Disponibles</h2>
+      <p class="no-cupones">No tienes cupones activos en este momento. ¡Sigue visitándonos o invita amigos!</p>
+    </div>
+
+  </div>
+</div>

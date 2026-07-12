@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Usuario } from 'src/app/interfaces/usuario.interface';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -23,6 +24,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   private usuarioSub!: Subscription;
   private fotoPerfilSub!: Subscription;
+  private routerSub!: Subscription;
   private relojInterval!: ReturnType<typeof setInterval>;
 
   constructor(
@@ -36,6 +38,16 @@ export class LayoutComponent implements OnInit, OnDestroy {
     // Monitor screen size
     this.observer.observe(['(max-width: 800px)']).subscribe((res) => {
       this.isMobile = res.matches;
+    });
+
+    // Resetear el scroll interno cada vez que se navega a una nueva ruta
+    this.routerSub = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const contentArea = document.querySelector('.mat-sidenav-content');
+      if (contentArea) {
+        contentArea.scrollTo(0, 0);
+      }
     });
 
     // Suscripción al usuario
@@ -95,6 +107,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.usuarioSub?.unsubscribe();
     this.fotoPerfilSub?.unsubscribe();
+    this.routerSub?.unsubscribe();
     if (this.relojInterval) clearInterval(this.relojInterval);
   }
 }

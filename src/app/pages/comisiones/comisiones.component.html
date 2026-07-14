@@ -6,15 +6,10 @@
     
     <!-- Encabezado -->
     <div class="header-section mb-5 fade-in-up">
-      <div class="d-flex align-items-center gap-3">
-        <div class="icon-wrapper bg-gradient-primary shadow-primary">
-          <i class="fas fa-chart-pie text-white"></i>
-        </div>
-        <div>
-          <h1 class="fw-bolder mb-0 text-dark title-main">Panel de Comisiones</h1>
-          <p class="text-secondary mb-0 subtitle-main" *ngIf="rol === 'admin'">Gestión y liquidación de ganancias del equipo</p>
-          <p class="text-secondary mb-0 subtitle-main" *ngIf="rol !== 'admin'">Resumen de tus ganancias y cobros realizados</p>
-        </div>
+      <div class="d-flex flex-column justify-content-center">
+        <h1 class="fw-bolder mb-1 text-dark title-main">Panel de Comisiones</h1>
+        <p class="text-secondary mb-0 subtitle-main" *ngIf="rol === 'admin'">Gestión y liquidación de ganancias del equipo</p>
+        <p class="text-secondary mb-0 subtitle-main" *ngIf="rol !== 'admin'">Resumen de tus ganancias y cobros realizados</p>
       </div>
     </div>
 
@@ -190,24 +185,18 @@
                   <table class="table premium-table align-middle mb-0">
                     <thead>
                       <tr>
-                        <th class="text-start" style="width: 30%; min-width: 160px;">Fecha</th>
-                        <th class="text-center" style="width: 20%; min-width: 120px;">Citas Pagadas</th>
-                        <th class="text-center" style="width: 20%; min-width: 120px;">Método</th>
-                        <th class="text-end" style="width: 30%; min-width: 150px;">Monto Liquidado</th>
+                        <th class="text-start">Fecha</th>
+                        <th class="text-center">Citas Pagadas</th>
+                        <th class="text-center">Método</th>
+                        <th class="text-end">Monto Liquidado</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let pago of historialPagos" class="hover-elevate">
-                        <td class="text-start">
-                          <div class="d-flex align-items-center gap-3 py-2 text-nowrap">
-                            <div class="calendar-icon">
-                              <span class="c-month">{{ pago.createdAt | date:'MMM' }}</span>
-                              <span class="c-day">{{ pago.createdAt | date:'dd' }}</span>
-                            </div>
-                            <div class="d-flex flex-column text-start">
-                              <span class="fw-bold text-dark lh-1 mb-1">{{ pago.createdAt | date:'yyyy' }}</span>
-                              <span class="text-muted small lh-1">{{ pago.createdAt | date:'h:mm a' }}</span>
-                            </div>
+                        <td class="text-start text-nowrap">
+                          <div class="d-flex flex-column">
+                            <span class="fw-bold text-dark">{{ pago.createdAt | date:'dd MMM yyyy' }}</span>
+                            <span class="text-muted small">{{ pago.createdAt | date:'h:mm a' }}</span>
                           </div>
                         </td>
                         <td class="text-center">

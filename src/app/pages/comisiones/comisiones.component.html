@@ -42,21 +42,21 @@
                   <table class="table table-borderless premium-table align-middle">
                     <thead>
                       <tr>
-                        <th class="text-start" style="width: 35%; min-width: 200px;">Profesional</th>
+                        <th class="text-center" style="width: 35%; min-width: 200px;">Profesional</th>
                         <th class="text-center" style="width: 15%; min-width: 80px;">Citas</th>
-                        <th class="text-end" style="width: 25%; min-width: 150px;">Monto Acumulado</th>
+                        <th class="text-center" style="width: 25%; min-width: 150px;">Monto Acumulado</th>
                         <th class="text-center" style="width: 25%; min-width: 120px;">Acción</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of comisionesPendientes" class="hover-elevate">
-                        <td class="text-start">
-                          <div class="d-flex align-items-center gap-3 py-2">
+                        <td class="text-center">
+                          <div class="d-flex justify-content-center align-items-center gap-3 py-2">
                             <div class="avatar-container">
                               <img [src]="item.peluquero?.usuario?.foto || 'assets/img/default-avatar.png'" 
                                    alt="Avatar" class="avatar-img" onerror="this.src='assets/img/default-avatar.png'">
                             </div>
-                            <div>
+                            <div class="text-start">
                               <span class="d-block fw-bold text-dark fs-6">{{ item.peluquero?.usuario?.nombre || 'Desconocido' }}</span>
                               <span class="text-muted small email-text">{{ item.peluquero?.usuario?.correo }}</span>
                             </div>
@@ -65,7 +65,7 @@
                         <td class="text-center">
                           <span class="pill-soft-dark">{{ item.citas?.length }}</span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-center">
                           <span class="text-success fw-bolder fs-5">{{ item.montoAcumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
                         </td>
                         <td class="text-center">
@@ -185,16 +185,16 @@
                   <table class="table premium-table align-middle mb-0">
                     <thead>
                       <tr>
-                        <th class="text-start">Fecha</th>
+                        <th class="text-center">Fecha</th>
                         <th class="text-center">Citas Pagadas</th>
                         <th class="text-center">Método</th>
-                        <th class="text-end">Monto Liquidado</th>
+                        <th class="text-center">Monto Liquidado</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let pago of historialPagos" class="hover-elevate">
-                        <td class="text-start text-nowrap">
-                          <div class="d-flex flex-column">
+                        <td class="text-center text-nowrap">
+                          <div class="d-flex flex-column align-items-center justify-content-center">
                             <span class="fw-bold text-dark">{{ pago.createdAt | date:'dd MMM yyyy' }}</span>
                             <span class="text-muted small">{{ pago.createdAt | date:'h:mm a' }}</span>
                           </div>
@@ -209,7 +209,7 @@
                             {{ pago.metodoPago }}
                           </span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-center">
                           <span class="text-success fw-bolder fs-5">+ {{ pago.montoTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
                         </td>
                       </tr>

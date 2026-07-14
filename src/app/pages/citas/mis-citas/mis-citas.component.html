@@ -30,13 +30,15 @@
 
   </div>
 
-  <!-- 🔹 Acumulado de Comisiones -->
-  <div class="comisiones-summary" *ngIf="(userRole === 'barbero' || userRole === 'manicurista' || userRole === 'admin' || userRole === 'superadmin')" style="background-color: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px; margin: 15px 0; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
+  <!-- 🔹 Banner para redirigir al nuevo módulo de Comisiones -->
+  <div class="comisiones-banner" *ngIf="(userRole === 'admin' || userRole === 'barbero' || userRole === 'manicurista')" style="background-color: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px; margin: 15px 0; border-radius: 4px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between;">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <mat-icon style="color: #4caf50;">payments</mat-icon>
-      <span style="font-size: 1.1rem; font-weight: 500; color: #2e7d32;">Acumulado de Comisiones (Citas Pagadas):</span>
+      <mat-icon style="color: #1976d2;">account_balance_wallet</mat-icon>
+      <span style="font-size: 1.05rem; font-weight: 500; color: #1565c0;">La gestión de comisiones (acumulados y liquidaciones) tiene su propio panel.</span>
     </div>
-    <span style="font-size: 1.5rem; font-weight: bold; color: #1b5e20;">${{ totalComisiones | number:'1.0-0' }}</span>
+    <button mat-flat-button color="primary" routerLink="/comisiones">
+      Ir al Panel de Comisiones
+    </button>
   </div>
 
   <!-- ================= DESKTOP ================= -->

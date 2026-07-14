@@ -1,261 +1,264 @@
-<div class="container-fluid py-4 px-lg-5 comisiones-container">
-  
-  <!-- Encabezado Principal -->
-  <div class="d-flex justify-content-between align-items-center mb-5">
-    <div>
-      <h2 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-        <i class="fas fa-wallet text-primary"></i> Gestión de Comisiones
-      </h2>
-      <p class="text-muted mb-0" *ngIf="rol === 'admin'">Administra y liquida las comisiones de tu equipo.</p>
-      <p class="text-muted mb-0" *ngIf="rol !== 'admin'">Revisa tu saldo acumulado y el historial de pagos.</p>
-    </div>
-  </div>
+<div class="comisiones-dashboard">
+  <!-- Fondo Decorativo -->
+  <div class="dashboard-bg-shape"></div>
 
-  <!-- Loader -->
-  <div *ngIf="cargando" class="d-flex justify-content-center align-items-center my-5 py-5 loader-wrapper">
-    <div class="spinner-grow text-primary me-2" role="status"></div>
-    <div class="spinner-grow text-primary me-2" role="status" style="animation-delay: 0.2s"></div>
-    <div class="spinner-grow text-primary" role="status" style="animation-delay: 0.4s"></div>
-  </div>
-
-  <div *ngIf="!cargando" class="fade-in">
+  <div class="container-fluid py-4 px-3 px-md-5 position-relative z-1">
     
-    <!-- ==============================================
-         VISTA ADMIN 
-         ============================================== -->
-    <div *ngIf="rol === 'admin'">
-      <div class="row g-4 mb-5">
-        <!-- Pendientes -->
-        <div class="col-12 col-xl-6">
-          <div class="card glass-card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
-              <h5 class="fw-bold m-0 d-flex align-items-center gap-2">
-                <div class="icon-circle bg-primary-light text-primary">
-                  <i class="fas fa-users"></i>
-                </div>
-                Pendientes de Pago
-              </h5>
-              <span class="badge bg-primary rounded-pill px-3 py-2">{{ comisionesPendientes.length }} Profesionales</span>
-            </div>
-            
-            <div class="card-body p-4">
-              <div class="table-responsive rounded-3 border">
-                <table class="table table-hover custom-table align-middle mb-0">
-                  <thead class="table-light text-secondary">
-                    <tr>
-                      <th class="ps-4 fw-semibold text-uppercase text-xs">Profesional</th>
-                      <th class="fw-semibold text-uppercase text-xs text-center">Citas</th>
-                      <th class="fw-semibold text-uppercase text-xs text-end">Monto Acumulado</th>
-                      <th class="fw-semibold text-uppercase text-xs text-center pe-4">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let item of comisionesPendientes" class="table-row-hover">
-                      <td class="ps-4">
-                        <div class="d-flex align-items-center gap-3">
-                          <img [src]="item.peluquero?.usuario?.foto || 'assets/img/default-avatar.png'" alt="Avatar" class="avatar-sm rounded-circle shadow-sm object-fit-cover" width="40" height="40" onerror="this.src='assets/img/default-avatar.png'">
-                          <div>
-                            <span class="d-block fw-bold text-dark">{{ item.peluquero?.usuario?.nombre || 'Desconocido' }}</span>
-                            <span class="text-muted small text-truncate d-inline-block" style="max-width: 150px;">{{ item.peluquero?.usuario?.correo }}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td class="text-center">
-                        <span class="badge bg-light text-dark border">{{ item.citas?.length }}</span>
-                      </td>
-                      <td class="text-end">
-                        <span class="text-success fw-bold fs-6">{{ item.montoAcumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
-                      </td>
-                      <td class="text-center pe-4">
-                        <button class="btn btn-primary btn-action rounded-pill shadow-sm" (click)="pagarComision(item.peluquero?._id)" matTooltip="Liquidar comisión">
-                          <i class="fas fa-hand-holding-usd me-1"></i> Pagar
-                        </button>
-                      </td>
-                    </tr>
-                    <!-- Empty state -->
-                    <tr *ngIf="comisionesPendientes.length === 0">
-                      <td colspan="4" class="text-center py-5">
-                        <div class="empty-state">
-                          <div class="icon-circle mx-auto mb-3 bg-light text-muted" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                            <i class="fas fa-check-circle"></i>
-                          </div>
-                          <h6 class="fw-bold text-dark mb-1">Todo al día</h6>
-                          <p class="text-muted small mb-0">No hay comisiones pendientes de pago.</p>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+    <!-- Encabezado -->
+    <div class="header-section mb-5 fade-in-up">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-wrapper bg-gradient-primary shadow-primary">
+          <i class="fas fa-chart-pie text-white"></i>
         </div>
-
-        <!-- Historial -->
-        <div class="col-12 col-xl-6">
-          <div class="card glass-card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
-              <h5 class="fw-bold m-0 d-flex align-items-center gap-2">
-                <div class="icon-circle bg-secondary-light text-secondary">
-                  <i class="fas fa-history"></i>
-                </div>
-                Historial de Pagos
-              </h5>
-            </div>
-            
-            <div class="card-body p-4">
-              <div class="timeline-container pe-2" style="max-height: 400px; overflow-y: auto;">
-                
-                <div *ngIf="historialPagos.length === 0" class="text-center py-5">
-                  <div class="empty-state">
-                    <div class="icon-circle mx-auto mb-3 bg-light text-muted" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                      <i class="fas fa-receipt"></i>
-                    </div>
-                    <p class="text-muted small mb-0">No se han registrado pagos aún.</p>
-                  </div>
-                </div>
-
-                <!-- Elemento de timeline -->
-                <div class="timeline-item d-flex gap-3 mb-4" *ngFor="let pago of historialPagos">
-                  <div class="timeline-icon bg-success-light text-success d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 45px; height: 45px;">
-                    <i class="fas fa-check"></i>
-                  </div>
-                  <div class="timeline-content w-100 pb-3 border-bottom">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <strong class="text-dark">{{ pago.peluquero?.usuario?.nombre }}</strong>
-                      <span class="badge bg-success-subtle text-success fs-6 fw-bold px-3 py-1 rounded-pill">{{ pago.montoTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center text-muted small">
-                      <span><i class="far fa-calendar-alt me-1"></i> {{ pago.createdAt | date:'dd MMM yyyy, h:mm a' }}</span>
-                      <span class="text-uppercase bg-light border px-2 py-1 rounded" style="font-size: 0.7rem;"><i class="fas fa-wallet me-1"></i>{{ pago.metodoPago }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div>
+          <h1 class="fw-bolder mb-0 text-dark title-main">Panel de Comisiones</h1>
+          <p class="text-secondary mb-0 subtitle-main" *ngIf="rol === 'admin'">Gestión y liquidación de ganancias del equipo</p>
+          <p class="text-secondary mb-0 subtitle-main" *ngIf="rol !== 'admin'">Resumen de tus ganancias y cobros realizados</p>
         </div>
       </div>
     </div>
 
+    <!-- Loader Elegante -->
+    <div *ngIf="cargando" class="d-flex flex-column justify-content-center align-items-center min-vh-50">
+      <div class="modern-loader mb-3"></div>
+      <p class="text-muted fw-medium animate-pulse">Sincronizando información...</p>
+    </div>
 
-    <!-- ==============================================
-         VISTA PROFESIONAL 
-         ============================================== -->
-    <div *ngIf="rol === 'barbero' || rol === 'manicurista'">
-      <div class="row g-4 mb-5">
-        
-        <!-- Tarjeta de Saldo Principal -->
-        <div class="col-12 col-md-6 col-xl-4">
-          <div class="balance-card position-relative overflow-hidden rounded-4 shadow border-0 h-100 p-4 text-white d-flex flex-column justify-content-between">
-            <div class="card-bg-overlay"></div>
-            <div class="d-flex justify-content-between align-items-start position-relative z-1">
-              <div>
-                <p class="text-uppercase fw-semibold mb-1 opacity-75" style="letter-spacing: 1px; font-size: 0.85rem;">Saldo Pendiente</p>
-                <h2 class="display-5 fw-bold mb-0">{{ miComisionAcumulada | currency:'COP':'symbol-narrow':'1.0-0' }}</h2>
-              </div>
-              <div class="icon-circle bg-white bg-opacity-25 text-white" style="width: 48px; height: 48px; font-size: 1.25rem;">
-                <i class="fas fa-wallet"></i>
-              </div>
-            </div>
-            
-            <div class="position-relative z-1 mt-4 pt-3 border-top border-white border-opacity-25 d-flex justify-content-between align-items-center">
-              <div>
-                <span class="d-block text-white opacity-75 small">Citas cobradas</span>
-                <span class="fw-bold fs-5">{{ misCitasPendientes.length }}</span>
-              </div>
-              <div class="text-end">
-                <span class="badge bg-white text-primary rounded-pill px-3 py-2 fw-semibold">
-                  <i class="fas fa-info-circle me-1"></i> Por liquidar
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Info Card -->
-        <div class="col-12 col-md-6 col-xl-8">
-          <div class="card glass-card h-100 border-0 shadow-sm rounded-4 d-flex flex-column justify-content-center p-4">
-            <div class="d-flex align-items-center gap-4">
-              <div class="icon-circle bg-info-light text-info flex-shrink-0" style="width: 80px; height: 80px; font-size: 2rem;">
-                <i class="fas fa-handshake"></i>
-              </div>
-              <div>
-                <h4 class="fw-bold text-dark mb-2">¡Hola!</h4>
-                <p class="text-muted mb-0" style="font-size: 1.05rem;">
-                  Este es tu panel personal de comisiones. Aquí puedes ver el saldo generado por tus servicios realizados. 
-                  El pago se realizará según las políticas de la barbería. Si tienes dudas, consulta con el administrador.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HISTORIAL PROFESIONAL -->
-      <div class="card glass-card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
-        <div class="card-header bg-transparent border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-          <h5 class="fw-bold m-0 d-flex align-items-center gap-2">
-            <div class="icon-circle bg-success-light text-success">
-              <i class="fas fa-money-check-alt"></i>
-            </div>
-            Historial de Pagos Recibidos
-          </h5>
-        </div>
-        
-        <div class="card-body p-4 pt-2">
-          <div class="table-responsive rounded-3 border">
-            <table class="table table-hover custom-table align-middle mb-0">
-              <thead class="table-light text-secondary">
-                <tr>
-                  <th class="ps-4 fw-semibold text-uppercase text-xs">Fecha del Pago</th>
-                  <th class="fw-semibold text-uppercase text-xs text-center">Citas Pagadas</th>
-                  <th class="fw-semibold text-uppercase text-xs">Método</th>
-                  <th class="fw-semibold text-uppercase text-xs text-end pe-4">Monto Recibido</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let pago of historialPagos" class="table-row-hover">
-                  <td class="ps-4">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="bg-light rounded p-2 text-center" style="min-width: 50px;">
-                        <span class="d-block fw-bold text-dark mb-0 lh-1">{{ pago.createdAt | date:'dd' }}</span>
-                        <span class="text-uppercase text-muted lh-1" style="font-size: 0.7rem;">{{ pago.createdAt | date:'MMM' }}</span>
-                      </div>
-                      <span class="text-muted small">{{ pago.createdAt | date:'yyyy, h:mm a' }}</span>
-                    </div>
-                  </td>
-                  <td class="text-center">
-                    <span class="badge bg-light text-dark border">{{ pago.cantidadCitas }}</span>
-                  </td>
-                  <td>
-                    <span class="badge bg-info-subtle text-info fw-semibold text-uppercase px-2 py-1">
-                      <i class="fas fa-credit-card me-1" *ngIf="pago.metodoPago !== 'efectivo'"></i>
-                      <i class="fas fa-coins me-1" *ngIf="pago.metodoPago === 'efectivo'"></i>
-                      {{ pago.metodoPago }}
-                    </span>
-                  </td>
-                  <td class="text-end pe-4">
-                    <span class="text-success fw-bold fs-5">{{ pago.montoTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
-                  </td>
-                </tr>
-                <tr *ngIf="historialPagos.length === 0">
-                  <td colspan="4" class="text-center py-5">
-                    <div class="empty-state">
-                      <div class="icon-circle mx-auto mb-3 bg-light text-muted" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                        <i class="fas fa-box-open"></i>
-                      </div>
-                      <h6 class="fw-bold text-dark mb-1">Aún no hay registros</h6>
-                      <p class="text-muted small mb-0">Los pagos que recibas aparecerán en esta lista.</p>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <div *ngIf="!cargando" class="stagger-fade-in">
       
+      <!-- ==============================================
+           VISTA ADMIN 
+           ============================================== -->
+      <div *ngIf="rol === 'admin'" class="admin-view">
+        <div class="row g-4 mb-5">
+          
+          <!-- Columna: Pendientes -->
+          <div class="col-12 col-xl-7">
+            <div class="premium-card h-100">
+              <div class="card-header-premium">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="soft-icon bg-warning-soft text-warning">
+                    <i class="fas fa-hourglass-half"></i>
+                  </div>
+                  <h4 class="fw-bold m-0 text-dark">Pendientes de Pago</h4>
+                </div>
+                <span class="badge-premium bg-dark text-white">{{ comisionesPendientes.length }} Profesionales</span>
+              </div>
+              
+              <div class="card-body-premium p-0">
+                <div class="table-responsive px-4 pb-4">
+                  <table class="table table-borderless premium-table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Profesional</th>
+                        <th class="text-center">Citas</th>
+                        <th class="text-end">Monto Acumulado</th>
+                        <th class="text-center">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of comisionesPendientes" class="hover-elevate">
+                        <td>
+                          <div class="d-flex align-items-center gap-3 py-2">
+                            <div class="avatar-container">
+                              <img [src]="item.peluquero?.usuario?.foto || 'assets/img/default-avatar.png'" 
+                                   alt="Avatar" class="avatar-img" onerror="this.src='assets/img/default-avatar.png'">
+                            </div>
+                            <div>
+                              <span class="d-block fw-bold text-dark fs-6">{{ item.peluquero?.usuario?.nombre || 'Desconocido' }}</span>
+                              <span class="text-muted small email-text">{{ item.peluquero?.usuario?.correo }}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="text-center">
+                          <span class="pill-soft-dark">{{ item.citas?.length }}</span>
+                        </td>
+                        <td class="text-end">
+                          <span class="text-success fw-bolder fs-5">{{ item.montoAcumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+                        </td>
+                        <td class="text-center">
+                          <button class="btn-modern btn-modern-primary" (click)="pagarComision(item.peluquero?._id)">
+                            <i class="fas fa-check-circle me-1"></i> Liquidar
+                          </button>
+                        </td>
+                      </tr>
+                      
+                      <!-- Empty State -->
+                      <tr *ngIf="comisionesPendientes.length === 0">
+                        <td colspan="4">
+                          <div class="empty-state-modern py-5">
+                            <img src="assets/img/empty-box.svg" alt="Vacío" onerror="this.style.display='none'" class="mb-3 opacity-50" style="width: 80px;">
+                            <div class="icon-placeholder mb-3" *ngIf="!comisionesPendientes"><i class="fas fa-check-double text-success fa-2x"></i></div>
+                            <h5 class="fw-bold text-dark">Todo al día</h5>
+                            <p class="text-muted">No tienes saldos pendientes por liquidar.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna: Historial -->
+          <div class="col-12 col-xl-5">
+            <div class="premium-card h-100">
+              <div class="card-header-premium">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="soft-icon bg-success-soft text-success">
+                    <i class="fas fa-history"></i>
+                  </div>
+                  <h4 class="fw-bold m-0 text-dark">Últimos Pagos</h4>
+                </div>
+              </div>
+              
+              <div class="card-body-premium px-4 pb-4">
+                <div class="modern-timeline pe-2 mt-3">
+                  <div *ngIf="historialPagos.length === 0" class="empty-state-modern py-5">
+                    <div class="icon-placeholder mb-3"><i class="fas fa-receipt text-muted fa-2x"></i></div>
+                    <p class="text-muted">Aún no hay transacciones registradas.</p>
+                  </div>
+
+                  <div class="timeline-card" *ngFor="let pago of historialPagos">
+                    <div class="t-icon">
+                      <i class="fas fa-arrow-down text-success"></i>
+                    </div>
+                    <div class="t-content">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h6 class="fw-bold text-dark m-0">{{ pago.peluquero?.usuario?.nombre }}</h6>
+                        <span class="text-success fw-bolder">{{ pago.montoTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="text-muted small"><i class="far fa-clock me-1"></i>{{ pago.createdAt | date:'d MMM yyyy, h:mm a' }}</span>
+                        <span class="badge-subtle">{{ pago.metodoPago }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ==============================================
+           VISTA PROFESIONAL 
+           ============================================== -->
+      <div *ngIf="rol === 'barbero' || rol === 'manicurista'" class="profesional-view">
+        <div class="row g-4 mb-5">
+          
+          <!-- Main Balance Card -->
+          <div class="col-12 col-xl-5">
+            <div class="gradient-balance-card h-100">
+              <div class="card-bg-effect"></div>
+              <div class="card-content d-flex flex-column h-100 justify-content-between position-relative z-1">
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <div class="pill-glass">
+                    <i class="fas fa-wallet me-2"></i> Mi Billetera
+                  </div>
+                  <button class="btn-glass-icon" matTooltip="Este saldo es pagado por el administrador.">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+
+                <div class="balance-amount my-4">
+                  <p class="balance-label">Saldo Acumulado por Cobrar</p>
+                  <h1 class="display-3 fw-bolder text-white tracking-tight text-shadow-sm mb-0">
+                    {{ miComisionAcumulada | currency:'COP':'symbol-narrow':'1.0-0' }}
+                  </h1>
+                </div>
+
+                <div class="stats-row mt-auto pt-4 border-top border-light border-opacity-25">
+                  <div class="stat-item">
+                    <span class="stat-label">Citas Validadas</span>
+                    <span class="stat-value">{{ misCitasPendientes.length }}</span>
+                  </div>
+                  <div class="stat-item text-end">
+                    <span class="stat-label">Estado</span>
+                    <span class="stat-value text-warning d-flex align-items-center gap-2 justify-content-end">
+                      <span class="pulse-dot"></span> Pendiente
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historial Personal -->
+          <div class="col-12 col-xl-7">
+            <div class="premium-card h-100">
+              <div class="card-header-premium border-bottom pb-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="soft-icon bg-success-soft text-success">
+                    <i class="fas fa-money-check-alt"></i>
+                  </div>
+                  <h4 class="fw-bold m-0 text-dark">Mis Pagos Recibidos</h4>
+                </div>
+              </div>
+              
+              <div class="card-body-premium p-0">
+                <div class="table-responsive px-4 pb-4 pt-3">
+                  <table class="table premium-table align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th class="text-center">Citas Pagadas</th>
+                        <th>Método</th>
+                        <th class="text-end">Monto Liquidadado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let pago of historialPagos" class="hover-elevate">
+                        <td>
+                          <div class="d-flex align-items-center gap-3 py-2">
+                            <div class="calendar-icon">
+                              <span class="c-month">{{ pago.createdAt | date:'MMM' }}</span>
+                              <span class="c-day">{{ pago.createdAt | date:'dd' }}</span>
+                            </div>
+                            <div class="d-flex flex-column">
+                              <span class="fw-bold text-dark">{{ pago.createdAt | date:'yyyy' }}</span>
+                              <span class="text-muted small">{{ pago.createdAt | date:'h:mm a' }}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="text-center">
+                          <span class="pill-soft-dark">{{ pago.cantidadCitas }}</span>
+                        </td>
+                        <td>
+                          <span class="badge-subtle text-uppercase fw-semibold">
+                            <i class="fas fa-credit-card me-1 text-primary" *ngIf="pago.metodoPago !== 'efectivo'"></i>
+                            <i class="fas fa-coins me-1 text-warning" *ngIf="pago.metodoPago === 'efectivo'"></i>
+                            {{ pago.metodoPago }}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          <span class="text-success fw-bolder fs-5">+ {{ pago.montoTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+                        </td>
+                      </tr>
+                      
+                      <tr *ngIf="historialPagos.length === 0">
+                        <td colspan="4">
+                          <div class="empty-state-modern py-5">
+                            <div class="icon-placeholder mb-3"><i class="fas fa-box-open text-muted fa-2x"></i></div>
+                            <h6 class="fw-bold text-dark mb-1">Sin historial</h6>
+                            <p class="text-muted mb-0">Aún no tienes registros de pagos liquidados.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

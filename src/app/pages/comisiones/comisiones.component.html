@@ -194,10 +194,7 @@
                     <tbody>
                       <tr *ngFor="let pago of historialPagos" class="hover-elevate">
                         <td class="text-center text-nowrap">
-                          <div class="d-flex flex-column align-items-center justify-content-center">
-                            <span class="fw-bold text-dark">{{ pago.createdAt | date:'dd MMM yyyy' }}</span>
-                            <span class="text-muted small">{{ pago.createdAt | date:'h:mm a' }}</span>
-                          </div>
+                          <span class="fw-bold text-dark">{{ pago.createdAt | date:'dd MMM yyyy, h:mm a' }}</span>
                         </td>
                         <td class="text-center">
                           <span class="pill-soft-dark">{{ pago.cantidadCitas }}</span>

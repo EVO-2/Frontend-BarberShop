@@ -33,32 +33,29 @@
         <div class="row g-4 mb-5">
           
           <!-- Columna: Pendientes -->
-          <div class="col-12 col-xl-7">
+          <div class="col-12 col-xl-8">
             <div class="premium-card h-100">
-              <div class="card-header-premium">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="soft-icon bg-warning-soft text-warning">
-                    <i class="fas fa-hourglass-half"></i>
-                  </div>
-                  <h4 class="fw-bold m-0 text-dark">Pendientes de Pago</h4>
+              <div class="card-header-premium border-bottom">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                  <h4 class="fw-bold m-0 text-dark"><i class="fas fa-hourglass-half text-warning me-2"></i> Pendientes de Pago</h4>
+                  <span class="badge-premium bg-dark text-white">{{ comisionesPendientes.length }} Profesionales</span>
                 </div>
-                <span class="badge-premium bg-dark text-white">{{ comisionesPendientes.length }} Profesionales</span>
               </div>
               
               <div class="card-body-premium p-0">
-                <div class="table-responsive px-4 pb-4">
+                <div class="table-responsive px-4 pb-4 mt-3">
                   <table class="table table-borderless premium-table align-middle">
                     <thead>
                       <tr>
-                        <th>Profesional</th>
-                        <th class="text-center">Citas</th>
-                        <th class="text-end">Monto Acumulado</th>
-                        <th class="text-center">Acción</th>
+                        <th class="text-start" style="width: 35%; min-width: 200px;">Profesional</th>
+                        <th class="text-center" style="width: 15%; min-width: 80px;">Citas</th>
+                        <th class="text-end" style="width: 25%; min-width: 150px;">Monto Acumulado</th>
+                        <th class="text-center" style="width: 25%; min-width: 120px;">Acción</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of comisionesPendientes" class="hover-elevate">
-                        <td>
+                        <td class="text-start">
                           <div class="d-flex align-items-center gap-3 py-2">
                             <div class="avatar-container">
                               <img [src]="item.peluquero?.usuario?.foto || 'assets/img/default-avatar.png'" 
@@ -102,19 +99,14 @@
           </div>
 
           <!-- Columna: Historial -->
-          <div class="col-12 col-xl-5">
+          <div class="col-12 col-xl-4">
             <div class="premium-card h-100">
-              <div class="card-header-premium">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="soft-icon bg-success-soft text-success">
-                    <i class="fas fa-history"></i>
-                  </div>
-                  <h4 class="fw-bold m-0 text-dark">Últimos Pagos</h4>
-                </div>
+              <div class="card-header-premium border-bottom">
+                <h4 class="fw-bold m-0 text-dark"><i class="fas fa-history text-success me-2"></i> Últimos Pagos</h4>
               </div>
               
-              <div class="card-body-premium px-4 pb-4">
-                <div class="modern-timeline pe-2 mt-3">
+              <div class="card-body-premium px-4 pb-4 mt-3">
+                <div class="modern-timeline pe-2 mt-2">
                   <div *ngIf="historialPagos.length === 0" class="empty-state-modern py-5">
                     <div class="icon-placeholder mb-3"><i class="fas fa-receipt text-muted fa-2x"></i></div>
                     <p class="text-muted">Aún no hay transacciones registradas.</p>
@@ -160,9 +152,6 @@
                   <div class="pill-glass">
                     <i class="fas fa-wallet me-2"></i> Mi Billetera
                   </div>
-                  <button class="btn-glass-icon" matTooltip="Este saldo es pagado por el administrador.">
-                    <i class="fas fa-info-circle"></i>
-                  </button>
                 </div>
 
                 <div class="balance-amount my-4">
@@ -191,29 +180,24 @@
           <!-- Historial Personal -->
           <div class="col-12 col-xl-7">
             <div class="premium-card h-100">
-              <div class="card-header-premium border-bottom pb-3">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="soft-icon bg-success-soft text-success">
-                    <i class="fas fa-money-check-alt"></i>
-                  </div>
-                  <h4 class="fw-bold m-0 text-dark">Mis Pagos Recibidos</h4>
-                </div>
+              <div class="card-header-premium border-bottom">
+                <h4 class="fw-bold m-0 text-dark"><i class="fas fa-money-check-alt text-success me-2"></i> Mis Pagos Recibidos</h4>
               </div>
               
-              <div class="card-body-premium p-0">
-                <div class="table-responsive px-4 pb-4 pt-3">
+              <div class="card-body-premium p-0 mt-3">
+                <div class="table-responsive px-4 pb-4">
                   <table class="table premium-table align-middle mb-0">
                     <thead>
                       <tr>
-                        <th>Fecha</th>
-                        <th class="text-center">Citas Pagadas</th>
-                        <th>Método</th>
-                        <th class="text-end">Monto Liquidadado</th>
+                        <th class="text-start" style="width: 35%; min-width: 150px;">Fecha</th>
+                        <th class="text-center" style="width: 20%; min-width: 120px;">Citas Pagadas</th>
+                        <th class="text-center" style="width: 20%; min-width: 100px;">Método</th>
+                        <th class="text-end" style="width: 25%; min-width: 150px;">Monto Liquidado</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let pago of historialPagos" class="hover-elevate">
-                        <td>
+                        <td class="text-start">
                           <div class="d-flex align-items-center gap-3 py-2">
                             <div class="calendar-icon">
                               <span class="c-month">{{ pago.createdAt | date:'MMM' }}</span>
@@ -228,7 +212,7 @@
                         <td class="text-center">
                           <span class="pill-soft-dark">{{ pago.cantidadCitas }}</span>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span class="badge-subtle text-uppercase fw-semibold">
                             <i class="fas fa-credit-card me-1 text-primary" *ngIf="pago.metodoPago !== 'efectivo'"></i>
                             <i class="fas fa-coins me-1 text-warning" *ngIf="pago.metodoPago === 'efectivo'"></i>

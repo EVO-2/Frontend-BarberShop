@@ -61,6 +61,7 @@ import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscrip
 import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { RecompensasComponent } from './pages/recompensas/recompensas.component';
+import { ComisionesComponent } from './pages/comisiones/comisiones.component'; // ✅ NUEVO
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
@@ -111,7 +112,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     SuscripcionVencidaComponent,
     SuscripcionesComponent,
     LandingComponent,
-    RecompensasComponent
+    RecompensasComponent,
+    ComisionesComponent
   ],
   imports: [
     BrowserModule,

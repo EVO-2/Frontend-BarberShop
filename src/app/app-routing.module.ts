@@ -20,6 +20,7 @@ import { ReporteIngresosComponent } from './pages/reportes/reporte-ingresos/repo
 import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado-equipos.component';
 import { ServiciosClienteComponent } from './pages/servicios-cliente/servicios-cliente.component';
 import { RecompensasComponent } from './pages/recompensas/recompensas.component';
+import { ComisionesComponent } from './pages/comisiones/comisiones.component';
 
 // 🔐 Roles
 import { RolesComponent } from './pages/roles/roles.component';
@@ -145,6 +146,12 @@ const routes: Routes = [
         component: GestionarCitasComponent,
         canActivate: [RoleGuard],
         data: { roles: ['barbero', 'manicurista', 'admin'] }
+      },
+      {
+        path: 'comisiones',
+        component: ComisionesComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin', 'barbero', 'manicurista'] }
       },
       {
         path: 'reportes/ingresos',

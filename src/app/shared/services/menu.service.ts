@@ -17,6 +17,7 @@ export class MenuService {
     { label: 'Mis Citas', ruta: '/mis-citas', icono: 'calendar_month', roles: ['cliente', 'barbero', 'manicurista', 'admin'] },
     { label: 'Mis Recompensas', ruta: '/mis-recompensas', icono: 'card_giftcard', roles: ['cliente'] },
     { label: 'Gestionar Citas', ruta: '/gestionar-citas', icono: 'content_cut', roles: ['barbero', 'manicurista', 'admin'] },
+    { label: 'Comisiones', ruta: '/comisiones', icono: 'attach_money', roles: ['admin', 'barbero', 'manicurista'] },
     { label: 'Reportes', ruta: '/reportes/ingresos', icono: 'bar_chart', roles: ['admin'] },
     { label: 'Mi Suscripción', ruta: '/suscripciones', icono: 'star', roles: ['admin'] },
 

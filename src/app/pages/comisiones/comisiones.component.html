@@ -113,12 +113,13 @@
                   </div>
 
                   <div class="timeline-card" *ngFor="let pago of historialPagos">
-                    <div class="t-icon">
-                      <i class="fas fa-arrow-down text-success"></i>
+                    <div class="avatar-container shadow-sm" style="width: 45px; height: 45px; padding: 2px; flex-shrink: 0;">
+                      <img [src]="pago.peluquero?.usuario?.foto || 'assets/img/default-avatar.png'" 
+                           alt="Avatar" class="avatar-img" onerror="this.src='assets/img/default-avatar.png'">
                     </div>
                     <div class="t-content">
                       <div class="d-flex justify-content-between align-items-start mb-1">
-                        <h6 class="fw-bold text-dark m-0">{{ pago.peluquero?.usuario?.nombre }}</h6>
+                        <h6 class="fw-bold text-dark m-0">{{ pago.peluquero?.usuario?.nombre || 'Desconocido' }}</h6>
                         <span class="text-success fw-bolder">{{ pago.montoTotal | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
                       </div>
                       <div class="d-flex justify-content-between align-items-center mt-2">
@@ -189,23 +190,23 @@
                   <table class="table premium-table align-middle mb-0">
                     <thead>
                       <tr>
-                        <th class="text-start" style="width: 35%; min-width: 150px;">Fecha</th>
+                        <th class="text-start" style="width: 30%; min-width: 160px;">Fecha</th>
                         <th class="text-center" style="width: 20%; min-width: 120px;">Citas Pagadas</th>
-                        <th class="text-center" style="width: 20%; min-width: 100px;">Método</th>
-                        <th class="text-end" style="width: 25%; min-width: 150px;">Monto Liquidado</th>
+                        <th class="text-center" style="width: 20%; min-width: 120px;">Método</th>
+                        <th class="text-end" style="width: 30%; min-width: 150px;">Monto Liquidado</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let pago of historialPagos" class="hover-elevate">
                         <td class="text-start">
-                          <div class="d-flex align-items-center gap-3 py-2">
+                          <div class="d-flex align-items-center gap-3 py-2 text-nowrap">
                             <div class="calendar-icon">
                               <span class="c-month">{{ pago.createdAt | date:'MMM' }}</span>
                               <span class="c-day">{{ pago.createdAt | date:'dd' }}</span>
                             </div>
-                            <div class="d-flex flex-column">
-                              <span class="fw-bold text-dark">{{ pago.createdAt | date:'yyyy' }}</span>
-                              <span class="text-muted small">{{ pago.createdAt | date:'h:mm a' }}</span>
+                            <div class="d-flex flex-column text-start">
+                              <span class="fw-bold text-dark lh-1 mb-1">{{ pago.createdAt | date:'yyyy' }}</span>
+                              <span class="text-muted small lh-1">{{ pago.createdAt | date:'h:mm a' }}</span>
                             </div>
                           </div>
                         </td>

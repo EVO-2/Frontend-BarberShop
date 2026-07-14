@@ -149,6 +149,46 @@
           </div>
         </mat-tab>
 
+        <!-- Pestaña 4: Configuración de Comisiones -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">payments</mat-icon>
+            <span>Comisiones</span>
+          </ng-template>
+
+          <div class="tab-content" formGroupName="configuracionComisiones">
+            <p class="hint-text mb-4">
+              Define el porcentaje de comisión que recibe el profesional por cada servicio según su tipo de contrato. (0 a 100)
+            </p>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Contrato: Herramientas de la Empresa</mat-label>
+                <input matInput type="number" formControlName="herramientas_empresa" min="0" max="100" required />
+                <span matSuffix>%</span>
+                <mat-hint>Por defecto: 50%</mat-hint>
+                <mat-error>Valor entre 0 y 100</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Contrato: Herramientas Propias</mat-label>
+                <input matInput type="number" formControlName="herramientas_propias" min="0" max="100" required />
+                <span matSuffix>%</span>
+                <mat-hint>Por defecto: 60%</mat-hint>
+                <mat-error>Valor entre 0 y 100</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Contrato: Propietario / Socio</mat-label>
+                <input matInput type="number" formControlName="propietario" min="0" max="100" required />
+                <span matSuffix>%</span>
+                <mat-hint>Por defecto: 100%</mat-hint>
+                <mat-error>Valor entre 0 y 100</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+
       </mat-tab-group>
 
       <!-- Botón de Guardado Único al final de la Tarjeta -->

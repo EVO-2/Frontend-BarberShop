@@ -54,7 +54,12 @@ export class AjustesEmpresaComponent implements OnInit {
       logo: [''],
       agendamientoAbierto: [true],
       mensajeCierre: ['El agendamiento de citas se encuentra temporalmente cerrado.'],
-      horarios: this.fb.array([])
+      horarios: this.fb.array([]),
+      configuracionComisiones: this.fb.group({
+        herramientas_empresa: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
+        herramientas_propias: [60, [Validators.required, Validators.min(0), Validators.max(100)]],
+        propietario: [100, [Validators.required, Validators.min(0), Validators.max(100)]]
+      })
     });
   }
 
@@ -88,7 +93,12 @@ export class AjustesEmpresaComponent implements OnInit {
           email: empresa.email || '',
           logo: empresa.logo || 'assets/sede.png',
           agendamientoAbierto: empresa.agendamientoAbierto !== undefined ? empresa.agendamientoAbierto : true,
-          mensajeCierre: empresa.mensajeCierre || 'El agendamiento de citas se encuentra temporalmente cerrado.'
+          mensajeCierre: empresa.mensajeCierre || 'El agendamiento de citas se encuentra temporalmente cerrado.',
+          configuracionComisiones: {
+            herramientas_empresa: (empresa.configuracionComisiones?.herramientas_empresa || 0.50) * 100,
+            herramientas_propias: (empresa.configuracionComisiones?.herramientas_propias || 0.60) * 100,
+            propietario: (empresa.configuracionComisiones?.propietario || 1.00) * 100
+          }
         });
 
         // Poblar horarios
@@ -130,7 +140,17 @@ export class AjustesEmpresaComponent implements OnInit {
     }
 
     this.saving = true;
-    const datosActualizar: EmpresaInfo = this.form.value;
+    const formValue = this.form.value;
+    
+    // Transformar los porcentajes de vuelta a decimales
+    const datosActualizar: EmpresaInfo = {
+      ...formValue,
+      configuracionComisiones: {
+        herramientas_empresa: (formValue.configuracionComisiones?.herramientas_empresa || 0) / 100,
+        herramientas_propias: (formValue.configuracionComisiones?.herramientas_propias || 0) / 100,
+        propietario: (formValue.configuracionComisiones?.propietario || 0) / 100
+      }
+    };
 
     this.empresaService.actualizarInfoEmpresa(datosActualizar).subscribe({
       next: (res) => {

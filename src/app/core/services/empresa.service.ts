@@ -27,6 +27,11 @@ export interface EmpresaInfo {
   horarios?: HorarioDia[];
   agendamientoAbierto?: boolean;
   mensajeCierre?: string;
+  configuracionComisiones?: {
+    herramientas_empresa?: number;
+    herramientas_propias?: number;
+    propietario?: number;
+  };
 }
 
 @Injectable({

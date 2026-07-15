@@ -1035,7 +1035,7 @@ export class ReporteIngresosComponent implements OnInit {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(9);
         doc.setTextColor(127, 140, 141);
-        doc.text('TOTAL INGRESOS', 41.5, startY + 7, { align: 'center' });
+        doc.text('INGRESOS SERVICIOS', 41.5, startY + 7, { align: 'center' });
         doc.text('TOTAL CITAS', 102.5, startY + 7, { align: 'center' });
         doc.text('PROMEDIO POR CITA', 166, startY + 7, { align: 'center' });
 
@@ -1196,23 +1196,18 @@ export class ReporteIngresosComponent implements OnInit {
       // =============================
       // RESUMEN DE INGRESOS
       // =============================
-      if (this.tabSeleccionada === 0) {
-
-        const totalIngresos = data.reduce((acc, c) => acc + (c.subtotal || 0), 0);
-        const totalCitas = data.length;
-        const promedio = totalIngresos / (totalCitas || 1);
-
+      if (this.tabSeleccionada === 0 && this.ventas.length > 0) {
+        const totalVentas = this.ventas.length;
+        const totalIngresosProductos = this.ingresosProductos;
+        
         const finalY = (doc as any).lastAutoTable.finalY + 12;
 
         doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(44, 62, 80);
         
-        doc.text(`Total Ingresos: $${totalIngresos.toLocaleString('es-CO')}`, 14, finalY);
-        doc.text(`Total Citas: ${totalCitas}`, 14, finalY + 6);
-        doc.text(`Promedio por cita: $${Math.round(promedio).toLocaleString('es-CO')}`, 14, finalY + 12);
-
-
+        doc.text(`Total Ingresos Productos: $${totalIngresosProductos.toLocaleString('es-CO')}`, 14, finalY);
+        doc.text(`Total Ventas de Productos: ${totalVentas}`, 14, finalY + 6);
       }
 
       // =============================

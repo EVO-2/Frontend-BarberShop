@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Empresa / Nombre</mat-label>
+      <input matInput formControlName="nombre" placeholder="Ej. Distribuidora XYZ" required>
+      <mat-error *ngIf="form.get('nombre')?.hasError('required')">El nombre es requerido</mat-error>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width" style="margin-right: 10px;">
+        <mat-label>Persona de Contacto</mat-label>
+        <input matInput formControlName="contacto" placeholder="Ej. Juan Pérez">
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" placeholder="Ej. 3001234567">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" placeholder="correo@empresa.com">
+      <mat-error *ngIf="form.get('email')?.hasError('email')">Formato de correo inválido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Dirección</mat-label>
+      <input matInput formControlName="direccion">
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="estado" color="primary">
+      Activo
+    </mat-slide-toggle>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()" [disabled]="loading">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="guardar()" [disabled]="loading || form.invalid">
+    <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+    <span *ngIf="!loading">Guardar</span>
+  </button>
+</mat-dialog-actions>

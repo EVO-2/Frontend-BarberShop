@@ -1,0 +1,19 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+  }
+  
+  .full-width {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .row {
+    display: flex;
+    width: 100%;
+  }
+
+  .half-width {
+    flex: 1;
+  }

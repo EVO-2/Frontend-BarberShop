@@ -46,11 +46,15 @@ import { ListadoEquiposComponent } from './pages/equipos/listado-equipos/listado
 import { MovimientosEquipoDialogComponent } from './pages/equipos/movimientos-equipo-dialog/movimientos-equipo-dialog.component';
 import { EquipoDialogComponent } from './pages/equipos/equipo-dialog/equipo-dialog.component';
 
-// ======= 📦 Productos =======
+// ======= 📦 Productos & Catálogos =======
 import { ProductosComponent } from './pages/productos/productos/productos.component';
-import { ProductoDialogComponent } from './pages/productos/producto-dialog/producto-dialog.component'; // ✅ NUEVO
+import { ProductoDialogComponent } from './pages/productos/producto-dialog/producto-dialog.component'; 
 import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
 import { TerminosDialogComponent } from './shared/components/terminos-dialog/terminos-dialog.component';
+import { CategoriasComponent } from './pages/categorias/categorias.component';
+import { CategoriaDialogComponent } from './pages/categorias/categoria-dialog/categoria-dialog.component';
+import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
+import { ProveedorDialogComponent } from './pages/proveedores/proveedor-dialog/proveedor-dialog.component';
 
 // ======= 🕵️ Auditoría =======
 import { HistorialComponent } from './pages/historial/historial.component';
@@ -61,7 +65,7 @@ import { SuscripcionVencidaComponent } from './pages/suscripcion-vencida/suscrip
 import { SuscripcionesComponent } from './pages/suscripciones/suscripciones.component';
 import { LandingComponent } from './pages/landing/landing.component';
 import { RecompensasComponent } from './pages/recompensas/recompensas.component';
-import { ComisionesComponent } from './pages/comisiones/comisiones.component'; // ✅ NUEVO
+import { ComisionesComponent } from './pages/comisiones/comisiones.component'; 
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
@@ -98,11 +102,15 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     MovimientosEquipoDialogComponent,
     EquipoDialogComponent,
 
-    // 📦 Productos
+    // 📦 Productos & Catálogos
     ProductosComponent,
-    ProductoDialogComponent, // ✅ AGREGADO
+    ProductoDialogComponent, 
     ProductosClienteComponent,
     TerminosDialogComponent,
+    CategoriasComponent,
+    CategoriaDialogComponent,
+    ProveedoresComponent,
+    ProveedorDialogComponent,
 
     // 🕵️ Auditoría
     HistorialComponent,

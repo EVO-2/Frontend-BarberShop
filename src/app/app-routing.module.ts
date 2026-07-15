@@ -25,9 +25,11 @@ import { ComisionesComponent } from './pages/comisiones/comisiones.component';
 // 🔐 Roles
 import { RolesComponent } from './pages/roles/roles.component';
 
-// 🆕 Productos
+// 🆕 Productos & Catálogos
 import { ProductosComponent } from './pages/productos/productos/productos.component';
 import { ProductosClienteComponent } from './pages/productos-cliente/productos-cliente.component';
+import { CategoriasComponent } from './pages/categorias/categorias.component';
+import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 
 // 🕵️ Auditoría
 import { HistorialComponent } from './pages/historial/historial.component';
@@ -113,6 +115,18 @@ const routes: Routes = [
         component: ProductosClienteComponent,
         canActivate: [RoleGuard],
         data: { roles: ['cliente', 'barbero', 'manicurista', 'admin'] }
+      },
+      {
+        path: 'categorias',
+        component: CategoriasComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      },
+      {
+        path: 'proveedores',
+        component: ProveedoresComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
 
       {

@@ -31,6 +31,8 @@ export class MenuService {
         { label: 'Servicios', ruta: '/servicios-admin', icono: 'build' },
         { label: 'Equipos', ruta: '/equipos', icono: 'inventory_2' },
         { label: 'Productos', ruta: '/productos', icono: 'inventory' },
+        { label: 'Categorías', ruta: '/categorias', icono: 'category' },
+        { label: 'Proveedores', ruta: '/proveedores', icono: 'local_shipping' },
         { label: 'Roles', ruta: '/roles', icono: 'admin_panel_settings' },
         { label: 'Auditoría', ruta: '/auditoria', icono: 'security' },
         { label: 'Ajustes', ruta: '/ajustes-empresa', icono: 'settings_applications' }

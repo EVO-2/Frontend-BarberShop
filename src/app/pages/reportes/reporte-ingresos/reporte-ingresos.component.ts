@@ -21,6 +21,15 @@ interface CitaReporte {
   subtotal: number;
 }
 
+interface VentaReporte {
+  fecha: Date;
+  sede?: string;
+  cliente: string;
+  vendedor: string;
+  productosStr: string;
+  subtotal: number;
+}
+
 interface BarberoReporte {
   sede?: string;
   barbero: string;
@@ -54,8 +63,12 @@ export class ReporteIngresosComponent implements OnInit {
 
   // === 1️⃣ Ingresos ===
   citas: CitaReporte[] = [];
+  ventas: VentaReporte[] = [];
   cantidadCitas = 0;
+  cantidadVentas = 0;
   total = 0;
+  ingresosServicios = 0;
+  ingresosProductos = 0;
   promedio: number = 0;
   totalServicios: number = 0;
   ingresosPorSede: { [key: string]: number } = {};
@@ -175,7 +188,8 @@ export class ReporteIngresosComponent implements OnInit {
 
       next: (res: any) => {
 
-        const detalle = res?.detalle ?? [];
+        const detalle = res?.detalleCitas ?? [];
+        const detalleVentas = res?.detalleVentas ?? [];
         const resumen = res?.resumen ?? {};
 
         // 🔹 NUEVO: ingresos agrupados por sede
@@ -193,9 +207,24 @@ export class ReporteIngresosComponent implements OnInit {
           subtotal: c.subtotal || 0
         }));
 
+        // 🔹 Mapear ventas
+        this.ventas = detalleVentas.map((v: any) => ({
+          fecha: v.fecha,
+          sede: v.sede || 'N/D',
+          cliente: v.cliente || 'N/D',
+          vendedor: v.vendedor || 'N/D',
+          productosStr: (v.productos && v.productos.length > 0)
+            ? v.productos.map((p: any) => `${p.cantidad}x ${p.nombre} ($${p.subtotal})`).join(', ')
+            : 'Producto Eliminado',
+          subtotal: v.subtotal || 0
+        }));
+
         // 🔹 Resumen financiero
         this.cantidadCitas = resumen?.cantidadCitas ?? 0;
+        this.cantidadVentas = resumen?.cantidadVentas ?? 0;
         this.total = resumen?.ingresosTotales ?? 0;
+        this.ingresosServicios = resumen?.ingresosServicios ?? 0;
+        this.ingresosProductos = resumen?.ingresosProductos ?? 0;
         this.promedio = Number(resumen?.promedioPorCita ?? 0);
         this.totalServicios = resumen?.totalServicios ?? 0;
 
@@ -497,7 +526,7 @@ export class ReporteIngresosComponent implements OnInit {
       case 0:
 
         titulo = 'Reporte_Ingresos';
-        sheetName = 'Ingresos';
+        sheetName = 'Ingresos_Servicios';
 
         colWidths = [
           { wch: 18 },
@@ -707,12 +736,35 @@ export class ReporteIngresosComponent implements OnInit {
     worksheet['!cols'] = colWidths;
 
     const workbook: xlsx.WorkBook = {
-
       Sheets: { [sheetName]: worksheet },
-
       SheetNames: [sheetName]
-
     };
+
+    // Si estamos en la pestaña 0, también agregamos la tabla de ventas de productos
+    if (this.tabSeleccionada === 0 && this.ventas.length > 0) {
+      const dataVentas = this.ventas.map((v: any) => ({
+        Fecha: new Intl.DateTimeFormat('es-CO', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: 'numeric', minute: '2-digit', hour12: true
+        }).format(new Date(v.fecha)),
+        Sede: v.sede ?? 'N/D',
+        Cliente: v.cliente ?? 'N/D',
+        Vendedor: v.vendedor ?? 'N/D',
+        Productos: v.productosStr ?? '',
+        Subtotal: v.subtotal ?? 0
+      }));
+
+      const worksheetVentas = xlsx.utils.json_to_sheet([]);
+      xlsx.utils.sheet_add_aoa(worksheetVentas, [[`${barberiaNombre} - Ingresos por Ventas de Productos`]], { origin: 'A1' });
+      xlsx.utils.sheet_add_aoa(worksheetVentas, [['Reporte generado el:', fechaColombia]], { origin: 'A2' });
+      xlsx.utils.sheet_add_aoa(worksheetVentas, [['']], { origin: 'A4' });
+      xlsx.utils.sheet_add_json(worksheetVentas, dataVentas, { origin: 'A6', skipHeader: false });
+      worksheetVentas['!cols'] = colWidths;
+      
+      const sheetNameVentas = 'Ingresos_Productos';
+      workbook.SheetNames.push(sheetNameVentas);
+      workbook.Sheets[sheetNameVentas] = worksheetVentas;
+    }
 
     const fileName = `${titulo}_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
@@ -770,7 +822,7 @@ export class ReporteIngresosComponent implements OnInit {
 
         data = this.citas;
 
-        title = 'Reporte de Ingresos';
+        title = 'Reporte de Ingresos (Servicios)';
 
         headers = ['Fecha', 'Sede', 'Cliente', 'Barbero', 'Servicios', 'Subtotal'];
 
@@ -1100,6 +1152,46 @@ export class ReporteIngresosComponent implements OnInit {
         styles: { fontSize: 9, font: 'helvetica', cellPadding: 4, lineColor: [220, 220, 220], lineWidth: 0.1 },
         margin: { top: 40, left: 14, right: 14 }
       });
+
+      // Si es la pestaña 0 y hay ventas, dibujamos una segunda tabla
+      if (this.tabSeleccionada === 0 && this.ventas.length > 0) {
+        const finalY = (doc as any).lastAutoTable.finalY + 15;
+        
+        doc.setFontSize(14);
+        doc.setTextColor(41, 128, 185);
+        doc.text('Reporte de Ingresos (Venta de Productos)', 14, finalY);
+
+        const headersVentas = ['Fecha', 'Sede', 'Cliente', 'Vendedor', 'Productos', 'Subtotal'];
+        const keysVentas = ['fecha', 'sede', 'cliente', 'vendedor', 'productosStr', 'subtotal'];
+        const bodyVentas = this.ventas.map((item: any) => {
+          return keysVentas.map(k => {
+            let value = item[k];
+            if (k === 'fecha' && value) {
+              value = new Intl.DateTimeFormat('es-CO', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+              }).format(new Date(value));
+            }
+            if (typeof value === 'object' && value !== null) {
+              value = value.nombre || value.name || value.descripcion || value.tipo || 'N/D';
+            }
+            return value ?? 'N/D';
+          });
+        });
+
+        autoTable(doc, {
+          head: [headersVentas],
+          body: bodyVentas,
+          startY: finalY + 5,
+          theme: 'grid',
+          styles: { fontSize: 9, cellPadding: 4, textColor: [50, 50, 50], lineColor: [220, 220, 220], lineWidth: 0.1 },
+          headStyles: { fillColor: [16, 185, 129], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' }, // verde para productos
+          alternateRowStyles: { fillColor: [245, 247, 250] },
+          columnStyles: {
+            5: { halign: 'right' }
+          }
+        });
+      }
 
       // =============================
       // RESUMEN DE INGRESOS

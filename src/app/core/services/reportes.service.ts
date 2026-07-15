@@ -62,8 +62,11 @@ export class ReportesService {
 
             resumen: res?.resumen ?? {
               cantidadCitas: 0,
+              cantidadVentas: 0,
               totalServicios: 0,
               ingresosTotales: 0,
+              ingresosServicios: 0,
+              ingresosProductos: 0,
               promedioPorCita: 0
             },
 
@@ -71,7 +74,10 @@ export class ReportesService {
             ingresosPorSede: res?.ingresosPorSede ?? {},
 
             // 🔹 Detalle de citas (tabla del reporte)
-            detalle: this.normalizarArray(res?.detalle)
+            detalleCitas: this.normalizarArray(res?.detalleCitas),
+
+            // 🔹 Detalle de ventas (tabla del reporte de productos)
+            detalleVentas: this.normalizarArray(res?.detalleVentas)
           };
 
         })

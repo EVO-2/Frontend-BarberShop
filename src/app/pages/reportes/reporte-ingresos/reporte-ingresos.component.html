@@ -79,7 +79,7 @@
         <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
       </div>
 
-      <div *ngIf="!cargando && (citas?.length ?? 0) > 0; else sinCitas">
+      <div *ngIf="!cargando && ((citas?.length ?? 0) > 0 || (ventas?.length ?? 0) > 0); else sinCitas">
 
         <!-- KPI -->
         <div class="kpi-grid">
@@ -91,29 +91,37 @@
             </div>
           </mat-card>
 
-          <mat-card class="kpi-card premium-card secondary-kpi">
-            <div class="kpi-icon-wrapper"><mat-icon>receipt_long</mat-icon></div>
+          <mat-card class="kpi-card premium-card secondary-kpi" style="background: linear-gradient(135deg, #10b981, #047857);">
+            <div class="kpi-icon-wrapper"><mat-icon>storefront</mat-icon></div>
             <div class="kpi-info">
-              <p>Total Citas / Servicios</p>
-              <h3>{{ cantidadCitas }} / {{ totalServicios }}</h3>
+              <p>Ingresos Productos</p>
+              <h3>{{ ingresosProductos | currency:'COP':'symbol':'1.0-0' }}</h3>
+            </div>
+          </mat-card>
+
+          <mat-card class="kpi-card premium-card secondary-kpi">
+            <div class="kpi-icon-wrapper"><mat-icon>content_cut</mat-icon></div>
+            <div class="kpi-info">
+              <p>Ingresos Servicios</p>
+              <h3>{{ ingresosServicios | currency:'COP':'symbol':'1.0-0' }}</h3>
             </div>
           </mat-card>
 
           <mat-card class="kpi-card premium-card accent-kpi">
             <div class="kpi-icon-wrapper"><mat-icon>trending_up</mat-icon></div>
             <div class="kpi-info">
-              <p>Ticket Promedio</p>
+              <p>Ticket Promedio (Servicios)</p>
               <h3>{{ promedio | currency:'COP':'symbol':'1.0-0' }}</h3>
             </div>
           </mat-card>
         </div>
 
-        <div class="dashboard-grid">
+        <div class="dashboard-grid" style="grid-template-columns: 1fr; gap: 24px;">
 
-          <!-- TABLA PRINCIPAL -->
-          <mat-card class="tabla-card main-table-card">
+          <!-- TABLA SERVICIOS -->
+          <mat-card class="tabla-card main-table-card" *ngIf="(citas?.length ?? 0) > 0">
             <div class="card-header-fancy">
-              <h3><mat-icon>list_alt</mat-icon> Detalle de Transacciones</h3>
+              <h3><mat-icon>list_alt</mat-icon> Detalle de Citas (Servicios)</h3>
             </div>
             <div class="table-wrapper">
 
@@ -155,6 +163,57 @@
 
                 <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
                 <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal'];"></tr>
+
+              </table>
+
+            </div>
+          </mat-card>
+
+          <!-- TABLA VENTAS DE PRODUCTOS -->
+          <mat-card class="tabla-card main-table-card" *ngIf="(ventas?.length ?? 0) > 0">
+            <div class="card-header-fancy" style="background: linear-gradient(135deg, #10b981, #047857);">
+              <h3><mat-icon>storefront</mat-icon> Detalle de Ventas (Productos)</h3>
+            </div>
+            <div class="table-wrapper">
+
+              <table mat-table [dataSource]="ventas || []">
+
+                <ng-container matColumnDef="fecha">
+                  <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                  <td mat-cell *matCellDef="let v">{{ v.fecha | date:'mediumDate' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="sede">
+                  <th mat-header-cell *matHeaderCellDef>Sede</th>
+                  <td mat-cell *matCellDef="let v">
+                    <span class="badge-sede">{{ v.sede }}</span>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="cliente">
+                  <th mat-header-cell *matHeaderCellDef>Cliente</th>
+                  <td mat-cell *matCellDef="let v">{{ v.cliente }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="vendedor">
+                  <th mat-header-cell *matHeaderCellDef>Vendedor</th>
+                  <td mat-cell *matCellDef="let v">{{ v.vendedor }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="productos">
+                  <th mat-header-cell *matHeaderCellDef>Productos</th>
+                  <td mat-cell *matCellDef="let v">{{ v.productosStr }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="subtotal">
+                  <th mat-header-cell *matHeaderCellDef>Total</th>
+                  <td mat-cell *matCellDef="let v" class="text-success fw-bold">
+                    {{ v.subtotal | currency:'COP':'symbol':'1.0-0' }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','vendedor','productos','subtotal']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','vendedor','productos','subtotal'];"></tr>
 
               </table>
 

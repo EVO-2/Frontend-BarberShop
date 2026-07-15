@@ -27,7 +27,7 @@ export class PushNotificationService {
     })
     .then(sub => {
       // Enviar la suscripción al backend
-      this.http.post(`${environment.apiUrl}/api/notificaciones/subscribe`, sub)
+      this.http.post(`${environment.apiUrl}/notificaciones/subscribe`, sub)
         .subscribe({
           next: () => console.log('✅ Suscripción Web Push guardada en el servidor.'),
           error: (err) => console.error('❌ Error enviando suscripción al servidor:', err)

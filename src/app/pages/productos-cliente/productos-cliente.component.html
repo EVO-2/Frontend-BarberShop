@@ -165,24 +165,20 @@
       <div class="instrucciones-pago" *ngIf="metodoSeleccionado">
         <ng-container [ngSwitch]="metodoSeleccionado">
           <div *ngSwitchCase="'nequi'">
-            <strong>Transfiere a Nequi:</strong>
-            <p class="numero-cuenta">3136355136</p>
-            <p>Se enviará tu pedido por WhatsApp para adjuntar el comprobante.</p>
+            <strong>Pago con Nequi:</strong>
+            <p>Se registrará la venta con Nequi. Asegúrese de haber recibido la transferencia.</p>
           </div>
           <div *ngSwitchCase="'daviplata'">
-            <strong>Transfiere a Daviplata:</strong>
-            <p class="numero-cuenta">3136355136</p>
-            <p>Se enviará tu pedido por WhatsApp para adjuntar el comprobante.</p>
+            <strong>Pago con Daviplata:</strong>
+            <p>Se registrará la venta con Daviplata. Asegúrese de haber recibido la transferencia.</p>
           </div>
           <div *ngSwitchCase="'transferencia'">
-            <strong>Cuenta Bancolombia:</strong>
-            <p class="numero-cuenta">Ahorros: xxxx-xxxx-xx</p>
-            <p>Se enviará tu pedido por WhatsApp para adjuntar el comprobante.</p>
+            <strong>Pago con Transferencia:</strong>
+            <p>Se registrará la venta con Transferencia Bancaria. Asegúrese de haber recibido la transferencia.</p>
           </div>
           <div *ngSwitchCase="'efectivo'">
             <strong>Pago en Efectivo:</strong>
-            <p style="margin-top: 10px;">Enviaremos el detalle de tu reserva por WhatsApp. Deberás pagar el monto total
-              al momento de reclamar los productos en la barbería.</p>
+            <p style="margin-top: 10px;">Se registrará la venta en efectivo para ser recibida en mostrador.</p>
           </div>
         </ng-container>
       </div>
@@ -193,9 +189,11 @@
       <button mat-stroked-button (click)="volverAlCarrito()" style="margin-bottom: 12px; width: 100%">
         <mat-icon>arrow_back</mat-icon> Volver al carrito
       </button>
-      <button mat-flat-button class="btn-checkout whatsapp-btn" [disabled]="!metodoSeleccionado"
+      <button mat-flat-button color="primary" class="btn-checkout" [disabled]="!metodoSeleccionado || procesando"
         (click)="confirmarPedido()">
-        <mat-icon style="margin-right: 8px;">whatsapp</mat-icon> Enviar Pedido a WhatsApp
+        <mat-icon style="margin-right: 8px;">check_circle</mat-icon> 
+        <span *ngIf="!procesando">Confirmar Venta</span>
+        <span *ngIf="procesando">Procesando...</span>
       </button>
     </div>
 

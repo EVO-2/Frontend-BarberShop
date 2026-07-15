@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductosService, Producto } from 'src/app/core/services/productos.service';
+import { VentasService, VentaDTO } from 'src/app/core/services/ventas.service';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -19,6 +20,7 @@ export class ProductosClienteComponent implements OnInit {
   productos: Producto[] = [];
   productosFiltrados: Producto[] = [];
   cargando: boolean = false;
+  procesando: boolean = false;
   error: string = '';
   textoBusqueda: string = '';
 
@@ -26,13 +28,13 @@ export class ProductosClienteComponent implements OnInit {
   mostrarCarrito: boolean = false;
   pasoCheckout: number = 1; // 1 = Carrito, 2 = Metodos de Pago
   metodoSeleccionado: string = '';
-  telefonoWhatsApp: string = '573000000000'; // Puedes cambiarlo por tu número real
-
+  
   readonly baseUrl: string = environment.baseUrl;
   imagenFallback = 'assets/img/placeholder.svg';
 
   constructor(
     private productosService: ProductosService,
+    private ventasService: VentasService,
     private router: Router,
     private snackBar: MatSnackBar
   ) { }
@@ -149,28 +151,33 @@ export class ProductosClienteComponent implements OnInit {
   }
 
   public confirmarPedido(): void {
-    let mensaje = `Hola, quiero realizar el siguiente pedido de productos:\n\n`;
-    
-    this.carrito.forEach(item => {
-      mensaje += `✅ ${item.cantidad}x ${item.producto.nombre} ($${item.producto.precio * item.cantidad})\n`;
+    if (!this.metodoSeleccionado || this.carrito.length === 0) return;
+
+    this.procesando = true;
+
+    const ventaData: VentaDTO = {
+      productos: this.carrito.map(item => ({
+        producto: item.producto._id,
+        cantidad: item.cantidad
+      })),
+      metodoPago: this.metodoSeleccionado,
+      observaciones: 'Venta registrada desde Tienda POS'
+    };
+
+    this.ventasService.registrarVenta(ventaData).subscribe({
+      next: (res) => {
+        this.procesando = false;
+        this.snackBar.open('✅ Venta registrada exitosamente', 'Cerrar', { duration: 5000 });
+        this.carrito = [];
+        this.mostrarCarrito = false;
+        this.pasoCheckout = 1;
+        this.metodoSeleccionado = '';
+        this.obtenerProductos(); // Recargar para actualizar el stock
+      },
+      error: (err) => {
+        this.procesando = false;
+        this.snackBar.open('❌ Error al registrar venta: ' + (err.error?.msg || ''), 'Cerrar', { duration: 5000 });
+      }
     });
-    
-    mensaje += `\n💰 *Total a pagar:* $${this.totalCarrito}\n`;
-    mensaje += `💳 *Método de pago elegido:* ${this.metodoSeleccionado.toUpperCase()}\n\n`;
-    
-    if (this.metodoSeleccionado === 'efectivo') {
-      mensaje += `Pasaré a recoger el pedido a la sede y pagaré en efectivo.`;
-    } else {
-      mensaje += `Adjunto mi comprobante de pago. Quedo atento.`;
-    }
-
-    const url = `https://wa.me/${this.telefonoWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
-
-    this.snackBar.open('¡Pedido enviado por WhatsApp!', 'Cerrar', { duration: 5000 });
-    this.carrito = [];
-    this.mostrarCarrito = false;
-    this.pasoCheckout = 1;
-    this.metodoSeleccionado = '';
   }
 }

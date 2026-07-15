@@ -17,16 +17,16 @@ export interface VentaDTO {
   providedIn: 'root'
 })
 export class VentasService {
-  private baseUrl = environment.baseUrl;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
   registrarVenta(data: VentaDTO): Observable<any> {
-    return this.http.post(`${this.baseUrl}/ventas`, data);
+    return this.http.post(`${this.apiUrl}/ventas`, data);
   }
 
   obtenerHistorialVentas(sedeId?: string): Observable<any> {
-    const url = sedeId ? `${this.baseUrl}/ventas?sede=${sedeId}` : `${this.baseUrl}/ventas`;
+    const url = sedeId ? `${this.apiUrl}/ventas?sede=${sedeId}` : `${this.apiUrl}/ventas`;
     return this.http.get(url);
   }
 }

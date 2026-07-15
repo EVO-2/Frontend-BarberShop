@@ -47,6 +47,7 @@ export interface DashboardResumen {
     productosTop: {
         nombre: string;
         total: number;
+        ingresos: number;
     }[];
 
     // 🔥 NUEVO KPI: INGRESOS PRODUCTOS HOY

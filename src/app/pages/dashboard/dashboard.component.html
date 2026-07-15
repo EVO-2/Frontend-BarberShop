@@ -263,17 +263,19 @@
                         #{{ i + 1 }}
                     </div>
 
-                    <div class="service-name">
-                        {{ producto.nombre }}
+                    <div class="service-info">
+                        <div class="service-name">{{ producto.nombre }}</div>
+                        <div class="service-stats-container">
+                            <span class="service-total-pill">{{ producto.total }} unds.</span>
+                            <span class="service-revenue-pill">{{ producto.ingresos | currency:'USD':'symbol':'1.0-0' }}</span>
+                        </div>
                     </div>
 
-                    <div class="service-total">
-                        {{ producto.total }} unidades
+                    <div class="progress-wrapper">
+                        <mat-progress-bar mode="determinate" color="accent"
+                            [value]="calcularPorcentajeProducto(producto.total)">
+                        </mat-progress-bar>
                     </div>
-
-                    <mat-progress-bar mode="determinate" color="accent"
-                        [value]="calcularPorcentajeProducto(producto.total)">
-                    </mat-progress-bar>
 
                     <div class="service-percent">
                         {{ calcularPorcentajeProducto(producto.total) | number:'1.0-0' }}%

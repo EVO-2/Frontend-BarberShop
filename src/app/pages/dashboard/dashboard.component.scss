@@ -281,15 +281,44 @@
     color: #6366f1;
 }
 
+.service-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .service-name {
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 1rem;
     color: #111827;
 }
 
-.service-total {
-    font-size: 0.8rem;
-    color: #6b7280;
+.service-stats-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.service-total-pill {
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.service-revenue-pill {
+    background: #dcfce7;
+    color: #166534;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.progress-wrapper {
+    margin-top: 5px;
 }
 
 .service-percent {

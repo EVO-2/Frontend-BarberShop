@@ -94,12 +94,28 @@
                     <div class="kpi-icon">
                         <mat-icon>payments</mat-icon>
                     </div>
-                    <span class="kpi-title">Ingresos Hoy</span>
+                    <span class="kpi-title">Ingresos Servicios</span>
                 </div>
 
                 <div class="kpi-body">
                     <div class="kpi-value">
                         ${{ data.ingresosHoy | number }}
+                    </div>
+                </div>
+            </mat-card>
+
+            <!-- INGRESOS TIENDA (PRODUCTOS) -->
+            <mat-card class="kpi-card warning" style="background: linear-gradient(135deg, #10b981, #047857);">
+                <div class="kpi-header">
+                    <div class="kpi-icon">
+                        <mat-icon>storefront</mat-icon>
+                    </div>
+                    <span class="kpi-title">Ingresos Tienda</span>
+                </div>
+
+                <div class="kpi-body">
+                    <div class="kpi-value">
+                        ${{ data.ingresosProductosHoy | number }}
                     </div>
                 </div>
             </mat-card>

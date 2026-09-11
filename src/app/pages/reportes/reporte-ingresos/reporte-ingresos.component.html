@@ -69,7 +69,7 @@
 
 
   <!-- TABS -->
-  <mat-tab-group class="tabs-reportes" [(selectedIndex)]="tabSeleccionada" (selectedIndexChange)="onTabChange($event)">
+  <mat-tab-group class="tabs-reportes" [selectedIndex]="tabSeleccionada" (selectedIndexChange)="onTabChange($event)">
 
 
     <!-- INGRESOS -->
@@ -79,7 +79,7 @@
         <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
       </div>
 
-      <div *ngIf="!cargando && ((citas?.length ?? 0) > 0 || (ventas?.length ?? 0) > 0); else sinCitas">
+      <div *ngIf="!cargando && (citas.length > 0 || ventas.length > 0); else sinCitas">
 
         <!-- KPI -->
         <div class="kpi-grid">
@@ -119,13 +119,13 @@
         <div class="dashboard-grid" style="grid-template-columns: 1fr; gap: 24px;">
 
           <!-- TABLA SERVICIOS -->
-          <mat-card class="tabla-card main-table-card" *ngIf="(citas?.length ?? 0) > 0">
+          <mat-card class="tabla-card main-table-card" *ngIf="citas.length > 0">
             <div class="card-header-fancy">
               <h3><mat-icon>list_alt</mat-icon> Detalle de Citas (Servicios)</h3>
             </div>
             <div class="table-wrapper">
 
-              <table mat-table [dataSource]="citas || []">
+              <table mat-table [dataSource]="citas">
 
                 <ng-container matColumnDef="fecha">
                   <th mat-header-cell *matHeaderCellDef>Fecha</th>
@@ -162,7 +162,7 @@
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal'];"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','peluquero','servicios','subtotal']"></tr>
 
               </table>
 
@@ -170,13 +170,13 @@
           </mat-card>
 
           <!-- TABLA VENTAS DE PRODUCTOS -->
-          <mat-card class="tabla-card main-table-card" *ngIf="(ventas?.length ?? 0) > 0">
+          <mat-card class="tabla-card main-table-card" *ngIf="ventas.length > 0">
             <div class="card-header-fancy" style="background: linear-gradient(135deg, #10b981, #047857);">
               <h3><mat-icon>storefront</mat-icon> Detalle de Ventas (Productos)</h3>
             </div>
             <div class="table-wrapper">
 
-              <table mat-table [dataSource]="ventas || []">
+              <table mat-table [dataSource]="ventas">
 
                 <ng-container matColumnDef="fecha">
                   <th mat-header-cell *matHeaderCellDef>Fecha</th>
@@ -213,7 +213,7 @@
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="['fecha','sede','cliente','vendedor','productos','subtotal']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','vendedor','productos','subtotal'];"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['fecha','sede','cliente','vendedor','productos','subtotal']"></tr>
 
               </table>
 
@@ -222,13 +222,13 @@
 
 
           <!-- INGRESOS POR SEDE -->
-          <mat-card *ngIf="ingresosPorSede | keyvalue as sedes" class="tabla-card side-table-card">
+          <mat-card *ngIf="ingresosPorSede | keyvalue as sedesIngresos" class="tabla-card side-table-card">
             <div class="card-header-fancy secondary-header">
               <h3><mat-icon>pie_chart</mat-icon> Distribución Sede</h3>
             </div>
             <div class="table-wrapper">
 
-              <table mat-table [dataSource]="sedes">
+              <table mat-table [dataSource]="sedesIngresos">
 
                 <ng-container matColumnDef="sede">
                   <th mat-header-cell *matHeaderCellDef>Sede</th>
@@ -245,7 +245,7 @@
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="['sede','ingresos']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['sede','ingresos'];"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['sede','ingresos']"></tr>
 
               </table>
 
@@ -269,13 +269,17 @@
     <!-- BARBEROS -->
     <mat-tab label="Citas por Barbero">
 
-      <mat-card class="tabla-card" *ngIf="reportesBarberos?.length">
+      <div *ngIf="cargando" class="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      </div>
+
+      <mat-card class="tabla-card" *ngIf="!cargando && reportesBarberos.length > 0">
         <div class="card-header-fancy">
           <h3><mat-icon>content_cut</mat-icon> Rendimiento por Barbero</h3>
         </div>
         <div class="table-wrapper">
 
-          <table mat-table [dataSource]="reportesBarberos || []">
+          <table mat-table [dataSource]="reportesBarberos">
 
             <ng-container matColumnDef="sede">
               <th mat-header-cell *matHeaderCellDef>Sede</th>
@@ -293,7 +297,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="['sede','barbero','cantidad']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['sede','barbero','cantidad'];"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','barbero','cantidad']"></tr>
 
           </table>
 
@@ -301,19 +305,28 @@
 
       </mat-card>
 
+      <div *ngIf="!cargando && reportesBarberos.length === 0" class="no-data">
+        <mat-icon>info</mat-icon>
+        No hay datos para el rango seleccionado
+      </div>
+
     </mat-tab>
 
 
     <!-- CLIENTES -->
     <mat-tab label="Clientes Frecuentes">
 
-      <mat-card class="tabla-card" *ngIf="reportesClientes?.length">
+      <div *ngIf="cargando" class="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      </div>
+
+      <mat-card class="tabla-card" *ngIf="!cargando && reportesClientes.length > 0">
         <div class="card-header-fancy">
           <h3><mat-icon>groups</mat-icon> Top Clientes Frecuentes</h3>
         </div>
         <div class="table-wrapper">
 
-          <table mat-table [dataSource]="reportesClientes || []">
+          <table mat-table [dataSource]="reportesClientes">
 
             <ng-container matColumnDef="sede">
               <th mat-header-cell *matHeaderCellDef>Sede</th>
@@ -331,7 +344,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="['sede','cliente','cantidad']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['sede','cliente','cantidad'];"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','cliente','cantidad']"></tr>
 
           </table>
 
@@ -339,19 +352,28 @@
 
       </mat-card>
 
+      <div *ngIf="!cargando && reportesClientes.length === 0" class="no-data">
+        <mat-icon>info</mat-icon>
+        No hay datos para el rango seleccionado
+      </div>
+
     </mat-tab>
 
 
     <!-- INVENTARIO -->
     <mat-tab label="Inventario">
 
-      <mat-card class="tabla-card" *ngIf="reportesInventario?.length">
+      <div *ngIf="cargando" class="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      </div>
+
+      <mat-card class="tabla-card" *ngIf="!cargando && reportesInventario.length > 0">
         <div class="card-header-fancy">
           <h3><mat-icon>inventory_2</mat-icon> Existencias de Equipos</h3>
         </div>
         <div class="table-wrapper">
 
-          <table mat-table [dataSource]="reportesInventario || []">
+          <table mat-table [dataSource]="reportesInventario">
 
             <ng-container matColumnDef="sede">
               <th mat-header-cell *matHeaderCellDef>Sede</th>
@@ -374,7 +396,7 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="['sede','tipo','cantidad','totalSede']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede'];"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','tipo','cantidad','totalSede']"></tr>
 
           </table>
 
@@ -382,19 +404,28 @@
 
       </mat-card>
 
+      <div *ngIf="!cargando && reportesInventario.length === 0" class="no-data">
+        <mat-icon>info</mat-icon>
+        No hay datos para el rango seleccionado
+      </div>
+
     </mat-tab>
 
 
     <!-- PRODUCTOS -->
     <mat-tab label="Productos (Inventario)">
 
-      <mat-card class="tabla-card" *ngIf="reportesProductos?.length">
+      <div *ngIf="cargando" class="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+      </div>
+
+      <mat-card class="tabla-card" *ngIf="!cargando && reportesProductos.length > 0">
         <div class="card-header-fancy">
           <h3><mat-icon>inventory</mat-icon> Inventario de Productos</h3>
         </div>
         <div class="table-wrapper">
 
-          <table mat-table [dataSource]="reportesProductos || []">
+          <table mat-table [dataSource]="reportesProductos">
 
             <ng-container matColumnDef="sede">
               <th mat-header-cell *matHeaderCellDef>Sede</th>
@@ -417,13 +448,18 @@
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="['sede','categoria','cantidad','totalSede']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['sede','categoria','cantidad','totalSede'];"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['sede','categoria','cantidad','totalSede']"></tr>
 
           </table>
 
         </div>
 
       </mat-card>
+
+      <div *ngIf="!cargando && reportesProductos.length === 0" class="no-data">
+        <mat-icon>info</mat-icon>
+        No hay datos para el rango seleccionado
+      </div>
 
     </mat-tab>
 

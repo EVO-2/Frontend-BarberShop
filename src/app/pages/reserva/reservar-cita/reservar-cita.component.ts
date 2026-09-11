@@ -229,6 +229,13 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
     this.serviciosArray.markAsTouched();
   }
 
+  // 📌 Configuración de recargo por servicio a domicilio (40%)
+  readonly PORCENTAJE_RECARGO_DOMICILIO: number = 0.40;
+
+  get porcentajeDomicilioDisplay(): number {
+    return Math.round(this.PORCENTAJE_RECARGO_DOMICILIO * 100);
+  }
+
   get esDomicilioSelected(): boolean {
     return !!this.reservarForm.get('esDomicilio')?.value;
   }
@@ -244,7 +251,7 @@ export class ReservarCitaComponent implements OnInit, OnDestroy {
   }
 
   get recargoDomicilio(): number {
-    return this.esDomicilioSelected ? this.subtotalServicios * 0.35 : 0;
+    return this.esDomicilioSelected ? Math.round(this.subtotalServicios * this.PORCENTAJE_RECARGO_DOMICILIO) : 0;
   }
 
   get totalCita(): number {

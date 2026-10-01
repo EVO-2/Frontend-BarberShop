@@ -59,6 +59,13 @@ export class AjustesEmpresaComponent implements OnInit {
         herramientas_empresa: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
         herramientas_propias: [60, [Validators.required, Validators.min(0), Validators.max(100)]],
         propietario: [100, [Validators.required, Validators.min(0), Validators.max(100)]]
+      }),
+      whatsappConfig: this.fb.group({
+        habilitado: [true],
+        phoneNumberId: [''],
+        displayPhoneNumber: [''],
+        tokenAcceso: [''],
+        instruccionesIA: ['Atendemos con y sin cita previa. Ofrecemos bebidas de cortesía y excelente atención.']
       })
     });
   }
@@ -98,6 +105,13 @@ export class AjustesEmpresaComponent implements OnInit {
             herramientas_empresa: (empresa.configuracionComisiones?.herramientas_empresa || 0.50) * 100,
             herramientas_propias: (empresa.configuracionComisiones?.herramientas_propias || 0.60) * 100,
             propietario: (empresa.configuracionComisiones?.propietario || 1.00) * 100
+          },
+          whatsappConfig: {
+            habilitado: empresa.whatsappConfig?.habilitado !== undefined ? empresa.whatsappConfig.habilitado : true,
+            phoneNumberId: empresa.whatsappConfig?.phoneNumberId || '',
+            displayPhoneNumber: empresa.whatsappConfig?.displayPhoneNumber || '',
+            tokenAcceso: empresa.whatsappConfig?.tokenAcceso || '',
+            instruccionesIA: empresa.whatsappConfig?.instruccionesIA || 'Atendemos con y sin cita previa. Ofrecemos bebidas de cortesía y excelente atención.'
           }
         });
 
@@ -131,6 +145,52 @@ export class AjustesEmpresaComponent implements OnInit {
   capitalizar(str: string): string {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  probandoWhatsApp = false;
+  probarWhatsApp() {
+    Swal.fire({
+      title: 'Probar Bot de WhatsApp',
+      text: 'Ingresa el número con indicativo internacional (ej: 573001234567) al que enviaremos el mensaje de bienvenida:',
+      input: 'text',
+      inputPlaceholder: '573001234567',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar Prueba',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#25D366',
+      showLoaderOnConfirm: true,
+      preConfirm: (numero) => {
+        if (!numero || numero.trim().length < 8) {
+          Swal.showValidationMessage('Ingresa un número de teléfono válido.');
+          return false;
+        }
+        return numero.trim();
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.probandoWhatsApp = true;
+        this.empresaService.probarWhatsApp(result.value).subscribe({
+          next: (res) => {
+            this.probandoWhatsApp = false;
+            Swal.fire({
+              title: '¡Mensaje Enviado!',
+              text: res.msg || 'La prueba de conexión con WhatsApp se ejecutó correctamente.',
+              icon: 'success',
+              confirmButtonColor: '#25D366'
+            });
+          },
+          error: (err) => {
+            this.probandoWhatsApp = false;
+            Swal.fire({
+              title: 'Error de Envío',
+              text: err?.error?.msg || 'No se pudo enviar el mensaje. Verifica que las credenciales de WhatsApp estén configuradas en el backend.',
+              icon: 'error',
+              confirmButtonColor: '#ef4444'
+            });
+          }
+        });
+      }
+    });
   }
 
   guardarCambios() {

@@ -189,6 +189,78 @@
           </div>
         </mat-tab>
 
+        <!-- Pestaña 5: Asistente Bot WhatsApp con IA -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon whatsapp-icon">chat</mat-icon>
+            <span>Bot WhatsApp & IA</span>
+          </ng-template>
+
+          <div class="tab-content" formGroupName="whatsappConfig">
+            <div class="whatsapp-banner">
+              <div class="badge-premium">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>Asistente Inteligente 24/7</span>
+              </div>
+              <h3>Automatiza la atención y agendamiento por WhatsApp</h3>
+              <p>
+                Tu asistente virtual responde dudas frecuentes con Inteligencia Artificial (Gemini) y guía a tus clientes para reservar citas paso a paso de forma automática.
+              </p>
+            </div>
+
+            <!-- Estado del Bot -->
+            <div class="toggle-container whatsapp-toggle-card">
+              <mat-slide-toggle formControlName="habilitado" color="primary">
+                <span class="toggle-label" [class.abierto]="form.get('whatsappConfig.habilitado')?.value" [class.cerrado]="!form.get('whatsappConfig.habilitado')?.value">
+                  {{ form.get('whatsappConfig.habilitado')?.value ? 'Bot de WhatsApp Activo' : 'Bot de WhatsApp Desactivado' }}
+                </span>
+              </mat-slide-toggle>
+              <p class="hint-text mt-2">
+                {{ form.get('whatsappConfig.habilitado')?.value 
+                    ? 'El bot responderá de forma automática a los mensajes entrantes de tus clientes.' 
+                    : 'El bot no responderá mensajes mientras esté desactivado.' }}
+              </p>
+            </div>
+
+            <!-- Formulario de Configuración de la Línea -->
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Número de WhatsApp Visible</mat-label>
+                <input matInput formControlName="displayPhoneNumber" placeholder="Ej: +57 300 123 4567" />
+                <mat-icon matSuffix>call</mat-icon>
+                <mat-hint>El número de contacto que tus clientes verán para escribirte.</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Phone Number ID (Meta Cloud)</mat-label>
+                <input matInput formControlName="phoneNumberId" placeholder="Ej: 104593829102834" />
+                <mat-icon matSuffix>dialpad</mat-icon>
+                <mat-hint>Identificador asignado por WhatsApp Cloud API en Meta Developer.</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full form-grid-full">
+                <mat-label>Instrucciones y Conocimiento para la Inteligencia Artificial</mat-label>
+                <textarea matInput rows="4" formControlName="instruccionesIA" placeholder="Ej: Atendemos con o sin cita previa. Ofrecemos bebidas de cortesía (café o cerveza), parqueadero privado para motos y carros. Aceptamos transferencias y tarjeta..."></textarea>
+                <mat-hint>Personaliza cómo habla la IA y qué datos clave de tu barbería debe conocer.</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <!-- Acciones de Conexión y Prueba -->
+            <div class="test-connection-box">
+              <div class="test-info">
+                <h4><mat-icon>verified</mat-icon> Prueba de Conexión en Vivo</h4>
+                <p>Verifica que los tokens de Meta y el bot estén operando enviando un mensaje directo a tu celular.</p>
+              </div>
+              <button mat-stroked-button type="button" class="btn-test-whatsapp" (click)="probarWhatsApp()" [disabled]="probandoWhatsApp">
+                <mat-icon *ngIf="!probandoWhatsApp">send</mat-icon>
+                <mat-icon *ngIf="probandoWhatsApp" class="spin-icon">autorenew</mat-icon>
+                {{ probandoWhatsApp ? 'Enviando Mensaje...' : 'Enviar Mensaje de Prueba' }}
+              </button>
+            </div>
+
+          </div>
+        </mat-tab>
+
       </mat-tab-group>
 
       <!-- Botón de Guardado Único al final de la Tarjeta -->

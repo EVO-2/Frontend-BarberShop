@@ -16,6 +16,14 @@ export interface HorarioDia {
   cierre: string;
 }
 
+export interface WhatsAppConfig {
+  habilitado: boolean;
+  phoneNumberId?: string;
+  displayPhoneNumber?: string;
+  tokenAcceso?: string;
+  instruccionesIA?: string;
+}
+
 export interface EmpresaInfo {
   _id?: string;
   nombre: string;
@@ -32,6 +40,7 @@ export interface EmpresaInfo {
     herramientas_propias?: number;
     propietario?: number;
   };
+  whatsappConfig?: WhatsAppConfig;
 }
 
 @Injectable({
@@ -57,6 +66,10 @@ export class EmpresaService {
 
   actualizarInfoEmpresa(datos: EmpresaInfo): Observable<{ success: boolean, msg: string, empresa: EmpresaInfo }> {
     return this.http.put<{ success: boolean, msg: string, empresa: EmpresaInfo }>(`${this.apiUrl}/info`, datos);
+  }
+
+  probarWhatsApp(telefonoDestino: string): Observable<{ success: boolean, msg: string }> {
+    return this.http.post<{ success: boolean, msg: string }>(`${environment.apiUrl}/whatsapp/probar-conexion`, { telefonoDestino });
   }
 
 }
